@@ -1,0 +1,43 @@
+# LOKF knowledge-bundle recipes for LOKF Curator.
+#
+# The `lokf` toolkit is a Python sidecar (see pyproject.toml); these recipes
+# drive it against the knowledge/ bundle. Run `just --list` to see them.
+
+bundle := "knowledge"
+
+# List available recipes
+default:
+    @just --list
+
+# Install the lokf sidecar toolkit into a local .venv
+lokf-install:
+    uv sync
+
+# Assemble and validate the knowledge bundle against the LOKF schema
+lokf-validate:
+    uv run lokf validate {{ bundle }}
+
+# Project the bundle (or a concept file) to RDF (Turtle) on stdout
+lokf-convert FILE=bundle:
+    uv run lokf convert --format ttl {{ FILE }}
+
+# Serve the bundle locally: SPARQL endpoint + live graph explorer
+lokf-serve:
+    uv run lokf serve {{ bundle }}
+
+# Audit: every typed-relation target must resolve to a concept in the bundle.
+# lokf validate only checks frontmatter/bundle shape, not cross-concept
+# references, so a fabricated or stale target passes it silently - this
+# closes that gap with the same SPARQL interface `lokf-serve` exposes.
+lokf-check-refs:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    q='SELECT DISTINCT ?target WHERE { ?s ?p ?target . FILTER(?p IN (dcterms:isPartOf, schema:hasPart, dcterms:references, dcterms:requires, prov:wasDerivedFrom, schema:about, schema:sameAs, dcterms:relation, rdfs:isDefinedBy, dcterms:source)) FILTER(isIRI(?target)) FILTER NOT EXISTS { ?target a ?anytype } }'
+    dangling="$(uv run lokf query {{ bundle }} "$q" --format csv | tail -n +2)"
+    if [ -z "$dangling" ]; then
+      echo "OK - every typed-relation target resolves to a concept in the bundle."
+    else
+      echo "FAIL - relation target(s) with no matching concept in the bundle:"
+      echo "$dangling"
+      exit 1
+    fi
