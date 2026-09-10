@@ -1,0 +1,36 @@
+# vscode
+.vscode
+
+# Intellij
+*.iml
+.idea
+
+# npm
+node_modules
+
+# Don't include the compiled main.js file in the repo.
+# It is uploaded to GitHub releases instead.
+main.js
+
+# Exclude sourcemaps
+*.map
+
+# obsidian
+data.json
+
+# Exclude macOS Finder (System Explorer) View States
+.DS_Store
+
+# local sample/test vault (never published)
+sample-vault/
+
+# OS/editor noise
+*.swp
+
+# Installed agent skills are runtime state, not source (the LOKF skills' own
+# hygiene note). CI installs the pinned lokf-librarian skill at run time, and
+# the smoke test reads a frozen copy of the scaffolding skeleton from
+# scripts/fixtures/, so nothing here needs to be committed.
+.agents/
+.claude/
+skills-lock.json

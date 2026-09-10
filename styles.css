@@ -1,0 +1,219 @@
+/* LOKF Curator - trust report and review card styles */
+
+.lokf-curator {
+  padding: 6px 8px 16px 8px;
+  font-size: var(--font-ui-smaller);
+}
+
+.lokf-bundle-selector {
+  margin-bottom: 8px;
+}
+
+.lokf-io-issues {
+  margin-bottom: 8px;
+}
+.lokf-io-issue {
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: var(--background-modifier-error);
+  color: var(--text-on-accent);
+  margin-bottom: 4px;
+}
+
+.lokf-health {
+  margin-bottom: 10px;
+}
+.lokf-chip {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-weight: 600;
+  font-size: var(--font-ui-smaller);
+  background: var(--background-modifier-border);
+  color: var(--text-normal);
+  margin: 0 4px 4px 0;
+}
+.lokf-chip-primary {
+  font-size: var(--font-ui-medium);
+  font-weight: 700;
+  padding: 4px 10px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  margin-bottom: 6px;
+}
+.lokf-health-rest {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.lokf-active-note {
+  margin-bottom: 10px;
+  padding: 6px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+}
+.lokf-active-note h4 {
+  margin: 0 0 4px 0;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lokf-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.lokf-queue-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.lokf-queue-card:hover {
+  background: var(--background-modifier-hover);
+}
+.lokf-queue-title {
+  font-weight: 600;
+}
+.lokf-queue-class {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.lokf-queue-why {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+.lokf-queue-source {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  font-family: var(--font-monospace);
+}
+.lokf-go-button {
+  cursor: pointer;
+  padding: 4px 10px;
+  margin-top: 4px;
+}
+
+.lokf-open-questions {
+  margin-bottom: 8px;
+}
+.lokf-oq-row {
+  padding: 3px 2px;
+  cursor: pointer;
+}
+.lokf-oq-row:hover {
+  background: var(--background-modifier-hover);
+}
+.lokf-oq-title {
+  font-weight: 600;
+}
+
+.lokf-feedback,
+.lokf-vocab,
+.lokf-remaining {
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.lokf-empty {
+  color: var(--text-muted);
+  padding: 8px 2px;
+}
+
+/* Review card */
+.lokf-toolbar {
+  margin-bottom: 8px;
+}
+.lokf-toolbar button {
+  cursor: pointer;
+}
+
+.lokf-source,
+.lokf-claim,
+.lokf-trust {
+  margin-bottom: 8px;
+}
+.lokf-source-path {
+  font-family: var(--font-monospace);
+  word-break: break-all;
+}
+
+.lokf-question {
+  color: var(--text-accent);
+}
+
+.lokf-verbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.lokf-verb {
+  cursor: pointer;
+  padding: 4px 10px;
+}
+.lokf-verb-default {
+  font-weight: 700;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+.lokf-verb:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lokf-collapsible {
+  cursor: pointer;
+}
+.lokf-caret {
+  color: var(--text-muted);
+}
+
+.lokf-source-hint {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.lokf-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+.lokf-choice-row button {
+  cursor: pointer;
+}
+.lokf-choice-selected {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.lokf-dialog-error {
+  color: var(--text-error);
+  margin-top: 6px;
+}
+
+.lokf-note-dialog,
+.lokf-confirm-dialog {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+}
+.lokf-note-dialog textarea {
+  width: 100%;
+  min-height: 60px;
+  margin: 6px 0;
+}
+.lokf-note-dialog input,
+.lokf-confirm-dialog input {
+  width: 100%;
+  margin: 6px 0;
+}
+
+.lokf-curator-error {
+  color: var(--text-error);
+}

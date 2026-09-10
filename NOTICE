@@ -1,0 +1,11 @@
+LOKF Curator
+Copyright 2026 Noel McLoughlin
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product implements the Linked Open Knowledge Format (LOKF) specification: https://lokf.nolan-nichols.com/specification/
+
+LOKF is a semantic profile of the Open Knowledge Format (OKF) specification by Google Cloud Platform:
+https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md
+
+LOKF Curator implements the lokf-curator agent skill's review workflow as an in-editor Obsidian plugin. It is a companion to lokf-enforcer (schema-valid tier) and to any installed OKF v0.2 validator, and does not itself implement schema validation.

@@ -1,0 +1,56 @@
+name: Node.js build
+
+on:
+    push:
+        branches: ['**']
+    pull_request:
+        branches: ['**']
+
+# Least-privilege default: every scope starts read-only (or none). The build
+# job below opts back into only the read access it needs to check out code;
+# no other job (present or future) inherits more. `pull_request` (not
+# `pull_request_target`) already keeps a fork PR's GITHUB_TOKEN read-only and
+# its run secret-free, regardless of this setting — this is defense in depth,
+# not what makes fork PRs safe here.
+permissions: {}
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+
+        strategy:
+            matrix:
+                node-version: [20.x, 22.x, 24.x]
+                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+        steps:
+            # Monitors the runner's outbound network traffic for the rest of this
+            # job and flags anything unexpected — the main defense here against a
+            # compromised dependency's postinstall script (`npm ci` below runs
+            # esbuild's, which fetches a platform binary) phoning home, doubly
+            # relevant on a job that also builds arbitrary fork PR branches.
+            # Audit mode only: it observes and reports, it does not block, since
+            # hand-maintaining an exact egress allowlist here would be fragile
+            # against ordinary dependency churn. See
+            # https://github.com/step-security/harden-runner.
+            - name: Harden the runner
+              uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+              with:
+                  egress-policy: audit
+
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - run: npm ci
+            - run: npm run build --if-present
+            - run: npm run lint
+            # validator.ts is import-free, so its rules run under plain Node here
+            # without an Obsidian install.
+            - run: npm run smoke-test

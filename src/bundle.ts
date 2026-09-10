@@ -1,0 +1,266 @@
+// bundle.ts - bundle-root resolution, frontmatter split, relation-target
+// resolution, and the 14-class check. Carried over from lokf-enforcer's
+// validator.ts unchanged: multi-bundle-root path algebra and the LOKF
+// class/relation-field vocabulary are shared plumbing, not enforcer rules.
+//
+// Deliberately import-free: no Obsidian, no YAML parser. Callers hand in
+// already-parsed frontmatter, so this module runs unchanged under Obsidian
+// and under plain Node (see scripts/smoke-test.ts).
+
+export const KNOWN_LOKF_TYPES = [
+  "Dataset",
+  "Table",
+  "Metric",
+  "Service",
+  "Playbook",
+  "Tutorial",
+  "Explanation",
+  "Policy",
+  "GlossaryTerm",
+  "Reference",
+  "Document",
+  "Person",
+  "Organization",
+  "AttestedComputation",
+];
+
+export const RELATION_FIELDS = [
+  "isPartOf",
+  "hasPart",
+  "references",
+  "dependsOn",
+  "derivedFrom",
+  "about",
+  "sameAs",
+  "relatedTo",
+  "definedBy",
+  "source",
+] as const;
+
+/** Settles the spellings a person plausibly types for one folder onto the
+ *  single form Obsidian's vault paths use: forward slashes, no leading or
+ *  trailing slash or whitespace, no doubled slashes, no `./` segments. So
+ *  "/knowledge/", " knowledge ", ".\knowledge", "./knowledge" and
+ *  "knowledge" all become "knowledge". (`..` is left alone - it can't name a
+ *  vault folder, so it falls through to the missing-root check and is
+ *  reported as not existing, which is the honest message for it.) */
+export function normalizeBundleRoot(value: string): string {
+  return value
+    .replace(/\\/g, "/")
+    .split("/")
+    .map((segment) => segment.trim())
+    .filter((segment) => segment !== "" && segment !== ".")
+    .join("/");
+}
+
+/**
+ * The first path segment beginning with a dot, or null if there is none.
+ *
+ * Obsidian's file index never lists a folder whose name starts with a dot, so
+ * a bundle root inside one (`.lokf/knowledge`, the sidecar convention) is
+ * invisible to this and every other plugin - a scan of it would silently find
+ * nothing. Callers report the segment rather than scanning into the void.
+ */
+export function hiddenRootSegment(bundleRoot: string): string | null {
+  const root = normalizeBundleRoot(bundleRoot);
+  if (!root) return null;
+  return root.split("/").find((segment) => segment.startsWith(".")) ?? null;
+}
+
+// ---- Multi-bundle-root resolution ----
+//
+// A vault may configure several bundle roots (one vault, several sibling
+// project folders, each its own bundle) or none (the whole vault is the one
+// implicit bundle). This is pure path algebra - no Obsidian dependency - so
+// it lives here rather than in main.ts.
+
+/** Normalizes and deduplicates a list of configured bundle roots, sorted
+ *  longest-first so `resolveBundleRoot`'s first prefix match is always the
+ *  most specific one for a path under a nested root. A blank entry (after
+ *  normalizing) drops out silently - it would otherwise collide with the "no
+ *  roots configured" case, which means something different (the whole vault,
+ *  rather than one configured root that happens to be the vault root). */
+export function normalizeBundleRoots(roots: string[]): string[] {
+  const seen = new Set<string>();
+  for (const entry of roots) {
+    const norm = normalizeBundleRoot(entry);
+    if (norm) seen.add(norm);
+  }
+  return [...seen].sort((a, b) => b.length - a.length);
+}
+
+/**
+ * Which configured bundle a vault-relative path belongs to.
+ *
+ * Returns that bundle's root path; `""` for the implicit whole-vault bundle
+ * when `roots` is empty (no explicit roots configured); or `null` when
+ * explicit roots are configured and the path sits under none of them - it
+ * belongs to no bundle and is not scanned at all.
+ *
+ * `roots` must already be normalized and sorted longest-first (see
+ * `normalizeBundleRoots`) - this function does not sort, so it stays cheap to
+ * call once per candidate file during a scan.
+ */
+export function resolveBundleRoot(vaultPath: string, roots: string[]): string | null {
+  if (roots.length === 0) return "";
+  for (const root of roots) {
+    if (vaultPath === root || vaultPath.startsWith(root + "/")) return root;
+  }
+  return null;
+}
+
+export function bundleRootIndexPath(root: string): string {
+  return root ? `${root}/index.md` : "index.md";
+}
+
+export function bundleLogPath(root: string): string {
+  return root ? `${root}/log.md` : "log.md";
+}
+
+/** Strips `root`'s prefix so downstream code - which knows nothing about
+ *  bundle roots - always sees paths relative to the bundle being processed,
+ *  exactly as when a bundle root was necessarily the vault root. The inverse
+ *  of `toVaultPath`. */
+export function toBundlePath(vaultPath: string, root: string): string {
+  return root && vaultPath.startsWith(root + "/") ? vaultPath.slice(root.length + 1) : vaultPath;
+}
+
+export function toVaultPath(bundlePath: string, root: string): string {
+  return root ? `${root}/${bundlePath}` : bundlePath;
+}
+
+const FM_RE = /^---\r?\n([\s\S]*?)\r?\n---/;
+const SCHEME_RE = /^[a-z][a-z0-9+.-]*:/i;
+
+export function isReserved(path: string): "index" | "log" | null {
+  const f = (path.split("/").pop() || "").toLowerCase();
+  if (f === "index.md") return "index";
+  if (f === "log.md") return "log";
+  return null;
+}
+
+export function isExcluded(path: string, excludeFolders: string[]): boolean {
+  return excludeFolders.some((folder) => folder && (path === folder || path.startsWith(folder + "/")));
+}
+
+export function splitFrontmatter(content: string): { hasFm: boolean; raw: string; body: string } {
+  const m = content.match(FM_RE);
+  if (!m) return { hasFm: false, raw: "", body: content };
+  return { hasFm: true, raw: m[1] ?? "", body: content.slice(m[0].length) };
+}
+
+export function readBaseIri(data: Record<string, unknown>): string | null {
+  const v = data["base_iri"];
+  return typeof v === "string" && v ? v : null;
+}
+
+export function parseCsv(text: string): string[] {
+  return text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+export function joinCsv(values: string[]): string {
+  return values.join(", ");
+}
+
+function hasScheme(s: string): boolean {
+  return SCHEME_RE.test(s);
+}
+
+function stripFragment(path: string): string {
+  const hashIdx = path.indexOf("#");
+  return hashIdx >= 0 ? path.slice(0, hashIdx) : path;
+}
+
+/**
+ * Frontmatter arrives as whatever YAML made of it, so a scalar can never be
+ * assumed: an unquoted `lokf_version: 0.2` is a number and `id: true` a
+ * boolean, both plainly meant as text.
+ */
+export function asScalar(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return null;
+}
+
+export function normalizeTypeKey(type: string): string {
+  return type.trim().replace(/\s+/g, "").toLowerCase();
+}
+
+const normalizedKnownTypes = new Set(KNOWN_LOKF_TYPES.map(normalizeTypeKey));
+
+export function classify(type: string | null): "known" | "unknown" {
+  if (!type) return "unknown";
+  return normalizedKnownTypes.has(normalizeTypeKey(type)) ? "known" : "unknown";
+}
+
+// ---- Relation target resolution ----
+
+export interface ResolvedTarget {
+  raw: string;
+  kind: "internal-iri" | "internal-relative" | "external-iri" | "malformed";
+  resolvedPath?: string;
+}
+
+export function resolveRelationTarget(raw: unknown, baseIri: string | null): ResolvedTarget {
+  if (typeof raw !== "string" || !raw.trim()) {
+    let described: string;
+    if (raw === undefined) described = "<missing>";
+    else if (raw === null) described = "<empty>";
+    else if (typeof raw === "string" || typeof raw === "number" || typeof raw === "boolean") described = String(raw);
+    else described = Array.isArray(raw) ? "<a list>" : "<a mapping>";
+    return { raw: described, kind: "malformed" };
+  }
+  const value = raw.trim();
+
+  if (hasScheme(value)) {
+    if (baseIri && value.startsWith(baseIri)) {
+      return { raw: value, kind: "internal-iri", resolvedPath: stripFragment(value.slice(baseIri.length)) };
+    }
+    return { raw: value, kind: "external-iri" };
+  }
+
+  let path = value;
+  if (path.startsWith("./")) path = path.slice(2);
+  return { raw: value, kind: "internal-relative", resolvedPath: stripFragment(path) };
+}
+
+export function mintExpectedId(vaultRelativePath: string, baseIri: string): string {
+  const withoutExt = vaultRelativePath.replace(/\.md$/i, "");
+  return baseIri + withoutExt.split("/").map(encodeURIComponent).join("/");
+}
+
+/** True when a source string names an absolute URL rather than a path inside
+ *  the vault - such a source can never be opened as a vault file. */
+export function hasUrlScheme(value: string): boolean {
+  return /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
+}
+
+/**
+ * Splits a `resource` into the path to open and the locator suffix to show as
+ * a hint (§6.2): a trailing `#fragment`, a trailing `:<line>` or
+ * `:<from>-<to>`, or both. The line-number form requires digits at the very
+ * end, so a `https://` scheme colon is never mistaken for one - and a URL is
+ * caught by `hasUrlScheme` before this matters anyway.
+ */
+export function splitSourceLocator(source: string): { path: string; hint: string | null } {
+  const hashIdx = source.indexOf("#");
+  let path = hashIdx >= 0 ? source.slice(0, hashIdx) : source;
+  const fragment = hashIdx >= 0 ? source.slice(hashIdx) : "";
+  let line = "";
+  const lineMatch = path.match(/:(\d+(?:-\d+)?)$/);
+  if (lineMatch) {
+    path = path.slice(0, path.length - lineMatch[0].length);
+    line = lineMatch[0];
+  }
+  const hint = `${line}${fragment}`;
+  return { path, hint: hint || null };
+}
+
+/** The directory part of a path, "" for a file at the root. */
+export function dirOf(path: string): string {
+  const cut = path.lastIndexOf("/");
+  return cut > 0 ? path.slice(0, cut) : "";
+}
