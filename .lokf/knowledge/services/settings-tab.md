@@ -8,7 +8,7 @@ isPartOf:
   - https://lokf-curator.example/knowledge/services/lokf-curator-plugin
 generated:
   by: process:lokf-librarian
-  at: "2026-09-10T00:00:00Z"
+  at: "2026-09-12T15:00:00Z"
 status: draft
 ---
 
@@ -17,9 +17,11 @@ status: draft
 `LokfCuratorSettingTab` returns definitions from `getSettingDefinitions()`
 rather than building DOM, which is what puts every setting into Obsidian's
 settings search. Groups: **Who is curating** (curator id, validated as a
-slug and refused if it contains `@`), **Scope** (bundle root folders,
-excluded folders - carried over from the sibling `lokf-enforcer` plugin's
-dot-folder rejection), **Review intervals** (three interval-months settings
+slug and refused if it contains `@`), **Scope** (bundle root folders and
+excluded folders - kept identical to the sibling `lokf-registrar` plugin: a
+dot-folder entry is accepted with a warning when Obsidian's index does not
+list it, rather than refused, and an empty list detects a top-level
+`knowledge_bundle/` on its own), **Review intervals** (three interval-months settings
 plus "prefer policies/knowledge-curation.md when present"), **Queue**
 (queue size, due-soon window), **Feedback** (the optional `feedbackFile`
 path).

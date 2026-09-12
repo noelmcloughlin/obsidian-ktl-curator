@@ -18,4 +18,4 @@ status: draft
 Defines `generated`, `verified`, `sources`, `usage_window`, `status`, and
 `stale_after` - the fields `trust-engine.md` (`src/trust.ts`) reads to
 compute every trust label. This plugin does not validate OKF or LOKF schema
-conformance itself (that is `lokf-enforcer`); it only reads these fields.
+conformance itself (that is `lokf-registrar`); it only reads these fields.

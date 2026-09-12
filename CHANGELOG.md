@@ -2,7 +2,21 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com/noelmcloughlin/obsidian-lokf-enforcer) release/0.3.0; its changelog history belongs to that plugin, not this one.
+This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com/noelmcloughlin/obsidian-lokf-registrar) release/0.3.0 - since renamed LOKF Registrar; its changelog history belongs to that plugin, not this one.
+
+## [Unreleased]
+
+## [0.3.0] - 2026-09-12
+
+### Added
+
+- **Bundle detection for the sidecar convention.** A top-level `knowledge_bundle/` with its own `index.md`, in a vault whose root `index.md` carries no LOKF header, becomes the bundle root with nothing configured - the health line and queue then cover only the bundle. Kept identical to LOKF Registrar; decision logic is the pure, smoke-tested `autoBundleRoot`.
+
+### Changed
+
+- **The sibling plugin is LOKF Registrar** - renamed from LOKF Enforcer on 2026-09-12, before either plugin was published - in the README, `NOTICE`, this repository's bundle, and code comments; its repository is now `obsidian-lokf-registrar`. Nothing here changes behaviour: the two plugins stay independent, and this one never read the other's id. `NOTICE` no longer calls this plugin a companion to any installed OKF validator.
+- **A dot-folder bundle root is accepted, not refused** - a community plugin (Hidden Folders Access) can expose one to Obsidian's index. The report checks the live index first and explains an absent root instead of assuming; saving such an entry warns if the index doesn't list it today.
+- **"How this fits" rewritten** around one desk that is always the person's: this plugin is the curator's assistant, named for whom it serves, and LOKF Registrar the registrar beside it, likewise named for its job. Covers both ways of reaching the desk - the doorway opened as its own vault (Obsidian skips a symlink that resolves inside the vault it's indexing, so open the link itself, never the repository root), or the real `knowledge_bundle/` folder found inside your own vault with nothing to configure - and names the vault the **workshop** and the bundle the **exhibition**: what a person confirms is what goes on exhibit. References to the upstream `lokf-scaffolding` skill now read `lokf-sidecar`.
 
 ## [0.2.0] - 2026-09-11
 

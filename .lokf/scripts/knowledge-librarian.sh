@@ -12,7 +12,7 @@
 # CONTRACT (the workflow relies on this):
 #   - This script only READS the repo and WRITES files under .lokf/knowledge/
 #     (the workflow diffs and commits that path only; tooling files are
-#     lokf-scaffolding's domain).
+#     lokf-sidecar's domain).
 #   - It MUST NOT git commit, push, or open PRs - the workflow owns that.
 #   - On success it exits 0 whether or not it changed anything; the workflow
 #     diffs the working tree to decide whether to open a PR.

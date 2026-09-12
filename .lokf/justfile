@@ -41,3 +41,18 @@ lokf-check-refs:
       echo "$dangling"
       exit 1
     fi
+
+# Visible layout only (knowledge_bundle/ is the real folder and .lokf/knowledge a
+# link onto it): a sync service such as OneDrive carries folders but not links,
+# so each machine may need the tools' link recreated. `visible` is where the real
+# folder lives, relative to this directory - the host root by default; set it
+# here when the folder sits inside a vault subfolder (visible := "../MSc-AI/knowledge_bundle").
+visible := "../knowledge_bundle"
+
+# Recreate the .lokf/knowledge link onto the visible bundle folder (no-op when knowledge/ exists)
+lokf-link:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -L knowledge ] && [ ! -e knowledge ]; then echo "knowledge is a link to nothing ($(readlink knowledge)) - remove it and re-run" >&2; exit 1; fi
+    if [ -e knowledge ]; then echo "knowledge already present - nothing to link"; exit 0; fi
+    if [ -d "{{ visible }}" ]; then ln -s "{{ visible }}" knowledge && echo "linked .lokf/knowledge -> {{ visible }}"; else echo "no {{ visible }} folder to link to" >&2; exit 1; fi

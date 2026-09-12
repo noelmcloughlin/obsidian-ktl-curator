@@ -15,6 +15,8 @@ import {
   splitSourceLocator,
   toBundlePath,
   toVaultPath,
+  autoBundleRoot,
+  VISIBLE_BUNDLE_FOLDER,
 } from "./bundle";
 import {
   computeHealth,
@@ -219,7 +221,23 @@ export default class LokfCuratorPlugin extends Plugin {
       this.bundleRootsRaw = raw;
       this.bundleRootsResolved = normalizeBundleRoots(raw);
     }
-    return this.bundleRootsResolved;
+    if (this.bundleRootsResolved.length) return this.bundleRootsResolved;
+    const detected = this.detectedRoot();
+    return detected ? [detected] : this.bundleRootsResolved;
+  }
+
+  /** With nothing configured, recognise the sidecar convention on its own: a
+   *  top-level `knowledge_bundle/` with its own index.md, in a vault whose
+   *  root index.md carries no LOKF header, is a notes vault hosting a bundle
+   *  beside its notes (lokf-sidecar's visible layout). Kept identical to LOKF
+   *  Registrar's; the decision itself is bundle.ts's pure `autoBundleRoot`. */
+  private detectedRoot(): string | null {
+    const visibleIndex = this.app.vault.getAbstractFileByPath(`${VISIBLE_BUNDLE_FOLDER}/index.md`);
+    if (!(visibleIndex instanceof TFile)) return null;
+    const rootIndex = this.app.vault.getAbstractFileByPath("index.md");
+    const fm = rootIndex instanceof TFile ? this.app.metadataCache.getFileCache(rootIndex)?.frontmatter : undefined;
+    const rootHasHeader = !!fm && (fm["lokf_version"] !== undefined || fm["base_iri"] !== undefined);
+    return autoBundleRoot(rootHasHeader, true);
   }
 
   private resolveRoot(vaultPath: string): string | null {
@@ -599,13 +617,17 @@ export default class LokfCuratorPlugin extends Plugin {
 
   private ioIssuesFor(root: string): string[] {
     const issues: string[] = [];
-    const hiddenSegment = hiddenRootSegment(root);
     const rootIndexPath = bundleRootIndexPath(root);
+    // The live index decides: a root Obsidian actually lists is read wherever
+    // it sits. Only an absent one is explained - by the dot-folder rule when
+    // that is the likely reason, else as missing.
+    const present = !root || this.app.vault.getAbstractFileByPath(root) instanceof TFolder;
+    const hiddenSegment = present ? null : hiddenRootSegment(root);
     if (hiddenSegment) {
       issues.push(
-        `Bundle root "${root}" sits inside "${hiddenSegment}", which Obsidian's file index never exposes - open that folder as its own vault instead.`
+        `Bundle root "${root}" sits inside "${hiddenSegment}", which Obsidian's file index does not list (it skips dot-folders unless a plugin such as Hidden Folders Access exposes one) - open that folder as its own vault, expose it, or lay the bundle down as a visible knowledge_bundle folder.`
       );
-    } else if (root && !(this.app.vault.getAbstractFileByPath(root) instanceof TFolder)) {
+    } else if (!present) {
       issues.push(`Bundle root folder "${root}" does not exist in this vault.`);
     } else if (!(this.app.vault.getAbstractFileByPath(rootIndexPath) instanceof TFile)) {
       issues.push(`There is no ${rootIndexPath}, so no concept ids can be minted or checked.`);

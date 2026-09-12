@@ -2,7 +2,7 @@
 //
 // Declarative (Obsidian 1.13.0+): the tab returns definitions rather than
 // building DOM, so every setting is indexed by Obsidian's settings search.
-import { App, PluginSettingTab } from "obsidian";
+import { App, Notice, PluginSettingTab, TFolder } from "obsidian";
 import type { SettingDefinitionItem } from "obsidian";
 import type LokfCuratorPlugin from "./main";
 import type { CuratorSettings } from "./main";
@@ -38,7 +38,22 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
     if (isCsvKey(key)) settings[key] = parseCsv(String(value));
     else settings[key] = value;
     await this.plugin.saveSettings();
-    if (key === "bundleRoots") this.plugin.invalidateBundleCache();
+    if (key === "bundleRoots") {
+      this.plugin.invalidateBundleCache();
+      // A dot-folder root is accepted rather than refused: Obsidian's own index
+      // skips such folders, but a plugin (Hidden Folders Access, for one) can
+      // expose one, and the report checks the live index either way. Warn now
+      // if the folder is not in the index today, so the reason is known.
+      for (const entry of this.plugin.settings.bundleRoots) {
+        const segment = hiddenRootSegment(entry);
+        if (segment && !(this.plugin.app.vault.getAbstractFileByPath(entry.replace(/^\/+|\/+$/g, "")) instanceof TFolder)) {
+          new Notice(
+            `LOKF Curator: "${entry}" sits inside "${segment}", which Obsidian's file index does not currently expose - nothing under it will be read until a plugin exposes it, or you open that folder as its own vault.`,
+            10000
+          );
+        }
+      }
+    }
     // Toggling the inline marker changes a registered editor extension's
     // behaviour; repaint open editors at once rather than on the next edit.
     if (key === "trustMarker") this.plugin.app.workspace.updateOptions();
@@ -90,21 +105,12 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
         items: [
           {
             name: "Bundle root folders",
-            desc: "Comma-separated vault-relative folders, each the root of its own bundle (its own index.md, base_iri, ids). Leave blank if the bundle is the whole vault. List folders here only when one vault holds several independent bundles as sibling project folders; a note outside every listed folder is not scanned.",
+            desc: "Comma-separated vault-relative folders, each the root of its own bundle (its own index.md, base_iri, ids). Leave blank if the bundle is the whole vault - the case when you open a knowledge_bundle doorway as a vault, or any vault that is a bundle outright. Blank also detects the sidecar convention on its own: a top-level knowledge_bundle folder with its own index.md, in a vault whose root index.md has no LOKF header, becomes the bundle root and every note outside it is left alone. List folders here only when one vault holds several independent bundles as sibling project folders; a note outside every listed folder is not scanned. A folder inside a dot-folder is accepted but only scannable if another plugin exposes it to Obsidian's index (the report says so otherwise).",
             aliases: ["subfolder", "one vault many folders", "bundleRoots", "multiple bundles"],
             control: {
               type: "textarea",
               key: "bundleRoots",
               rows: 2,
-              validate: (value) => {
-                for (const entry of parseCsv(String(value ?? ""))) {
-                  const segment = hiddenRootSegment(entry);
-                  if (segment) {
-                    return `"${entry}" sits inside "${segment}" - Obsidian's file index skips folders whose name begins with a dot, so nothing under it can ever be scanned. Open that folder as its own vault instead (File → Open folder as vault).`;
-                  }
-                }
-                return undefined;
-              },
             },
           },
           {

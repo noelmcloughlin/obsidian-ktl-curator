@@ -29,6 +29,8 @@ import {
   splitSourceLocator,
   hasUrlScheme,
   dirOf,
+  autoBundleRoot,
+  VISIBLE_BUNDLE_FOLDER,
 } from "../src/bundle";
 import {
   buildTrustRecord,
@@ -93,6 +95,9 @@ section("bundle.ts - bundle roots", () => {
   expect("normalizeBundleRoot backslashes", normalizeBundleRoot(".\\knowledge") === "knowledge", normalizeBundleRoot(".\\knowledge"));
   expect("hiddenRootSegment finds dot folder", hiddenRootSegment(".lokf/knowledge") === ".lokf", String(hiddenRootSegment(".lokf/knowledge")));
   expect("hiddenRootSegment null for clean root", hiddenRootSegment("knowledge") === null, String(hiddenRootSegment("knowledge")));
+  expect("auto-detect: knowledge_bundle/index.md in a plain notes vault becomes the root", autoBundleRoot(false, true) === VISIBLE_BUNDLE_FOLDER, String(autoBundleRoot(false, true)));
+  expect("auto-detect: a vault whose root index.md is a header stays the whole-vault bundle", autoBundleRoot(true, true) === null, String(autoBundleRoot(true, true)));
+  expect("auto-detect: nothing without the visible folder's index.md", autoBundleRoot(false, false) === null, String(autoBundleRoot(false, false)));
 
   const roots = normalizeBundleRoots(["b", "a/nested", "a"]);
   expect("normalizeBundleRoots sorts longest-first", roots[0] === "a/nested", JSON.stringify(roots));
@@ -108,7 +113,7 @@ section("bundle.ts - bundle roots", () => {
 
   expect("isReserved index.md", isReserved("knowledge/index.md") === "index", String(isReserved("knowledge/index.md")));
   expect("isReserved log.md", isReserved("knowledge/log.md") === "log", String(isReserved("knowledge/log.md")));
-  expect("isReserved diataxis.md (Enforcer-generated map, not a concept)", isReserved("knowledge/diataxis.md") === "diataxis", String(isReserved("knowledge/diataxis.md")));
+  expect("isReserved diataxis.md (Registrar-generated map, not a concept)", isReserved("knowledge/diataxis.md") === "diataxis", String(isReserved("knowledge/diataxis.md")));
   expect("isReserved concept", isReserved("knowledge/services/a.md") === null, String(isReserved("knowledge/services/a.md")));
 });
 

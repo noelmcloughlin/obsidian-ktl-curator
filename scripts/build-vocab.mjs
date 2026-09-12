@@ -4,7 +4,7 @@
 // from a sibling checkout (or $LOKF_SCHEMA) and writes the small JSON manifest
 // the plugin ships as static data. The curator consumes the `slots` (each
 // field's schema description) for its "Look up a LOKF field" reference
-// (src/fields.ts); the rest of the manifest is kept in step with LOKF Enforcer.
+// (src/fields.ts); the rest of the manifest is kept in step with LOKF Registrar.
 // Re-run it, and commit the result, when bumping the pinned schema version.
 //
 //   node scripts/build-vocab.mjs

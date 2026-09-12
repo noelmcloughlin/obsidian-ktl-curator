@@ -36,7 +36,7 @@ for s in lokf-librarian lokf-curator; do   # derive / confirm concepts
 done
 ```
 
-`lokf-scaffolding` is only for re-generating the `.lokf/` tooling and the
+`lokf-sidecar` is only for re-generating the `.lokf/` tooling and the
 two bundle workflows from their template (rare); `lokf-docent` only lets an
 agent answer questions from the bundle. Neither is needed to contribute.
 
@@ -66,12 +66,12 @@ For a realistic LOKF vault to test against, point a scratch vault directly at an
 - Keep changes focused; describe what and why in the PR.
 - Follow the existing style: build DOM with `createEl`/`createDiv` (never `innerHTML`), put styling in `styles.css`, and register events via `registerEvent` so they unload.
 - **Keep `bundle.ts`, `trust.ts`, and `edits.ts` free of runtime dependencies.** They take already-parsed frontmatter (plus, for `trust.ts`, a fixed `today`) and pull in nothing that isn't deterministic static data - not Obsidian, not a YAML library, not `Date.now()`; `bundle.ts`'s one import is the static schema manifest (`src/lokf-vocab.json`), which keeps the concept-type vocabulary in step with the pinned schema. That is what lets the whole rule set run under plain Node in the smoke test with every date-dependent label reproducible. Parsing and the current date belong in `main.ts`, which uses Obsidian's own `metadataCache`.
-- **Refreshing the vocabulary manifest.** `src/lokf-vocab.json` (the field descriptions behind *Look up a LOKF field*) is generated from a pinned LOKF schema by `node scripts/build-vocab.mjs` - a maintenance step, not part of `npm run build`. Re-run it, and commit the result, only when bumping the pinned schema. It prefers `lokf vocab --all --json` (install the [`lokf`](https://pypi.org/project/lokf/) toolkit so it is on `PATH`) and falls back to reading `../lokf/lokf.yaml` from a sibling checkout; `src/fields.ts` takes each field's wording straight from the manifest. Kept identical to LOKF Enforcer so the two plugins' field reference never drifts.
+- **Refreshing the vocabulary manifest.** `src/lokf-vocab.json` (the field descriptions behind *Look up a LOKF field*) is generated from a pinned LOKF schema by `node scripts/build-vocab.mjs` - a maintenance step, not part of `npm run build`. Re-run it, and commit the result, only when bumping the pinned schema. It prefers `lokf vocab --all --json` (install the [`lokf`](https://pypi.org/project/lokf/) toolkit so it is on `PATH`) and falls back to reading `../lokf/lokf.yaml` from a sibling checkout; `src/fields.ts` takes each field's wording straight from the manifest. Kept identical to LOKF Registrar so the two plugins' field reference never drifts.
 - **Never let a write exceed what `references/review-session.md` in the `lokf-curator` skill specifies for that verb.** These guardrails are the product: one verb, one concept, one person's answer; no proposed corrections; no touching a field the verb's table doesn't name.
 
 ## Code of conduct
 
-Participation here is covered by the [Contributor Covenant](CODE_OF_CONDUCT.md), the same one the sibling `lokf-agent-skills` and `obsidian-lokf-enforcer` repositories use.
+Participation here is covered by the [Contributor Covenant](CODE_OF_CONDUCT.md), the same one `lokf-agent-skills` and LOKF Registrar use.
 
 ## Using AI tools
 

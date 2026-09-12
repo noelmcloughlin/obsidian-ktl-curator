@@ -22,5 +22,5 @@ functions with no Obsidian dependency and no `Date.now()` - `today` is always
 a parameter, so every date-dependent label is reproducible under plain Node
 (`scripts/smoke-test.ts`).
 
-- `bundle.ts` - carried over from the sibling `lokf-enforcer` plugin: bundle-root resolution (`normalizeBundleRoots`, `resolveBundleRoot`), frontmatter split, relation-target resolution, and the 14-class check (`classify`).
+- `bundle.ts` - carried over from the sibling `lokf-registrar` plugin: bundle-root resolution (`normalizeBundleRoots`, `resolveBundleRoot`), frontmatter split, relation-target resolution, and the 14-class check (`classify`).
 - `trust.ts` - `buildTrustRecord` turns one concept's frontmatter + heading list into a `TrustRecord`; `computeReliedOnBy` does the second pass over every concept's ten relation fields plus `relations[].target` to fill in "N other concepts rely on this"; `computeHealth` produces the seven (overlapping, not partitioned) counts; `rankQueue` orders the queue by the skill's four ranking groups, then by reliance count, then by newest `generated.at`.

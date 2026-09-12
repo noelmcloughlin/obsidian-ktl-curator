@@ -15,7 +15,7 @@ status: draft
 
 Bootstrap discovery pass (first real run of `lokf-librarian` against this
 repository - the two `services/example-*.md` placeholders from
-`lokf-scaffolding` are removed as part of this run). Re-check each row by
+`lokf-sidecar` are removed as part of this run). Re-check each row by
 re-reading the paths listed; if a path no longer exists, remove the concepts
 it fed and log the removal.
 
@@ -30,7 +30,7 @@ it fed and log the removal.
 | `.agents/skills/lokf-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
 | `CUR.md` | the implementation plan and architecture decisions | `Reference` | re-reading for scope/architecture changes not yet reflected in code |
 | `SECURITY.md` | the plugin's privacy/write-surface guarantees | `Policy` | re-reading for a changed write surface |
-| `README.md` "For the curious" section | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `lokf-enforcer` |
+| `README.md` "For the curious" section | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `lokf-registrar` |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
 | <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
 | <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uv pip index versions lokf` |
