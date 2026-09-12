@@ -23,6 +23,7 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for LOKF Curator. Every 
 * [Edits engine](services/edits-engine.md)
 * [Curator side panel](services/curator-view.md)
 * [Settings tab](services/settings-tab.md)
+* [In-editor aids](services/in-editor-aids.md)
 
 # References
 

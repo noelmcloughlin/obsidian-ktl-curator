@@ -13,6 +13,9 @@ generated:
   by: process:lokf-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
+verified:
+  - by: process:lokf-librarian
+    at: "2026-09-12T22:00:00Z"
 ---
 
 Declared in `.lokf/pyproject.toml`; `just lokf-validate` (from `.lokf/`) runs

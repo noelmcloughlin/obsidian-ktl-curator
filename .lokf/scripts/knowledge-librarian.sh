@@ -2,11 +2,11 @@
 #
 # Wrapper for the scheduled knowledge-librarian loop (Karpathy rule).
 #
-# `.github/workflows/knowledge-librarian.yaml` always invokes this script
-# directly (never a repository variable's content as a command - a repo
-# variable can only choose *which* agent runs, never *what command* runs).
-# Set `AGENT_CLI` (repo variable or secret) to the command that runs your
-# coding agent non-interactively - e.g. the GitHub Copilot CLI or an internal
+# `.github/workflows/knowledge-librarian.yaml` invokes this script directly - a
+# fixed, reviewed path, not an arbitrary command from a repo variable. To arm the
+# scheduled run, set the `KNOWLEDGE_LIBRARIAN_ENABLED` repository variable to
+# "true", and set `AGENT_CLI` (repo variable or secret) to the command that runs
+# your coding agent non-interactively - e.g. the GitHub Copilot CLI or an internal
 # agent runner that accepts a prompt on `-p`/stdin.
 #
 # CONTRACT (the workflow relies on this):
@@ -83,6 +83,82 @@ Task (Karpathy rule - continuous small corrections, not a rewrite):
 EOF
 )"
 
-echo "knowledge-librarian: refreshing the .lokf/ bundle via AGENT_CLI"
-# shellcheck disable=SC2086
-$AGENT_CLI -p "$prompt"
+# Security rationale (for human and automated reviewers): AGENT_CLI is trusted
+# configuration, not untrusted input - a repo admin sets it in Settings (the
+# operator naming their own agent command); it is never derived from repo
+# contents, PR data, or model output. It is parsed into a quoted argv array and
+# run directly (see below), so bash does NOT re-evaluate it as source: shell
+# metacharacters (; | & $() ``) are passed as inert arguments, not executed -
+# there is no eval and no `bash -c`. This step runs only in the workflow's
+# read-only `refresh` job (contents: read, no persisted credentials), and the
+# post-run check further fails if the agent wrote outside .lokf/knowledge/.
+# That check, and the AGENT_CLI invocation itself, live inside main() below,
+# called only from this file's last line: bash reads a function body in full
+# before running any of it, so - unlike the top-level statements this used to
+# be - nothing after the agent call can be skipped by an agent that truncates
+# this script mid-run (bash otherwise just stops at whatever the file's
+# current length on disk is when it gets there).
+#
+# Split AGENT_CLI into an argv array (whitespace word-split, no globbing) and
+# invoke it as a quoted vector rather than a re-expanded string. Handles the
+# usual "cmd --flags" form; quotes *inside* AGENT_CLI are not honoured - keep it
+# to a plain command plus flags, or wrap richer logic in its own script.
+read -r -a agent_cmd <<< "$AGENT_CLI"
+if [ "${#agent_cmd[@]}" -eq 0 ]; then
+  echo "knowledge-librarian: AGENT_CLI has no command after parsing" >&2
+  exit 2
+fi
+
+# Defence in depth: the prompt asks the agent to edit only .lokf/knowledge/, but
+# nothing forces it. Record paths already dirty outside the bundle (e.g. a
+# uv.lock the workflow refreshed) so the agent is held to account only for *new*
+# ones. Allowed: the bundle under either of its two names - .lokf/knowledge/,
+# and knowledge_bundle/ when that is the real folder and .lokf/knowledge the
+# link onto it (lokf-sidecar's visible layout; git pathspecs do not traverse a
+# symlink, so both must be named) - plus lokf-docent's .lokf/feedback.md.
+outside_bundle() {
+  git status --porcelain -- '.' \
+    ':(exclude).lokf/knowledge' ':(exclude)knowledge_bundle' ':(exclude).lokf/feedback.md' \
+    | cut -c4- | sort -u
+}
+
+main() {
+  # A local, well-formed AGENT_CLI can still run code that writes anywhere in
+  # this job's checkout - that's what the check above is for. But that check
+  # is only as good as the `git status` it reads: an agent that sets
+  # core.fsmonitor or core.hooksPath in .git/config, or drops a file in
+  # .git/hooks/, gets it run by *this script's own* later git commands (and
+  # by the workflow's separate detect/package steps after this script exits,
+  # which share this job's checkout). Snapshot both around the agent call and
+  # restore them unconditionally, so neither this check nor anything the
+  # workflow does afterwards can be blinded or hijacked that way. This is
+  # defence in depth, not the actual backstop - a human reviewing the PR
+  # before merge is.
+  local config_snapshot hooks_snapshot
+  config_snapshot="$(mktemp)"
+  hooks_snapshot="$(mktemp -d)"
+  cp .git/config "$config_snapshot"
+  cp -a .git/hooks/. "$hooks_snapshot/"
+
+  local before_outside
+  before_outside="$(outside_bundle)"
+
+  echo "knowledge-librarian: refreshing the .lokf/ bundle via AGENT_CLI"
+  "${agent_cmd[@]}" -p "$prompt"
+
+  cp "$config_snapshot" .git/config
+  rm -rf .git/hooks
+  mkdir .git/hooks
+  cp -a "$hooks_snapshot/." .git/hooks/
+  rm -rf "$config_snapshot" "$hooks_snapshot"
+
+  local stray
+  stray="$(comm -13 <(printf '%s\n' "$before_outside") <(outside_bundle))"
+  if [ -n "${stray//[$'\n\t ']/}" ]; then
+    echo "knowledge-librarian: agent modified paths outside .lokf/knowledge/ - refusing:" >&2
+    printf '%s\n' "$stray" | sed '/^$/d; s/^/  /' >&2
+    exit 3
+  fi
+}
+
+main "$@"

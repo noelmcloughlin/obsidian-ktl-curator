@@ -1,5 +1,42 @@
 # Change Log
 
+## 2026-09-12 (5)
+
+* **Steady-state refresh** (`process:lokf-librarian`), triggered by this
+  session's "no bundle" state and break-glass "Treat the vault root as the
+  bundle" setting (`src/main.ts`, `src/bundle.ts`, `src/settings.ts`,
+  `src/curator-view.ts`) and the README→`docs/for-the-curious.md` split:
+  - `services/lokf-curator-plugin.md` - description and body corrected for
+    the no-bundle state (`hasNoBundle()`/`noBundleNotice()`) and fixed
+    drifted function names (`detectedRoot()`/`autoBundleRoot` no longer
+    exist; the current path is `implicitRoots()` calling `bundle.ts`'s pure
+    `implicitBundleRoots`).
+  - `services/settings-tab.md` - added the break-glass "Treat the vault
+    root as the bundle" toggle to the Scope group's description.
+  - `services/curator-view.md` - added the report's no-bundle message.
+  - `explanation/why-lokf-curator.md` - `resource` moved from `README.md`
+    to `docs/for-the-curious.md`, where the four-tier trust model content
+    now actually lives.
+  - `playbooks/knowledge-sources.md` - updated the `README.md` "For the
+    curious" row to point at `docs/for-the-curious.md`, and added a row for
+    the in-editor-aids source files.
+  - **Added** `services/in-editor-aids.md` (`status: draft`, open
+    question left for a person): a new `Service` concept covering
+    `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`,
+    `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` -
+    the "Look up a LOKF field" command, the inline trust badge, and
+    frontmatter autocomplete - which had no concept of their own despite
+    being live features since v0.2.0. Wired into `services/index.md`,
+    root `index.md`, and `lokf-curator-plugin.md`'s `hasPart`.
+  - Re-verified against their sources and unchanged otherwise: 13 concepts
+    (`policies/no-telemetry.md`; the six `references/*.md`; the three
+    `glossary/*.md`; `services/trust-engine.md`, `services/edits-engine.md`;
+    `playbooks/contributing.md`) got a refreshed `process:lokf-librarian`
+    `verified` event, no content changes.
+  - `.lokf/pyproject.toml`: `lokf[build]` floor raised `>=0.5.0` →
+    `>=0.7.0` (latest on PyPI is 0.7.0; a minor-version bump, no major
+    change to review).
+
 ## 2026-09-12 (4)
 
 * **Semantic-release, hardened** (maintainer decision, matching upstream
