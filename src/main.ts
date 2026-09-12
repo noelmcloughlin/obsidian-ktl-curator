@@ -46,6 +46,11 @@ import {
   type CurationTally,
 } from "./edits";
 import { LokfCuratorView, LOKF_CURATOR_VIEW_TYPE } from "./curator-view";
+import { trustLabel, handoffLabel, type TrustLabel } from "./trust-label";
+import { lokfTrustMarkerExtension } from "./inline";
+import { LokfCuratorSuggest, type SuggestVocabulary } from "./suggest";
+import { FieldReferenceModal } from "./field-modal";
+import { LOKF_FIELD_DOCS } from "./fields";
 import { LokfCuratorSettingTab } from "./settings";
 
 export interface CuratorSettings {
@@ -59,6 +64,12 @@ export interface CuratorSettings {
   queueSize: number;
   dueSoonDays: number;
   feedbackFile: string;
+  /** Show a concept's trust tier inline on its frontmatter while editing (raw
+   *  frontmatter / Source mode). Off leaves the editor untouched. */
+  trustMarker: boolean;
+  /** Offer LOKF-aware value completions while editing a concept's frontmatter
+   *  (the actor string, status, and dates a curator hand-types). */
+  autocomplete: boolean;
 }
 
 export const DEFAULT_SETTINGS: CuratorSettings = {
@@ -72,6 +83,8 @@ export const DEFAULT_SETTINGS: CuratorSettings = {
   queueSize: 5,
   dueSoonDays: 30,
   feedbackFile: "",
+  trustMarker: true,
+  autocomplete: true,
 };
 
 export interface OpenQuestionEntry {
@@ -112,6 +125,14 @@ function nowIso(): string {
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+/** `iso` (YYYY-MM-DD) advanced by whole months, for the stale_after date
+ *  completions - a UTC calendar shift, no time component. */
+function addMonthsIso(iso: string, months: number): string {
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString().slice(0, 10);
 }
 
 class CuratorIdModal extends Modal {
@@ -255,8 +276,29 @@ export default class LokfCuratorPlugin extends Plugin {
       name: "Record something missing",
       callback: () => void this.recordSomethingMissing(),
     });
+    this.addCommand({
+      id: "review-next",
+      name: "Review the next concept in the queue",
+      callback: () => void this.reviewNext(),
+    });
+    this.addCommand({
+      id: "review-active-note",
+      name: "Review the active note",
+      callback: () => void this.reviewActiveNote(),
+    });
+    this.addCommand({
+      id: "field-reference",
+      name: "Look up a LOKF field",
+      callback: () => new FieldReferenceModal(this.app, LOKF_FIELD_DOCS).open(),
+    });
 
     this.addSettingTab(new LokfCuratorSettingTab(this.app, this));
+
+    // The trust tier shown inline on a concept's frontmatter while editing.
+    this.registerEditorExtension(lokfTrustMarkerExtension(this));
+
+    // LOKF-aware value completions inside a concept's frontmatter.
+    this.registerEditorSuggest(new LokfCuratorSuggest(this.app, this));
 
     const refresh = debounce(() => void this.refreshAllReports(), 300, true);
     this.registerEvent(this.app.metadataCache.on("changed", (file) => {
@@ -460,7 +502,7 @@ export default class LokfCuratorPlugin extends Plugin {
         recordsByRootNext.get(root)!.push(record);
         const vocab = vocabularyByRoot.get(root)!;
         if (record.cls === "unknown" && record.type) {
-          vocab.push({ path: file.path, message: `type "${record.type}" is not one of the 14 LOKF classes` });
+          vocab.push({ path: file.path, message: `type "${record.type}" is not one of the LOKF vocabulary classes` });
         }
         if (record.invalidStatus) {
           vocab.push({ path: file.path, message: "status is not one of draft/stable/deprecated" });
@@ -604,6 +646,104 @@ export default class LokfCuratorPlugin extends Plugin {
     if (!report) return null;
     const record = (this.recordsByRoot.get(root) ?? []).find((r) => r.path === active.path) ?? null;
     return { report, record };
+  }
+
+  // ---- TrustMarkerHost: the inline editor marker (inline.ts) ----
+
+  trustMarkerEnabled(): boolean {
+    return this.settings.trustMarker;
+  }
+
+  /** The trust tier and handoff hint for a note, derived live from the editor's
+   *  current text so the marker is accurate as you type, or null when it is not
+   *  a concept in a configured bundle. Headings come from the metadata cache
+   *  (stable while frontmatter is edited); the id is irrelevant to the tier and
+   *  handoff, so it isn't minted. */
+  trustMarkerFor(file: TFile, doc: string): { label: TrustLabel; handoff: string | null } | null {
+    const root = this.resolveRoot(file.path);
+    if (root === null || file.extension !== "md" || isReserved(toBundlePath(file.path, root)) !== null) return null;
+    const { hasFm, raw } = splitFrontmatter(doc);
+    if (!hasFm) return null;
+    let fm: Record<string, unknown>;
+    try {
+      const parsed: unknown = parseYaml(raw);
+      fm = parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
+    } catch {
+      return null;
+    }
+    const headings: HeadingLine[] = (this.app.metadataCache.getFileCache(file)?.headings ?? []).map((h) => ({
+      level: h.level,
+      heading: h.heading,
+    }));
+    const record = buildTrustRecord(
+      { path: file.path, bundleRoot: root, frontmatter: fm, headings, mintId: (p) => p },
+      todayIso(),
+      this.settings.dueSoonDays
+    );
+    return { label: trustLabel(record), handoff: handoffLabel(record)?.text ?? null };
+  }
+
+  // ---- SuggestHost: value completions inside frontmatter (D) ----
+
+  suggestEnabled(): boolean {
+    return this.settings.autocomplete;
+  }
+
+  /** The values a concept's frontmatter completes against - the curator's
+   *  actor string, the lifecycle status, and dates - or null when the file is
+   *  not a concept in a configured bundle. */
+  suggestVocabularyFor(file: TFile): SuggestVocabulary | null {
+    const root = this.resolveRoot(file.path);
+    if (root === null || file.extension !== "md" || isReserved(toBundlePath(file.path, root)) !== null) return null;
+    const today = todayIso();
+    const curatorId = this.settings.curatorId.trim();
+    const dates = [
+      today,
+      addMonthsIso(today, this.settings.intervalMonthsGroupA),
+      addMonthsIso(today, this.settings.intervalMonthsGroupB),
+      addMonthsIso(today, this.settings.intervalMonthsGroupC),
+    ];
+    return {
+      statuses: ["draft", "stable", "deprecated"],
+      actors: curatorId ? [`human:${curatorId}`] : [],
+      dates: [...new Set(dates)],
+    };
+  }
+
+  // ---- Review commands (open the card, never a blind one-tap verdict) ----
+
+  /** The highest-ranked queued concept, preferring the active note's bundle so
+   *  "review next" stays where the curator is working, then any other bundle. */
+  private topQueued(): { path: string; root: string } | null {
+    const active = this.getReportForActiveNote()?.report;
+    const reports = this.getReports();
+    const ordered = active ? [active, ...reports.filter((r) => r !== active)] : reports;
+    for (const report of ordered) {
+      const first = report.queue[0];
+      if (first) return { path: first.path, root: report.root };
+    }
+    return null;
+  }
+
+  private async reviewNext(): Promise<void> {
+    const top = this.topQueued();
+    if (!top) {
+      new Notice("LOKF Curator: nothing in the queue right now.");
+      return;
+    }
+    await this.activateView();
+    this.getCuratorView()?.reviewConcept(top.path, top.root);
+  }
+
+  private async reviewActiveNote(): Promise<void> {
+    const active = this.getReportForActiveNote();
+    const file = this.app.workspace.getActiveFile();
+    if (!active || !active.record || !file) {
+      new Notice("LOKF Curator: the active note is not a concept in a configured bundle.");
+      return;
+    }
+    await this.activateView();
+    this.getCuratorView()?.reviewConcept(file.path, active.report.root);
   }
 
   // ---- Review card support ----
@@ -886,8 +1026,21 @@ export default class LokfCuratorPlugin extends Plugin {
   private refreshStatusBar(): void {
     const active = this.getReportForActiveNote();
     if (active) {
-      this.statusEl.setText(`Confirmed ${active.report.health.humanConfirmed}/${active.report.health.total}`);
-      this.statusEl.setAttribute("aria-label", `${active.report.title} - click to open the curator panel`);
+      const { report, record } = active;
+      const confirmed = `${report.health.humanConfirmed}/${report.health.total}`;
+      if (record) {
+        // Editing a concept: show that note's own trust tier, with the bundle
+        // count kept in the tooltip.
+        const label = trustLabel(record);
+        this.statusEl.setText(`${label.short} · ${confirmed}`);
+        this.statusEl.setAttribute(
+          "aria-label",
+          `${label.long} - ${confirmed} confirmed in ${report.title}. Click to open the curator panel.`
+        );
+      } else {
+        this.statusEl.setText(`Confirmed ${confirmed}`);
+        this.statusEl.setAttribute("aria-label", `${report.title} - click to open the curator panel`);
+      }
       return;
     }
     const reports = this.getReports();

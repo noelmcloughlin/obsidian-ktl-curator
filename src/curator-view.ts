@@ -3,6 +3,7 @@
 import { ItemView, TFile, type WorkspaceLeaf } from "obsidian";
 import type LokfCuratorPlugin from "./main";
 import type { TrustRecord } from "./trust";
+import { handoffLabel } from "./trust-label";
 
 export const LOKF_CURATOR_VIEW_TYPE = "lokf-curator-view";
 
@@ -148,9 +149,18 @@ export class LokfCuratorView extends ItemView {
           evt.stopPropagation();
           this.openFile(record.path);
         });
-        card.createDiv({ cls: "lokf-queue-why", text: whyInQueue(record) });
+        card.createDiv({ cls: "lokf-queue-why", text: handoffLabel(record)?.text ?? whyInQueue(record) });
         card.createDiv({ cls: "lokf-queue-source", text: record.source ? record.source : "no source recorded" });
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `Review ${record.title}`);
         card.addEventListener("click", () => this.startReview(record.path, report.root));
+        card.addEventListener("keydown", (evt) => {
+          if (evt.key === "Enter" || evt.key === " ") {
+            evt.preventDefault();
+            this.startReview(record.path, report.root);
+          }
+        });
       }
       const goBtn = c.createEl("button", { cls: "lokf-go-button", text: "Go through these now" });
       goBtn.addEventListener("click", () => this.startReview(report.queue[0]!.path, report.root));
@@ -212,6 +222,13 @@ export class LokfCuratorView extends ItemView {
     const file = this.app.vault.getAbstractFileByPath(path);
     if (file instanceof TFile) this.plugin.recordCardOpened(file);
     this.render();
+  }
+
+  /** The command/hotkey entry into the review card, mirroring a queue-card
+   *  click - so "Review next in queue" and "Review this note" go through the
+   *  same flow (and its "look before you confirm" guard) as the panel. */
+  reviewConcept(path: string, root: string): void {
+    this.startReview(path, root);
   }
 
   private stopReview() {

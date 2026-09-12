@@ -39,6 +39,9 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
     else settings[key] = value;
     await this.plugin.saveSettings();
     if (key === "bundleRoots") this.plugin.invalidateBundleCache();
+    // Toggling the inline marker changes a registered editor extension's
+    // behaviour; repaint open editors at once rather than on the next edit.
+    if (key === "trustMarker") this.plugin.app.workspace.updateOptions();
   }
 
   getSettingDefinitions(): SettingDefinitionItem<SettingKey>[] {
@@ -60,6 +63,24 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
                 return SLUG_RE.test(v) ? undefined : 'Use lowercase letters, digits, and hyphens only, e.g. "ada-lovelace".';
               },
             },
+          },
+        ],
+      },
+      {
+        type: "group",
+        heading: "In-editor",
+        items: [
+          {
+            name: "Show the trust tier on a concept's frontmatter",
+            desc: "Mark a concept's trust tier inline while editing (Confirmed / Automation / Unchecked / Draft / Retired), at the top of its frontmatter - the review card's verdict, where the note is edited. Raw frontmatter (Source mode) only; in Live Preview the frontmatter is Obsidian's Properties widget.",
+            aliases: ["inline", "marker", "badge", "editor", "tier", "gutter"],
+            control: { type: "toggle", key: "trustMarker" },
+          },
+          {
+            name: "Suggest LOKF values as you type",
+            desc: "Offer completions inside a concept's frontmatter: your actor string (human:<id>) for a verified or generated `by`, the lifecycle `status`, and dates for `at`/`stale_after` (today and each review interval). Raw-text editing only - in Live Preview, frontmatter is Obsidian's Properties widget.",
+            aliases: ["autocomplete", "EditorSuggest", "completion", "actor", "status", "date"],
+            control: { type: "toggle", key: "autocomplete" },
           },
         ],
       },

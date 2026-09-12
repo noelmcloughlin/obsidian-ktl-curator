@@ -5,6 +5,41 @@
   font-size: var(--font-ui-smaller);
 }
 
+/* inline trust-tier marker (inline.ts) */
+.lokf-trust-marker {
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+  vertical-align: middle;
+  background: var(--background-modifier-border);
+  color: var(--text-muted);
+}
+.lokf-trust-confirmed {
+  background: var(--background-modifier-success);
+  color: var(--text-success);
+}
+.lokf-trust-automation {
+  color: var(--text-accent);
+}
+.lokf-trust-unchecked {
+  color: var(--text-warning);
+}
+.lokf-trust-draft {
+  color: var(--text-muted);
+}
+.lokf-trust-retired {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+/* frontmatter value autocomplete (suggest.ts) */
+.lokf-suggest-meta {
+  display: block;
+  color: var(--text-muted);
+}
+
 .lokf-bundle-selector {
   margin-bottom: 8px;
 }
@@ -74,6 +109,10 @@
 }
 .lokf-queue-card:hover {
   background: var(--background-modifier-hover);
+}
+.lokf-queue-card:focus-visible {
+  outline: 1px solid var(--interactive-accent);
+  outline-offset: -1px;
 }
 .lokf-queue-title {
   font-weight: 600;

@@ -46,6 +46,8 @@ import {
   type HeadingLine,
   type HealthCounts,
 } from "../src/trust";
+import { trustLabel, handoffLabel } from "../src/trust-label";
+import { detectSuggestContext, withinFrontmatter, kindForKey } from "../src/suggest-context";
 import {
   normalizeVerified,
   applyConfirm,
@@ -62,6 +64,8 @@ import {
   parseCurationTally,
   readCurationTally,
 } from "../src/edits";
+import { FIELD_ORDER, LOKF_FIELD_DOCS, resolveFieldDocs } from "../src/fields";
+import lokfVocab from "../src/lokf-vocab.json";
 
 let failures = 0;
 
@@ -104,6 +108,7 @@ section("bundle.ts - bundle roots", () => {
 
   expect("isReserved index.md", isReserved("knowledge/index.md") === "index", String(isReserved("knowledge/index.md")));
   expect("isReserved log.md", isReserved("knowledge/log.md") === "log", String(isReserved("knowledge/log.md")));
+  expect("isReserved diataxis.md (Enforcer-generated map, not a concept)", isReserved("knowledge/diataxis.md") === "diataxis", String(isReserved("knowledge/diataxis.md")));
   expect("isReserved concept", isReserved("knowledge/services/a.md") === null, String(isReserved("knowledge/services/a.md")));
 });
 
@@ -647,6 +652,108 @@ section("edits.ts - repeated send-back hint", () => {
   const hint = repeatedSendBackHint(["the endpoint moved to v2", "the endpoint moved to v3 too", "unrelated note"]);
   expect("flags two notes sharing their first four words", hint !== null && hint.includes("2 similar send-backs"), String(hint));
   expect("no hint when nothing repeats", repeatedSendBackHint(["one thing", "another thing"]) === null, "");
+});
+
+// ---- trust-label.ts ----
+
+section("trust-label.ts - the shared trust-tier vocabulary", () => {
+  const label = (r: Pick<TrustRecord, "status" | "humanConfirmed" | "automationOnly">) => trustLabel(r);
+  expect("a human-confirmed stable concept reads Confirmed", label({ status: "stable", humanConfirmed: true, automationOnly: false }).tone === "confirmed", "");
+  expect("verified by automation only reads Automation", label({ status: "stable", humanConfirmed: false, automationOnly: true }).tone === "automation", "");
+  expect("no verified key reads Unchecked", label({ status: "stable", humanConfirmed: false, automationOnly: false }).tone === "unchecked", "");
+  expect("a draft reads Draft whatever its verified events", label({ status: "draft", humanConfirmed: true, automationOnly: false }).tone === "draft", "");
+  expect("a deprecated concept reads Retired", label({ status: "deprecated", humanConfirmed: true, automationOnly: false }).tone === "retired", "");
+  const confirmed = label({ status: "stable", humanConfirmed: true, automationOnly: false });
+  expect("a label carries a short form, a sentence, and an icon", !!confirmed.short && !!confirmed.long && !!confirmed.icon, JSON.stringify(confirmed));
+});
+
+section("trust.ts - buildTrustRecord carries the handoff fields", () => {
+  const rec = buildTrustRecord(
+    {
+      path: "c.md",
+      bundleRoot: "",
+      frontmatter: {
+        type: "Reference",
+        verified: [{ by: "human:alice", at: "2026-01-15" }],
+        generated: { by: "process:lokf-librarian", at: "2026-01-01" },
+      },
+      headings: [],
+      mintId: (p) => p,
+    },
+    TODAY
+  );
+  expect("confirmedBy is the human actor", rec.confirmedBy === "human:alice", String(rec.confirmedBy));
+  expect("confirmedAt is normalized to a date", rec.confirmedAt === "2026-01-15", String(rec.confirmedAt));
+  expect("generatedBy is the producer", rec.generatedBy === "process:lokf-librarian", String(rec.generatedBy));
+});
+
+section("trust-label.ts - the handoff hint (whose turn in the loop)", () => {
+  type H = Parameters<typeof handoffLabel>[0];
+  const base: H = {
+    status: "stable",
+    hasOpenQuestions: false,
+    editedSinceConfirmed: false,
+    pastReview: false,
+    generatedBy: null,
+    humanConfirmed: false,
+    confirmedBy: null,
+    confirmedAt: null,
+    unchecked: true,
+  };
+  expect("open questions take priority - for the curator", handoffLabel({ ...base, hasOpenQuestions: true })?.kind === "open-questions", "");
+  expect("edited since a confirmation is flagged", handoffLabel({ ...base, editedSinceConfirmed: true })?.kind === "edited-since", "");
+  expect("past its review date is flagged", handoffLabel({ ...base, pastReview: true })?.kind === "past-review", "");
+  expect("a librarian draft awaits a curator", handoffLabel({ ...base, status: "draft", unchecked: false, generatedBy: "process:lokf-librarian" })?.kind === "drafted", "");
+  const c = handoffLabel({ ...base, unchecked: false, humanConfirmed: true, confirmedBy: "human:alice", confirmedAt: "2026-01-15" });
+  expect("a confirmed concept names who and when", c?.kind === "confirmed" && c.text === "Confirmed by alice on 2026-01-15", JSON.stringify(c));
+  expect("an unchecked concept is for the curator", handoffLabel(base)?.kind === "unchecked", "");
+  expect("a retired concept has no handoff", handoffLabel({ ...base, status: "deprecated" }) === null, "");
+});
+
+section("suggest-context.ts - frontmatter completion detection", () => {
+  expect("status completes the lifecycle values", kindForKey("status") === "status", "");
+  expect("by completes the actor", kindForKey("by") === "actor", "");
+  expect("at and stale_after complete a date", kindForKey("at") === "date" && kindForKey("stale_after") === "date", "");
+  expect("an unrelated key completes nothing", kindForKey("title") === null, "");
+
+  const lines = ["---", "type: Reference", "status: dr", "verified:", "  - by: hu", "    at: 2026", "---", "body"];
+  const read = (i: number) => lines[i] ?? "";
+  expect("inside the frontmatter fence", withinFrontmatter(read, lines.length, 2), "expected true");
+  expect("the body is outside the fence", !withinFrontmatter(read, lines.length, 7), "expected false");
+  const status = detectSuggestContext(read, 2, read(2).length);
+  expect("status value is detected with its query", status?.kind === "status" && status.query === "dr", JSON.stringify(status));
+  const by = detectSuggestContext(read, 4, read(4).length);
+  expect("a `- by:` list item detects the actor", by?.kind === "actor" && by.query === "hu", JSON.stringify(by));
+  const at = detectSuggestContext(read, 5, read(5).length);
+  expect("a nested `at:` detects a date", at?.kind === "date" && at.query === "2026", JSON.stringify(at));
+  expect("a non-completable line yields nothing", detectSuggestContext(read, 1, read(1).length) === null, "expected null");
+});
+
+section("field reference - schema-sourced, drift-guarded, modal-sized", () => {
+  const byName = new Map(LOKF_FIELD_DOCS.map((f) => [f.name, f.description]));
+  for (const key of ["lokf_version", "base_iri", "type", "id", "genre", "status", "verified", "relations"]) {
+    expect(`documents ${key}`, byName.has(key), `missing ${key}`);
+  }
+  const baseIri = byName.get("base_iri") ?? "";
+  expect("base_iri is framed as an identifier that need not resolve", /identifier/i.test(baseIri) && /need not resolve/i.test(baseIri), baseIri);
+  expect("every field doc carries a non-empty description", LOKF_FIELD_DOCS.every((f) => f.description.trim().length > 0), "empty description");
+
+  // The description flows straight from the schema manifest, unchanged.
+  const resolved = resolveFieldDocs([{ name: "title", description: "STRAIGHT FROM THE SCHEMA" }]);
+  expect("the schema's description flows through unchanged", resolved.find((f) => f.name === "title")?.description === "STRAIGHT FROM THE SCHEMA", "schema description not used");
+  expect("a FIELD_ORDER field the manifest doesn't describe is dropped", resolved.length === 1, "undescribed fields not dropped");
+
+  // Drift guard: every surfaced field is a real, described schema slot.
+  const manifestSlots = new Set(((lokfVocab as { slots?: { name: string }[] }).slots ?? []).map((s) => s.name));
+  expect(
+    "every FIELD_ORDER entry is a real schema slot",
+    LOKF_FIELD_DOCS.length === FIELD_ORDER.length && LOKF_FIELD_DOCS.every((f) => manifestSlots.has(f.name)),
+    "a FIELD_ORDER entry names a slot the schema doesn't have"
+  );
+
+  // Conciseness guard: schema descriptions must stay short enough for a one-row lookup.
+  const longest = Math.max(...LOKF_FIELD_DOCS.map((f) => f.description.length));
+  expect("every field description stays modal-sized (<= 400 chars)", longest <= 400, `longest description is ${longest} chars`);
 });
 
 // ---- summary ----

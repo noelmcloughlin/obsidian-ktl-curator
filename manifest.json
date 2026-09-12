@@ -1,7 +1,7 @@
 {
 	"id": "lokf-curator",
 	"name": "LOKF Curator",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.13.0",
 	"description": "See how far your notes have actually been checked, and record what you decide: a trust report computed from frontmatter, and a review session that puts each source beside its claim and writes your confirm / send back / retire verdict into the notes themselves.",
 	"author": "Noel McLoughlin",

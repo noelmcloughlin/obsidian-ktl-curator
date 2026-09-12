@@ -18,7 +18,7 @@ Any source content a person opens through the review card's "Open source" button
 
 Please use GitHub's private vulnerability reporting at:
 
-https://github.com/noelmcloughlin/obsidian-lokf-curator/security/advisories/new
+<https://github.com/noelmcloughlin/obsidian-lokf-curator/security/advisories/new>
 
 rather than a public issue. Include:
 

@@ -46,7 +46,7 @@ Source lives in `src/`, following the upstream [obsidian-sample-plugin](https://
 
 | File | Responsibility |
 |---|---|
-| `src/bundle.ts` | Bundle-root resolution, frontmatter split, relation-target resolution, the 14-class check (import-free, plain-Node testable) |
+| `src/bundle.ts` | Bundle-root resolution, frontmatter split, relation-target resolution, the LOKF class check from the pinned schema manifest (plain-Node testable) |
 | `src/trust.ts` | The trust-record model, health counts, ranked queue, `stale_after` derivation (import-free, plain-Node testable) |
 | `src/edits.ts` | The five verbs' frontmatter/body transforms, the `log.md` upsert, the Step-3 templates (import-free, plain-Node testable) |
 | `src/main.ts` | Plugin lifecycle - scanning, the review session, writes, commands |
@@ -65,8 +65,17 @@ For a realistic LOKF vault to test against, point a scratch vault directly at an
 - **Do not commit `main.js`.** It is generated and git-ignored; the release workflow builds it and attaches it to the GitHub release.
 - Keep changes focused; describe what and why in the PR.
 - Follow the existing style: build DOM with `createEl`/`createDiv` (never `innerHTML`), put styling in `styles.css`, and register events via `registerEvent` so they unload.
-- **Keep `bundle.ts`, `trust.ts`, and `edits.ts` import-free.** They take already-parsed frontmatter (plus, for `trust.ts`, a fixed `today`) and pull in nothing - not Obsidian, not a YAML library, not `Date.now()` - which is what lets the whole rule set run under plain Node in the smoke test with every date-dependent label reproducible. Parsing and the current date belong in `main.ts`, which uses Obsidian's own `metadataCache`.
-- **Never let a write exceed what `references/review-session.md` in the `lokf-curator` skill specifies for that verb.** The guardrails in the plan (`CUR.md` §6.6) are the product: one verb, one concept, one person's answer; no proposed corrections; no touching a field the verb's table doesn't name.
+- **Keep `bundle.ts`, `trust.ts`, and `edits.ts` free of runtime dependencies.** They take already-parsed frontmatter (plus, for `trust.ts`, a fixed `today`) and pull in nothing that isn't deterministic static data - not Obsidian, not a YAML library, not `Date.now()`; `bundle.ts`'s one import is the static schema manifest (`src/lokf-vocab.json`), which keeps the concept-type vocabulary in step with the pinned schema. That is what lets the whole rule set run under plain Node in the smoke test with every date-dependent label reproducible. Parsing and the current date belong in `main.ts`, which uses Obsidian's own `metadataCache`.
+- **Refreshing the vocabulary manifest.** `src/lokf-vocab.json` (the field descriptions behind *Look up a LOKF field*) is generated from a pinned LOKF schema by `node scripts/build-vocab.mjs` - a maintenance step, not part of `npm run build`. Re-run it, and commit the result, only when bumping the pinned schema. It prefers `lokf vocab --all --json` (install the [`lokf`](https://pypi.org/project/lokf/) toolkit so it is on `PATH`) and falls back to reading `../lokf/lokf.yaml` from a sibling checkout; `src/fields.ts` takes each field's wording straight from the manifest. Kept identical to LOKF Enforcer so the two plugins' field reference never drifts.
+- **Never let a write exceed what `references/review-session.md` in the `lokf-curator` skill specifies for that verb.** These guardrails are the product: one verb, one concept, one person's answer; no proposed corrections; no touching a field the verb's table doesn't name.
+
+## Code of conduct
+
+Participation here is covered by the [Contributor Covenant](CODE_OF_CONDUCT.md), the same one the sibling `lokf-agent-skills` and `obsidian-lokf-enforcer` repositories use.
+
+## Using AI tools
+
+AI assistance is welcome here - this repository's own `.lokf/` bundle is maintained by an agent, and the plugin exists to record a person's verdict on that agent-written knowledge. What that requires of you is unchanged: you are the author of whatever you submit, you are responsible for understanding and defending it in review, and an agent may not participate in discussion on your behalf. The full rules, including how this repo's own scheduled `knowledge-librarian` agent is held to them, are in [AI_COVENANT.md](AI_COVENANT.md).
 
 ## Reporting bugs
 

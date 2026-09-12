@@ -2,7 +2,7 @@
 // ranked "worth ten minutes today" queue. Pure: no Obsidian, no Date.now().
 // Rules verbatim from lokf-curator's references/trust-fields.md - this file
 // does not restate them, it implements them.
-import { RELATION_FIELDS, classify, dirOf, normalizeTypeKey, resolveRelationTarget, toBundlePath } from "./bundle";
+import { KNOWN_LOKF_TYPES, RELATION_FIELDS, classify, dirOf, normalizeTypeKey, resolveRelationTarget, toBundlePath } from "./bundle";
 
 export type ConceptClass = "known" | "unknown";
 export type ConceptStatus = "stable" | "draft" | "deprecated";
@@ -24,6 +24,13 @@ export interface TrustRecord {
   humanConfirmed: boolean; // any verified[].by starts with "human:"
   automationOnly: boolean; // verified present, no human: actor
   unchecked: boolean; // no verified key at all
+  /** The latest human verification's actor (raw, e.g. "human:alice") and date
+   *  (YYYY-MM-DD), for the handoff hint "Confirmed by <id> on <date>". */
+  confirmedBy: string | null;
+  confirmedAt: string | null;
+  /** The `generated.by` producer (e.g. "process:lokf-librarian"), for the
+   *  "drafted by the librarian" handoff. */
+  generatedBy: string | null;
   editedSinceConfirmed: boolean | null; // null = can't tell
   pastReview: boolean;
   dueSoon: boolean;
@@ -148,8 +155,11 @@ export function buildTrustRecord(
 
   const generatedRaw = fm["generated"];
   let generatedAt: string | null = null;
+  let generatedBy: string | null = null;
   if (generatedRaw && typeof generatedRaw === "object" && !Array.isArray(generatedRaw)) {
     generatedAt = normalizeDateTime((generatedRaw as Record<string, unknown>)["at"]);
+    const by = (generatedRaw as Record<string, unknown>)["by"];
+    generatedBy = typeof by === "string" ? by : null;
   }
   const timestampRaw = fm["timestamp"];
   if (!generatedAt && typeof timestampRaw === "string") generatedAt = timestampRaw;
@@ -176,6 +186,13 @@ export function buildTrustRecord(
   }
 
   const hasOpenQuestions = hasOpenQuestionsHeading(inputs.headings);
+
+  // The latest human verification, for the "Confirmed by <id> on <date>" handoff.
+  const latestHumanEvent = humanEvents.length
+    ? ([...humanEvents].sort((a, b) => a.at.localeCompare(b.at)).at(-1) ?? null)
+    : null;
+  const confirmedBy = latestHumanEvent?.by ?? null;
+  const confirmedAt = latestHumanEvent?.at ? normalizeDate(latestHumanEvent.at) : null;
 
   const titleRaw = fm["title"];
   const title = typeof titleRaw === "string" && titleRaw.trim() ? titleRaw.trim() : inputs.path;
@@ -209,6 +226,9 @@ export function buildTrustRecord(
     humanConfirmed,
     automationOnly,
     unchecked,
+    confirmedBy,
+    confirmedAt,
+    generatedBy,
     editedSinceConfirmed,
     pastReview,
     dueSoon,
@@ -384,22 +404,6 @@ export function proposeStaleAfter(confirmationDate: string, months: number): str
  *  leaves the setting in force. Returns a map keyed by normalized class name. */
 export function parseCurationPolicyTable(body: string): Map<string, number> {
   const overrides = new Map<string, number>();
-  const knownClasses = [
-    "Dataset",
-    "Table",
-    "Metric",
-    "Service",
-    "Playbook",
-    "Tutorial",
-    "Explanation",
-    "Policy",
-    "GlossaryTerm",
-    "Reference",
-    "Document",
-    "Person",
-    "Organization",
-    "AttestedComputation",
-  ];
   for (const line of body.split("\n")) {
     if (!line.trim().startsWith("|")) continue;
     const cells = line
@@ -412,7 +416,7 @@ export function parseCurationPolicyTable(body: string): Map<string, number> {
     const months = parseInt(monthsMatch[1] ?? "", 10);
     if (!Number.isFinite(months)) continue;
     const firstCell = cells[0] ?? "";
-    for (const cls of knownClasses) {
+    for (const cls of KNOWN_LOKF_TYPES) {
       if (firstCell.toLowerCase().includes(cls.toLowerCase())) {
         overrides.set(normalizeTypeKey(cls), months);
       }
