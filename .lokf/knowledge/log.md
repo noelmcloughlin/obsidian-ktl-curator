@@ -1,5 +1,19 @@
 # Change Log
 
+## 2026-09-12 (4)
+
+* **Semantic-release, hardened** (maintainer decision, matching upstream
+  `lokf-registrar`): `playbooks/releasing.md` rewritten (`generated`/`verified`
+  refreshed) - a person no longer picks the version. `semantic-release.yml`'s
+  `release` job, behind the `release` GitHub Environment, computes it from
+  Conventional Commits and runs a new `.github/scripts/changelog-release.mjs`
+  as semantic-release's own `verifyRelease`/`generateNotes`/`prepare` hooks:
+  refuses an empty `## [Unreleased]`, uses it as the release notes, retitles
+  it to a dated heading. `@semantic-release/npm` (`npmPublish: false`) still
+  triggers the existing `version` script. `release.yml` gained a
+  `workflow_call` trigger for the same reason as the sibling plugin;
+  unchanged otherwise.
+
 ## 2026-09-12 (3)
 
 * **Sibling renamed** (maintainer decision, upstream): LOKF Enforcer is now
