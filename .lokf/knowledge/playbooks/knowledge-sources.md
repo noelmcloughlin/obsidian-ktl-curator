@@ -31,10 +31,10 @@ it fed and log the removal.
 | `CUR.md` | the implementation plan and architecture decisions | `Reference` | re-reading for scope/architecture changes not yet reflected in code |
 | `SECURITY.md` | the plugin's privacy/write-surface guarantees | `Policy` | re-reading for a changed write surface |
 | `README.md` "For the curious" section | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `lokf-enforcer` |
-| https://lokf.nolan-nichols.com/specification/ | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
-| https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
-| https://pypi.org/project/lokf/ | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uv pip index versions lokf` |
-| Obsidian's own plugin developer docs (https://docs.obsidian.md/Plugins) | the platform API surface (`processFrontMatter`, `metadataCache`, declarative settings) this plugin is built against | `Reference` | re-reading for a breaking API change |
+| <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
+| <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
+| <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uv pip index versions lokf` |
+| Obsidian's own plugin developer docs (<https://docs.obsidian.md/Plugins>) | the platform API surface (`processFrontMatter`, `metadataCache`, declarative settings) this plugin is built against | `Reference` | re-reading for a breaking API change |
 | glossary terms recurring across `src/`, the skill, and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
 
 ## Not yet a concept
