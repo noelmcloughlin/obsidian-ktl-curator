@@ -6,6 +6,8 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-13
+
 ### Changed
 
 - **A vault with no bundle is left alone.** With nothing configured, a root `index.md` carrying a LOKF header makes the whole vault the bundle and a top-level `knowledge_bundle/` makes that the bundle, as before; a vault with neither now has *no bundle* - no report, no queue, nothing written, status bar *Curate: no bundle*, the panel says why - rather than being read as one whole-vault bundle. Mirrors LOKF Registrar. The workshop is never mistaken for the exhibition.
