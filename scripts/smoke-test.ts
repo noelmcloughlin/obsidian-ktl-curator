@@ -29,7 +29,7 @@ import {
   splitSourceLocator,
   hasUrlScheme,
   dirOf,
-  autoBundleRoot,
+  implicitBundleRoots,
   VISIBLE_BUNDLE_FOLDER,
 } from "../src/bundle";
 import {
@@ -95,14 +95,17 @@ section("bundle.ts - bundle roots", () => {
   expect("normalizeBundleRoot backslashes", normalizeBundleRoot(".\\knowledge") === "knowledge", normalizeBundleRoot(".\\knowledge"));
   expect("hiddenRootSegment finds dot folder", hiddenRootSegment(".lokf/knowledge") === ".lokf", String(hiddenRootSegment(".lokf/knowledge")));
   expect("hiddenRootSegment null for clean root", hiddenRootSegment("knowledge") === null, String(hiddenRootSegment("knowledge")));
-  expect("auto-detect: knowledge_bundle/index.md in a plain notes vault becomes the root", autoBundleRoot(false, true) === VISIBLE_BUNDLE_FOLDER, String(autoBundleRoot(false, true)));
-  expect("auto-detect: a vault whose root index.md is a header stays the whole-vault bundle", autoBundleRoot(true, true) === null, String(autoBundleRoot(true, true)));
-  expect("auto-detect: nothing without the visible folder's index.md", autoBundleRoot(false, false) === null, String(autoBundleRoot(false, false)));
+  const j = (x: unknown) => JSON.stringify(x);
+  expect("implicit: a root index.md carrying a header makes the whole vault the bundle", j(implicitBundleRoots(true, true, false)) === j([""]), j(implicitBundleRoots(true, true, false)));
+  expect("implicit: knowledge_bundle/index.md in a plain notes vault becomes the root", j(implicitBundleRoots(false, true, false)) === j([VISIBLE_BUNDLE_FOLDER]), j(implicitBundleRoots(false, true, false)));
+  expect("implicit: neither header nor folder is no bundle", j(implicitBundleRoots(false, false, false)) === j([]), j(implicitBundleRoots(false, false, false)));
+  expect("implicit: break-glass reads that same vault as one whole-vault bundle", j(implicitBundleRoots(false, false, true)) === j([""]), j(implicitBundleRoots(false, false, true)));
 
   const roots = normalizeBundleRoots(["b", "a/nested", "a"]);
   expect("normalizeBundleRoots sorts longest-first", roots[0] === "a/nested", JSON.stringify(roots));
 
-  expect("resolveBundleRoot implicit whole vault", resolveBundleRoot("foo/bar.md", []) === "", "");
+  expect("resolveBundleRoot: no roots is no bundle", resolveBundleRoot("foo/bar.md", []) === null, String(resolveBundleRoot("foo/bar.md", [])));
+  expect("resolveBundleRoot: the explicit whole-vault root matches everything", resolveBundleRoot("foo/bar.md", [""]) === "", String(resolveBundleRoot("foo/bar.md", [""])));
   expect("resolveBundleRoot most specific match", resolveBundleRoot("a/nested/x.md", roots) === "a/nested", String(resolveBundleRoot("a/nested/x.md", roots)));
   expect("resolveBundleRoot outside every root", resolveBundleRoot("outside/x.md", ["a"]) === null, String(resolveBundleRoot("outside/x.md", ["a"])));
 

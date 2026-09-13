@@ -15,7 +15,7 @@ import {
   splitSourceLocator,
   toBundlePath,
   toVaultPath,
-  autoBundleRoot,
+  implicitBundleRoots,
   VISIBLE_BUNDLE_FOLDER,
 } from "./bundle";
 import {
@@ -58,6 +58,10 @@ import { LokfCuratorSettingTab } from "./settings";
 export interface CuratorSettings {
   curatorId: string;
   bundleRoots: string[];
+  /** Break-glass: with nothing configured and nothing detected, read a vault
+   *  whose root index.md carries no LOKF header as one whole-vault bundle
+   *  anyway. Off, such a vault has no bundle and the plugin stays out of it. */
+  treatVaultRootAsBundle: boolean;
   excludeFolders: string[];
   intervalMonthsGroupA: number; // services/datasets/tables/metrics/attested computations
   intervalMonthsGroupB: number; // policies/playbooks/tutorials/references/documents/people/organizations
@@ -77,6 +81,7 @@ export interface CuratorSettings {
 export const DEFAULT_SETTINGS: CuratorSettings = {
   curatorId: "",
   bundleRoots: [],
+  treatVaultRootAsBundle: false,
   excludeFolders: [],
   intervalMonthsGroupA: 6,
   intervalMonthsGroupB: 12,
@@ -222,22 +227,35 @@ export default class LokfCuratorPlugin extends Plugin {
       this.bundleRootsResolved = normalizeBundleRoots(raw);
     }
     if (this.bundleRootsResolved.length) return this.bundleRootsResolved;
-    const detected = this.detectedRoot();
-    return detected ? [detected] : this.bundleRootsResolved;
+    return this.implicitRoots();
   }
 
-  /** With nothing configured, recognise the sidecar convention on its own: a
-   *  top-level `knowledge_bundle/` with its own index.md, in a vault whose
-   *  root index.md carries no LOKF header, is a notes vault hosting a bundle
-   *  beside its notes (lokf-sidecar's visible layout). Kept identical to LOKF
-   *  Registrar's; the decision itself is bundle.ts's pure `autoBundleRoot`. */
-  private detectedRoot(): string | null {
-    const visibleIndex = this.app.vault.getAbstractFileByPath(`${VISIBLE_BUNDLE_FOLDER}/index.md`);
-    if (!(visibleIndex instanceof TFile)) return null;
+  /** With nothing configured, let the vault say what it is: a root index.md
+   *  carrying a LOKF header makes the whole vault the bundle; a top-level
+   *  `knowledge_bundle/` with its own index.md is a notes vault hosting a
+   *  bundle beside its notes (lokf-sidecar's visible layout); neither is a
+   *  workshop with no exhibition, left alone unless the break-glass setting
+   *  says otherwise. Kept identical to LOKF Registrar's; the decision itself
+   *  is bundle.ts's pure `implicitBundleRoots`. */
+  private implicitRoots(): string[] {
     const rootIndex = this.app.vault.getAbstractFileByPath("index.md");
     const fm = rootIndex instanceof TFile ? this.app.metadataCache.getFileCache(rootIndex)?.frontmatter : undefined;
     const rootHasHeader = !!fm && (fm["lokf_version"] !== undefined || fm["base_iri"] !== undefined);
-    return autoBundleRoot(rootHasHeader, true);
+    const visibleIndex = this.app.vault.getAbstractFileByPath(`${VISIBLE_BUNDLE_FOLDER}/index.md`);
+    return implicitBundleRoots(rootHasHeader, visibleIndex instanceof TFile, this.settings.treatVaultRootAsBundle);
+  }
+
+  /** True when nothing is configured, nothing was detected, and the
+   *  break-glass setting is off: a notes vault with no bundle in it. */
+  hasNoBundle(): boolean {
+    return this.bundleRoots().length === 0;
+  }
+
+  private noBundleNotice(): void {
+    new Notice(
+      "LOKF Curator: this vault has no knowledge bundle - no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md - so there is nothing to curate. LOKF Registrar's Insert the bundle's semantic header command (or the lokf-sidecar skill) creates one; or turn on Settings → Scope → Treat the vault root as the bundle to read the whole vault anyway.",
+      12000
+    );
   }
 
   private resolveRoot(vaultPath: string): string | null {
@@ -404,7 +422,6 @@ export default class LokfCuratorPlugin extends Plugin {
   private invalidateBaseIri(path: string): void {
     const roots = new Set<string>(this.baseIriCache.keys());
     for (const r of this.bundleRoots()) roots.add(r);
-    if (roots.size === 0) roots.add("");
     for (const root of roots) {
       const index = bundleRootIndexPath(root);
       if (index === path || index.startsWith(path + "/")) this.baseIriCache.delete(root);
@@ -481,7 +498,9 @@ export default class LokfCuratorPlugin extends Plugin {
     this.busy = true;
     try {
       const files = this.candidateFiles();
-      const roots = this.bundleRoots().length ? this.bundleRoots() : [""];
+      // `""` when the whole vault is the bundle; empty for a vault with none,
+      // which then simply has no report.
+      const roots = this.bundleRoots();
       const baseIriByRoot = new Map<string, string | null>();
       for (const root of roots) baseIriByRoot.set(root, await this.findBaseIriFor(root));
 
@@ -991,12 +1010,15 @@ export default class LokfCuratorPlugin extends Plugin {
       if (r !== null) return r;
     }
     const roots = this.bundleRoots();
-    if (roots.length === 0) return "";
     if (roots.length === 1) return roots[0] ?? "";
     return null;
   }
 
   async createCurationPolicy(): Promise<void> {
+    if (this.hasNoBundle()) {
+      this.noBundleNotice();
+      return;
+    }
     const root = this.resolveCommandTarget();
     if (root === null) {
       new Notice("LOKF Curator: several bundle roots are configured - open a note inside the target bundle first.");
@@ -1019,6 +1041,10 @@ export default class LokfCuratorPlugin extends Plugin {
   }
 
   async recordSomethingMissing(): Promise<void> {
+    if (this.hasNoBundle()) {
+      this.noBundleNotice();
+      return;
+    }
     const root = this.resolveCommandTarget();
     if (root === null) {
       new Notice("LOKF Curator: several bundle roots are configured - open a note inside the target bundle first.");
@@ -1066,6 +1092,14 @@ export default class LokfCuratorPlugin extends Plugin {
       return;
     }
     const reports = this.getReports();
+    if (this.hasNoBundle()) {
+      this.statusEl.setText("Curate: no bundle");
+      this.statusEl.setAttribute(
+        "aria-label",
+        "This vault has no knowledge bundle (no knowledge_bundle folder, no LOKF header on the root index.md), so there is nothing to curate. Click to open the panel."
+      );
+      return;
+    }
     if (reports.length === 1) {
       const r = reports[0]!;
       this.statusEl.setText(`Confirmed ${r.health.humanConfirmed}/${r.health.total}`);

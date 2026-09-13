@@ -38,6 +38,7 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
     if (isCsvKey(key)) settings[key] = parseCsv(String(value));
     else settings[key] = value;
     await this.plugin.saveSettings();
+    if (key === "treatVaultRootAsBundle") this.plugin.invalidateBundleCache();
     if (key === "bundleRoots") {
       this.plugin.invalidateBundleCache();
       // A dot-folder root is accepted rather than refused: Obsidian's own index
@@ -112,6 +113,12 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
               key: "bundleRoots",
               rows: 2,
             },
+          },
+          {
+            name: "Treat the vault root as the bundle (break-glass)",
+            desc: "Off by default, and meant to stay off. With no bundle root folders listed, what is in the vault decides: a root index.md with a LOKF header makes the whole vault the bundle; otherwise a top-level knowledge_bundle folder is the bundle; otherwise the vault has no bundle - no report, no queue, nothing written. Turn this on only if you want the whole vault read anyway - it really is one bundle and its root index.md just has no LOKF header yet.",
+            aliases: ["whole vault", "no bundle", "workshop", "treatVaultRootAsBundle"],
+            control: { type: "toggle", key: "treatVaultRootAsBundle" },
           },
           {
             name: "Excluded folders",

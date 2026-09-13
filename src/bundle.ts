@@ -98,7 +98,7 @@ export function normalizeBundleRoots(roots: string[]): string[] {
 /**
  * Which configured bundle a vault-relative path belongs to.
  *
- * Returns that bundle's root path; `""` for the implicit whole-vault bundle
+ * Returns that bundle's root path; `""` when the whole vault is the bundle (its root index.md is the header, or the break-glass setting says so)
  * when `roots` is empty (no explicit roots configured); or `null` when
  * explicit roots are configured and the path sits under none of them - it
  * belongs to no bundle and is not scanned at all.
@@ -112,18 +112,32 @@ export function normalizeBundleRoots(roots: string[]): string[] {
  *  repository; the real folder itself in a vault or shared-folder host). */
 export const VISIBLE_BUNDLE_FOLDER = "knowledge_bundle";
 
-/** With no bundle roots configured, a vault that holds a `knowledge_bundle/`
- *  folder with its own `index.md`, while its own root `index.md` carries no
- *  LOKF header, is a notes vault hosting a bundle beside its notes - so that
- *  folder is the bundle root and every note outside it is left alone, with
- *  nothing to configure. Kept identical to LOKF Registrar's. */
-export function autoBundleRoot(rootIndexHasHeader: boolean, visibleBundleIndexExists: boolean): string | null {
-  return !rootIndexHasHeader && visibleBundleIndexExists ? VISIBLE_BUNDLE_FOLDER : null;
+/** The bundle roots when none are configured, decided from what the vault
+ *  itself says. `""` is the whole vault; an empty list is *no bundle*. A root
+ *  index.md carrying a LOKF header makes the whole vault the bundle (a
+ *  `knowledge_bundle` doorway opened as its own vault, or a vault that is a
+ *  bundle outright); otherwise a `knowledge_bundle/` folder with its own
+ *  index.md is a notes vault hosting a bundle beside its notes; otherwise this
+ *  is a workshop with no exhibition in it and the plugin stays out of it -
+ *  unless the break-glass setting says to read the whole vault as the bundle
+ *  anyway. Kept identical to LOKF Registrar's. */
+export function implicitBundleRoots(
+  rootIndexHasHeader: boolean,
+  visibleBundleIndexExists: boolean,
+  treatVaultRootAsBundle: boolean
+): string[] {
+  if (rootIndexHasHeader) return [""];
+  if (visibleBundleIndexExists) return [VISIBLE_BUNDLE_FOLDER];
+  return treatVaultRootAsBundle ? [""] : [];
 }
 
+/** Which of `roots` a vault path belongs to, or null for none. A root of `""`
+ *  is the whole vault and matches everything; only `implicitBundleRoots` ever
+ *  produces it (normalizeBundleRoots drops blanks). An empty `roots` means no
+ *  bundle at all, so every path resolves to null. */
 export function resolveBundleRoot(vaultPath: string, roots: string[]): string | null {
-  if (roots.length === 0) return "";
   for (const root of roots) {
+    if (root === "") return "";
     if (vaultPath === root || vaultPath.startsWith(root + "/")) return root;
   }
   return null;

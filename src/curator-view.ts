@@ -84,7 +84,12 @@ export class LokfCuratorView extends ItemView {
   private renderReport(c: HTMLElement) {
     const reports = this.plugin.getReports();
     if (reports.length === 0) {
-      c.createDiv({ cls: "lokf-empty", text: "No bundle configured, or nothing has been scanned yet." });
+      c.createDiv({
+        cls: "lokf-empty",
+        text: this.plugin.hasNoBundle()
+          ? "This vault has no knowledge bundle: no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md. Your notes are left alone. LOKF Registrar's Insert the bundle's semantic header command, or the lokf-sidecar skill, creates a bundle; if the whole vault really is one, turn on Settings → Scope → Treat the vault root as the bundle."
+          : "Nothing has been scanned yet.",
+      });
       return;
     }
 
