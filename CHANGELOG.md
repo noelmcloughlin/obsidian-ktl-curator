@@ -6,6 +6,11 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Changed
+
+- **README restructured for the two-vault story.** An early notice says the plugin works on the exhibition, never the workshop vault you already keep, and that it pairs with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) without needing them. *Where it works* replaces *How this fits*: three arrangements, the bundle as its own vault first, with the cost of a bundle folder inside your vault stated plainly. Host-by-host layouts moved to `docs/for-the-curious.md`.
+- **This repository's own sidecar follows the current `lokf-sidecar` templates**: `just lokf-link` creates the `knowledge_bundle` doorway link, and the wrapper and both workflows describe the bundle's second name as the templates do. No plugin change.
+
 ## [1.0.0] - 2026-09-13
 
 ### Changed

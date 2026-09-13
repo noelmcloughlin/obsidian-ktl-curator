@@ -85,6 +85,8 @@ Open an issue with your Obsidian version, OS, plugin version, and steps to repro
 
 The version number is no longer hand-picked. Write `## [Unreleased]` in `CHANGELOG.md` as you go - the same section you already keep current for each change - and describe what changed with a [Conventional Commits](https://www.conventionalcommits.org/) type (`feat:`, `fix:`, `security:` for a patch, `BREAKING CHANGE:` in a footer, or `!` after the type, for a major). Open the PR as normal.
 
+**Only `feat:`, `fix:`, `security:` and a breaking-change marker cut a release.** `docs:`, `chore:`, `refactor:`, `style:` and `test:` deliberately do not: a branch carrying only those merges cleanly, releases nothing, and leaves its `## [Unreleased]` entries to ship with the next release that does. So type the commit for what the change *is* - a user-visible behaviour change is a `feat:` even when most of the diff is prose. If a PR should release and its commits are typed too quietly, squash-merge it and give the squash commit the right type.
+
 Once it merges to `main`, [`semantic-release.yml`](.github/workflows/semantic-release.yml) does the rest:
 
 1. Computes the next version from the commits since the last release. Nothing lands if none of them warrant one.
@@ -92,8 +94,55 @@ Once it merges to `main`, [`semantic-release.yml`](.github/workflows/semantic-re
 3. Retitles that section to `## [X.Y.Z] - YYYY-MM-DD` and inserts a fresh empty `## [Unreleased]` above it, and bumps `package.json` (which triggers the existing `version` script - `manifest.json` and `versions.json` update exactly as they did under `npm version`, `.npmrc`'s `tag-version-prefix=""` included).
 4. Commits those files and creates the bare `X.Y.Z` tag Obsidian requires.
 
-That tag then invokes `release.yml` directly (unchanged), which builds, attests provenance, and opens the release as a **draft** carrying `main.js`, `manifest.json`, and `styles.css` - review the draft and publish it by hand, same as before.
+5. Calls [`release.yml`](.github/workflows/release.yml) as a reusable workflow (`build-and-attest`), which builds, attests provenance, and opens the release as a **draft** carrying `main.js`, `manifest.json` and `styles.css`. Review the draft and publish it by hand. It is called rather than tag-triggered because a tag pushed with the default `GITHUB_TOKEN` does not re-trigger workflows; a hand-pushed tag still fires `release.yml`'s own `push: tags:` trigger and takes the same path.
 
 Step 3 onward runs behind the `release` GitHub Environment - **configure required reviewers on it once, in this repository's Settings → Environments**, or every qualifying merge ships unattended. `semantic-release.yml`'s own header comment has the full design and why each piece is shaped the way it is.
 
 A hand-pushed tag (`git tag 0.2.0 && git push origin 0.2.0`) still works exactly as before, going through the same `release.yml` - useful for a hotfix or recovering from an automation problem, not the normal path.
+
+### What the repository settings mean for you
+
+Two are worth knowing because they explain what a pull request waits on, or refuses:
+
+- **Changes reach `main` by pull request, but the rule is not enforced by a ruleset.** A ruleset that requires pull requests rejects every direct push, and the release job's own push - the changelog promotion and tag in step 4 - cannot be exempted from it: a ruleset bypass list accepts roles, teams, GitHub Apps and Dependabot, and `github-actions[bot]` is none of those. So the pull-request discipline here is a convention, held to by the maintainer, not a gate. Open one anyway. Required status checks are off for the same reason - that rule is applied to direct pushes too, and rejects the release job's `[skip ci]` commit for having no checks of its own. CI still runs on every pull request and is still read before merge; it is just not the thing that blocks one, so treat a red check as your problem to fix rather than a net that will catch it.
+- **"Require signed commits" as a branch rule is deliberately off**, and must stay off. A `git commit` made inside a runner is unsigned - GitHub only auto-signs commits made through the web UI or API, and `@semantic-release/git` uses the git CLI. Turning the rule on would reject step 4 above and break every release. Signing your own commits locally is a different thing, nothing gates on it here, and it is still worth doing - see below.
+
+### Signing your commits (encouraged, not required)
+
+A signature ties a commit to you cryptographically, so GitHub shows it `Verified`. Nothing in this repository requires one; it is one setup and free afterwards.
+
+**Choose one format - GPG or SSH.** They are not interchangeable: git reads `user.signingkey` in whichever format `gpg.format` names, so a file in the wrong format fails with `could not load public key`. Either way, `git config user.email` must be a **verified email** on your GitHub account, or commits stay `Unverified`.
+
+**GPG.** The key lives in `~/.gnupg/`; exporting prints it for pasting rather than writing a file you keep. Choose `ECC (sign only)`, `Curve 25519`, and an expiry of 1-2 years rather than never. Record the passphrase in your password manager as you type it - there is no recovery.
+
+```bash
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format=long   # fingerprint is under `sec`
+git config --global gpg.format openpgp
+git config --global user.signingkey <fingerprint>
+git config --global commit.gpgsign true
+gpg --armor --export <fingerprint>           # paste at github.com/settings/keys -> New GPG key
+```
+
+**SSH**, reusing a key you may already have. The file must be a real SSH public key (`ssh-ed25519 AAAA...`), not a GPG export saved under an SSH-looking name:
+
+```bash
+ssh-keygen -t ed25519 -C "you@example.com"   # skip if ~/.ssh/id_ed25519 exists
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+git config --global commit.gpgsign true
+cat ~/.ssh/id_ed25519.pub                    # paste under SSH keys -> Key type: Signing Key
+```
+
+GitHub keeps authentication and signing keys in separate lists; a key registered only for auth leaves every commit `Unverified`, even though it is the same key. Check your work with `git log --show-signature -1`.
+
+**Renew a GPG key before it expires.** Set a calendar reminder a month ahead of the date `gpg --list-secret-keys` shows. Extending keeps the same fingerprint, so past commits keep verifying:
+
+```bash
+gpg --quick-set-expire <fingerprint> 2y
+gpg --armor --export <fingerprint>
+```
+
+Then delete the old entry on github.com/settings/keys and add the exported key again - GitHub stores the expiry from the copy you uploaded and does not re-read it. An expiry is not a compromise: commits signed while the key was valid stay `Verified`, and only *new* signatures stop. If a key is ever actually stolen, revoke it rather than extending it.
+
+If signing fails with no prompt at all, GPG has nowhere to ask for your passphrase - add `export GPG_TTY=$(tty)` to your shell profile and open a new shell. [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/CONTRIBUTING.md#signing-your-commits) has the longer walkthrough.

@@ -108,8 +108,8 @@ export function normalizeBundleRoots(roots: string[]): string[] {
  * call once per candidate file during a scan.
  */
 /** The conventional visible name of a knowledge bundle at a host's root - the
- *  doorway `lokf-sidecar` lays down (a link onto `.lokf/knowledge` in a code
- *  repository; the real folder itself in a vault or shared-folder host). */
+ *  doorway `lokf-sidecar` lays down as a link onto `.lokf/knowledge`, or the
+ *  real folder where someone keeps the bundle among their notes instead. */
 export const VISIBLE_BUNDLE_FOLDER = "knowledge_bundle";
 
 /** The bundle roots when none are configured, decided from what the vault
