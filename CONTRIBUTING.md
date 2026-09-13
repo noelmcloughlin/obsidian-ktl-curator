@@ -146,4 +146,3 @@ gpg --armor --export <fingerprint>
 Then delete the old entry on github.com/settings/keys and add the exported key again - GitHub stores the expiry from the copy you uploaded and does not re-read it. An expiry is not a compromise: commits signed while the key was valid stay `Verified`, and only *new* signatures stop. If a key is ever actually stolen, revoke it rather than extending it.
 
 If signing fails with no prompt at all, GPG has nowhere to ask for your passphrase - add `export GPG_TTY=$(tty)` to your shell profile and open a new shell. [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/CONTRIBUTING.md#signing-your-commits) has the longer walkthrough.
-
