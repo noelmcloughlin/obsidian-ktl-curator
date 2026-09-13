@@ -1,6 +1,6 @@
 // inline.ts - a CodeMirror 6 marker showing a concept's trust tier on its
 // frontmatter, so the review card's verdict is visible where the note is
-// edited. This is the Curator's counterpart to the Enforcer's inline
+// edited. This is the Curator's counterpart to the Registrar's inline
 // diagnostics: same editor layer, but a trust badge rather than an underline.
 //
 // The tier vocabulary (trust-label.ts) stays import-free and Node-tested; this

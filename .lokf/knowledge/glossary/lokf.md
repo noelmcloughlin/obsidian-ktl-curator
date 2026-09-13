@@ -12,9 +12,12 @@ generated:
   by: process:lokf-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
+verified:
+  - by: process:lokf-librarian
+    at: "2026-09-12T22:00:00Z"
 ---
 
 This plugin's trust labels and the ten typed-relation fields (`isPartOf`,
 `dependsOn`, etc.) are the LOKF-specific surface `trust-engine.md` computes
-over - schema validation of the LOKF layer itself is `lokf-enforcer`'s job,
+over - schema validation of the LOKF layer itself is `lokf-registrar`'s job,
 not this plugin's.

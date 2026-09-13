@@ -2,7 +2,35 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com/noelmcloughlin/obsidian-lokf-enforcer) release/0.3.0; its changelog history belongs to that plugin, not this one.
+This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com/noelmcloughlin/obsidian-lokf-registrar) release/0.3.0 - since renamed LOKF Registrar; its changelog history belongs to that plugin, not this one.
+
+## [Unreleased]
+
+### Changed
+
+- **A vault with no bundle is left alone.** With nothing configured, a root `index.md` carrying a LOKF header makes the whole vault the bundle and a top-level `knowledge_bundle/` makes that the bundle, as before; a vault with neither now has *no bundle* - no report, no queue, nothing written, status bar *Curate: no bundle*, the panel says why - rather than being read as one whole-vault bundle. Mirrors LOKF Registrar. The workshop is never mistaken for the exhibition.
+- README trimmed: the *For the curious* section is now `docs/for-the-curious.md`.
+
+### Added
+
+- **Treat the vault root as the bundle** (Scope, off by default): the break-glass switch that restores the old whole-vault reading for a vault whose root `index.md` carries no LOKF header.
+
+### Fixed
+
+- `npm run lint` failed on `.github/scripts/changelog-release.mjs` (outside ESLint's project); it now passes.
+
+## [0.3.0] - 2026-09-12
+
+### Added
+
+- **Bundle detection for the sidecar convention.** A top-level `knowledge_bundle/` with its own `index.md`, in a vault whose root `index.md` carries no LOKF header, becomes the bundle root with nothing configured - the health line and queue then cover only the bundle. Kept identical to LOKF Registrar.
+- **Semantic release.** The version is computed from Conventional Commits on `main`, and `CHANGELOG.md`'s `## [Unreleased]` section is promoted into a dated heading and used as the release notes; `manifest.json`, `package.json` and `versions.json` bump as they always did. The resulting tag runs the same build, attestation and draft release as before, and a hand-pushed tag still does too. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Changed
+
+- **The sibling plugin is now LOKF Registrar** (repository `obsidian-lokf-registrar`), renamed before either plugin was published, and named so here in the README, `NOTICE`, this repository's bundle and code comments. Nothing changes behaviour: the two stay independent, and this one never read the other's id.
+- **A dot-folder bundle root is accepted, not refused** - a community plugin can expose one to Obsidian's index. The report checks the live index first and explains an absent root instead of assuming.
+- **"How this fits" rewritten** around one desk that is always the person's: this plugin is the curator's assistant, LOKF Registrar the registrar beside it. It covers both ways of reaching a bundle - the doorway opened as its own vault, or a real `knowledge_bundle/` folder inside your own vault - and names the vault the **workshop**, the bundle the **exhibition**: what a person confirms goes on exhibit. References to `lokf-scaffolding` now read `lokf-sidecar`.
 
 ## [0.2.0] - 2026-09-11
 

@@ -2,26 +2,49 @@
 type: Playbook
 id: https://lokf-curator.example/knowledge/playbooks/releasing
 title: Releasing a new version
-description: The PR-based release flow - version bump, dated changelog, tag, draft GitHub release.
+description: Semantic-release computes the version and promotes CHANGELOG.md on merge to main, behind a required-reviewer Environment; the resulting tag invokes the same hardened build-and-attest workflow a hand-pushed tag always has.
 genre: how-to
 resource: CONTRIBUTING.md
 isPartOf:
   - https://lokf-curator.example/knowledge/playbooks/knowledge-sources
 generated:
   by: process:lokf-librarian
-  at: "2026-09-10T00:00:00Z"
-status: draft
+  at: "2026-09-12T18:00:00Z"
+verified:
+  - by: process:lokf-librarian
+    at: "2026-09-12T18:00:00Z"
 ---
 
-From `CONTRIBUTING.md` "Releasing (maintainers)": branch `release/<version>`,
-`npm version <bump> --no-git-tag-version` (updates `package.json` +
-`manifest.json` + `versions.json`), date the `## [Unreleased]` heading in
-`CHANGELOG.md`, merge the PR, tag the merge commit (`.npmrc`'s
-`tag-version-prefix=""` keeps the tag bare, no leading `v`, as Obsidian
-requires), push the tag. The release workflow then builds, attests
-provenance, and opens a **draft** GitHub release carrying `main.js`,
-`manifest.json`, `styles.css` for manual review and publish.
+A person no longer picks the version. `semantic-release.yml`'s `release` job
+runs on every push to `main`, behind the `release` GitHub Environment
+(required reviewers configured in this repository's own settings, not by
+the workflow file): `@semantic-release/commit-analyzer` computes the next
+version from Conventional Commits since the last tag; `@semantic-release/exec`
+runs `.github/scripts/changelog-release.mjs` as its `verifyRelease`,
+`generateNotes`, and `prepare` hooks, which refuses the run if this
+repository's `CHANGELOG.md` `## [Unreleased]` section is empty, uses it as
+the release notes, and then retitles it to a dated heading with a fresh
+empty one above; `@semantic-release/npm` (`npmPublish: false`) bumps
+`package.json` via `npm version <ver> --no-git-tag-version`, which still
+triggers the existing `version` script - `manifest.json` and `versions.json`
+update exactly as they did under a hand-run `npm version`, `.npmrc`'s
+`tag-version-prefix=""` included, so the tag stays bare. `@semantic-release/git`
+commits those files; semantic-release's own core then creates and pushes
+that bare tag. The tool itself is installed at exact pinned versions inside
+the workflow, never added to `package.json`.
 
-## Open questions
+That push then invokes `release.yml` directly, via a `workflow_call` trigger
+added alongside its original `push: tags:` one - needed because a tag pushed
+with the default `GITHUB_TOKEN` does not itself re-trigger another
+workflow's `push` event. `release.yml` is otherwise unchanged and still
+works standalone for a hand-pushed tag: harden-runner in audit mode,
+`persist-credentials: false`, SHA-pinned actions, and a scoped
+`contents: write` / `id-token: write` / `attestations: write` are all
+exactly as before. The release is still opened as a **draft** carrying
+`main.js`, `manifest.json`, `styles.css` with build-provenance attestation,
+for manual review and publish - now with a second human checkpoint (the
+Environment approval) in front of it.
 
-- 2026-09-10, process:lokf-librarian: this repository currently has no git history at all (confirmed via `git status` returning "not a git repository") - this playbook describes the process `CONTRIBUTING.md` specifies, not something exercised in this repo yet.
+A `pull_request`-triggered `plan` job in `semantic-release.yml` previews
+every PR into `main` with `--dry-run` - no write scope, no commit, no tag -
+so a malformed commit message or a broken exec script surfaces in review.

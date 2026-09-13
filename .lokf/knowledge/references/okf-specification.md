@@ -13,9 +13,12 @@ generated:
   by: process:lokf-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
+verified:
+  - by: process:lokf-librarian
+    at: "2026-09-12T22:00:00Z"
 ---
 
 Defines `generated`, `verified`, `sources`, `usage_window`, `status`, and
 `stale_after` - the fields `trust-engine.md` (`src/trust.ts`) reads to
 compute every trust label. This plugin does not validate OKF or LOKF schema
-conformance itself (that is `lokf-enforcer`); it only reads these fields.
+conformance itself (that is `lokf-registrar`); it only reads these fields.

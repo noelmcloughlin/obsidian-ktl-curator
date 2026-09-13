@@ -3,7 +3,12 @@
   // markdown validation only sees source content, not runtime artifacts.
   "ignores": [
     "**/.venv/**",
-    ".lokf/.venv/**"
+    ".lokf/.venv/**",
+    "**/node_modules/**",
+    // Agent skills are installed at run time, never committed (see
+    // CONTRIBUTING.md); they are upstream prose, not this repo's content.
+    "**/.agents/**",
+    "**/.claude/**"
   ],
   // Rules disabled for reasons specific to this repo's content, not because
   // the underlying style guidance is wrong in general:
@@ -27,7 +32,7 @@
     // placeholder tokens, not HTML.
     "MD033": false,
     // templates/readme-for-ai-agents.md is an insertable fragment (spliced
-    // into a host README after its intro, per lokf-scaffolding Step 2), so
+    // into a host README after its intro, per lokf-sidecar Step 2), so
     // it starts at "## For AI Agents" by design - it is never meant to
     // stand alone as its own top-level document.
     "MD041": false,

@@ -10,6 +10,9 @@ generated:
   by: process:lokf-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
+verified:
+  - by: process:lokf-librarian
+    at: "2026-09-12T22:00:00Z"
 ---
 
 The format LOKF (below) profiles. This plugin reads OKF's provenance/trust/lifecycle fields (`generated`, `verified`, `status`, `stale_after`) to compute trust labels, and never validates OKF schema conformance itself.

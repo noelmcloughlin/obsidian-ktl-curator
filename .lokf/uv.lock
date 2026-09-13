@@ -1077,7 +1077,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "lokf", extras = ["build"], specifier = ">=0.5.0" }]
+requires-dist = [{ name = "lokf", extras = ["build"], specifier = ">=0.7.0" }]
 
 [[package]]
 name = "markdown-it-py"
