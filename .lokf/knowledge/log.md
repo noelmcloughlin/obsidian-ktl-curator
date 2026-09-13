@@ -1,5 +1,20 @@
 # Change Log
 
+## 2026-09-13
+
+* **Steady-state refresh** (librarian pass, no feedback pending): re-verified
+  `services/settings-tab.md` and `services/lokf-curator-plugin.md` against
+  `src/settings.ts` and `src/main.ts` after this session's README-notice
+  rewording and a comment-only pass over `src/main.ts`/`src/bundle.ts`
+  (`knowledge_bundle` doorway wording, `implicitRoots`). Both already
+  matched, so each gained its first `verified` event
+  (`process:lokf-librarian`) rather than a content change; `status: draft`
+  is unchanged - that records no human curator has confirmed them yet,
+  which this refresh does not settle. `policies/no-telemetry.md` (resource
+  `SECURITY.md`) and `explanation/why-lokf-curator.md` (resource
+  `docs/for-the-curious.md`) were not re-checked this run - neither
+  resource changed this session.
+
 ## 2026-09-12 (5)
 
 * **Steady-state refresh** (`process:lokf-librarian`), triggered by this
