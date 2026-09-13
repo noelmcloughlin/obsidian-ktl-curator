@@ -7,6 +7,10 @@
 
 The [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) leave a folder of checked knowledge beside whatever they were run on - code, notes, documents - with every record marked a draft until a person has read it against its source. Open that folder in Obsidian as a vault of its own, and this plugin is where that person sits: it says how far each record has actually been checked, puts the source beside the claim, and writes down what you decide. No servers, nothing to configure beyond installing it: a status-bar item reads **Confirmed 12/40** - or, when you're editing a concept, that note's own tier beside the count, **Draft · 3/12**.
 
+<p align="center">
+  <img src=".assets/lokf-obsidian-plugins-card.svg" alt="LOKF Agent Skills overview graphic" width="720" />
+</p>
+
 > **Where this plugin belongs.** Your Obsidian vault is your **workshop**; nothing here touches it, and a vault of ordinary notes reads *Curate: no bundle* and is left alone. The plugin works on the **exhibition**: a separate folder of notes in the Linked Open Knowledge Format (LOKF), one record per note with a few properties on each, that the skills build and refresh from the workshop and that you open in Obsidian as a second vault. It is an extension of the skills, not a plugin for vaults in general - the desk at which a person, rather than an agent, passes judgment on the skills' output. It does not *need* them (the folder is only Markdown, and a small bundle can be grown by hand with LOKF Registrar), but that is the narrow path. [Layout](#layout) shows what is on disk; [Where it works](#where-it-works-the-exhibition-not-the-workshop) how the plugin finds it.
 
 It speaks a particular dialect of structured notes called **LOKF** (Linked Open Knowledge Format, layered on OKF v0.2 - more in [What gets computed](docs/for-the-curious.md)). A folder of notes written that way is a **knowledge bundle**: one concept per note, a little frontmatter on each, and an `index.md` at the folder's root that names the bundle. That folder is the exhibition, and each concept in it an **exhibit** - the checked, curated part of what you know. This plugin reads the trust fields OKF v0.2 already defines on each of those notes - `verified`, `generated`, `status`, `stale_after` - and records what *you* say about a concept. It never invents a fact about one.
@@ -29,6 +33,10 @@ So every concept says how far it has been checked, in plain words:
 - **Still a draft**, **edited since a person last confirmed it**, **past its review date**, **retired** - and, for prioritising, how many other concepts rely on each one.
 
 Those labels are computed from the frontmatter every time the panel refreshes, never stored, so they cannot drift from what they describe. The number to watch is **confirmed by a person: n of N**, and it is meant to rise slowly - a handful of concepts in a sitting, cumulative and partial by design. A small, young bundle can reach fully-confirmed quickly; a large or fast-growing one never quite does, and the report says so instead of pretending.
+
+<p align="center">
+  <img src=".assets/lokf-two-vaults.svg" alt="LOKF Agent Skills overview graphic" width="720" />
+</p>
 
 ## Layout
 
