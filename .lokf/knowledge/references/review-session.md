@@ -13,7 +13,7 @@ generated:
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-12T22:00:00Z"
+    at: "2026-09-13T19:00:00Z"
 ---
 
 Specifies who records (`human:<id>`, never an email), the five verbs'

@@ -2,18 +2,18 @@
 type: Reference
 id: https://lokf-curator.example/knowledge/references/trust-fields
 title: Trust fields (lokf-curator skill)
-description: The exact rule for each plain-language trust label - the spec of record trust-engine.md implements, and the source this bundle's own README trust-label table summarizes.
+description: The exact rule for each plain-language trust label - the spec of record trust-engine.md implements, and the source the README's health-line chips and docs/for-the-curious.md's label table summarize.
 genre: reference
 resource: .agents/skills/lokf-curator/references/trust-fields.md
 about:
   - https://lokf-curator.example/knowledge/references/lokf-specification
 generated:
   by: process:lokf-librarian
-  at: "2026-09-10T00:00:00Z"
+  at: "2026-09-13T19:00:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-12T22:00:00Z"
+    at: "2026-09-13T19:00:00Z"
 ---
 
 Maps each human-facing label ("confirmed by a person", "past its review

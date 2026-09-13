@@ -53,3 +53,4 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for LOKF Curator. Every 
 * [Knowledge sources](playbooks/knowledge-sources.md)
 * [Releasing a new version](playbooks/releasing.md)
 * [Contributing to the plugin](playbooks/contributing.md)
+* [Knowledge registrar gate](playbooks/knowledge-registrar-gate.md) - what a confirmation this plugin records must be backed by before it merges
