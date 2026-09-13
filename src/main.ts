@@ -232,9 +232,9 @@ export default class LokfCuratorPlugin extends Plugin {
 
   /** With nothing configured, let the vault say what it is: a root index.md
    *  carrying a LOKF header makes the whole vault the bundle; a top-level
-   *  `knowledge_bundle/` with its own index.md is a notes vault hosting a
-   *  bundle beside its notes (lokf-sidecar's visible layout); neither is a
-   *  workshop with no exhibition, left alone unless the break-glass setting
+   *  `knowledge_bundle/` with its own index.md is a notes vault keeping a
+   *  bundle as a folder among its notes (at the cost the README names);
+   *  neither is a workshop with no exhibition, left alone unless the break-glass setting
    *  says otherwise. Kept identical to LOKF Registrar's; the decision itself
    *  is bundle.ts's pure `implicitBundleRoots`. */
   private implicitRoots(): string[] {
