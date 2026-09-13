@@ -5,21 +5,21 @@
 > We balance the earth in a pair of scales of our own devising."\
 > — Amy Lowell, *The Congressional Library* (1922)
 
-If you keep a structured knowledge base in Obsidian - a wiki, a team's shared brain, documentation for a project - this plugin tells you how far it has actually been checked, and records what you decide about it. No servers, no setup beyond installing it: open a vault, and a status-bar item reads **Confirmed 12/40** - or, when you're editing a concept, that note's own tier beside the count, **Draft · 3/12**.
+The [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) leave a folder of checked knowledge beside whatever they were run on - code, notes, documents - with every record marked a draft until a person has read it against its source. Open that folder in Obsidian as a vault of its own, and this plugin is where that person sits: it says how far each record has actually been checked, puts the source beside the claim, and writes down what you decide. No servers, nothing to configure beyond installing it: a status-bar item reads **Confirmed 12/40** - or, when you're editing a concept, that note's own tier beside the count, **Draft · 3/12**.
 
-> **What this plugin is for.** Your Obsidian vault is your **workshop**; nothing here touches it. The plugin works on the **exhibition** generated from it: a separate folder of knowledge notes that follow the Linked Open Knowledge Format (LOKF), a few properties on each, that you open in Obsidian as a vault of its own. Running the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) builds and refreshes that folder from your workshop; this plugin is the same work at your desk, showing how far each note in it has been checked and writing down what you decide. It does not need the skills - the folder is only Markdown, and you can grow one by hand - but the two were designed together, and that is where it is most valuable. [Where it works](#where-it-works-the-exhibition-not-the-workshop) has the three arrangements.
+> **Where this plugin belongs.** Your Obsidian vault is your **workshop**; nothing here touches it, and a vault of ordinary notes reads *Curate: no bundle* and is left alone. The plugin works on the **exhibition**: a separate folder of notes in the Linked Open Knowledge Format (LOKF), one record per note with a few properties on each, that the skills build and refresh from the workshop and that you open in Obsidian as a second vault. It is an extension of the skills, not a plugin for vaults in general - the desk at which a person, rather than an agent, passes judgment on the skills' output. It does not *need* them (the folder is only Markdown, and a small bundle can be grown by hand with LOKF Registrar), but that is the narrow path. [Layout](#layout) shows what is on disk; [Where it works](#where-it-works-the-exhibition-not-the-workshop) how the plugin finds it.
 
 It speaks a particular dialect of structured notes called **LOKF** (Linked Open Knowledge Format, layered on OKF v0.2 - more in [What gets computed](docs/for-the-curious.md)). A folder of notes written that way is a **knowledge bundle**: one concept per note, a little frontmatter on each, and an `index.md` at the folder's root that names the bundle. That folder is the exhibition, and each concept in it an **exhibit** - the checked, curated part of what you know. This plugin reads the trust fields OKF v0.2 already defines on each of those notes - `verified`, `generated`, `status`, `stale_after` - and records what *you* say about a concept. It never invents a fact about one.
 
 If the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) are the library's staff - one lays the network, one binds it into order, one holds the scales, one guides the visitors - Obsidian is the desk where the one who holds the scales sits - and that one is always a person: the **curator** is a named human, never a tool. Two plugins work at that desk. **LOKF Curator** - this one - is the curator's assistant, named for whom it serves: it puts the source beside the claim and writes down what the person decided. Its sibling [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar) is the **registrar**, and named for it: it checks that each record is well-formed as it is written. **Neither reaches a verdict of its own: the registrar keeps the paperwork straight, the assistant keeps the record of the decisions, and the judging stays with the person.**
 
-*New to LOKF, with just a vault of ordinary notes? Start at [Where it works](#where-it-works-the-exhibition-not-the-workshop).*
+*New to LOKF, with just a vault of ordinary notes? Start with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills), not here: an agent runs them beside your vault, and the exhibition they leave is what this plugin opens.*
 
 > **Two ways in.** This README is one; the other is a docent. Install [`lokf-docent`](https://github.com/noelmcloughlin/lokf-agent-skills) into whatever agent you already use - `npx skills add noelmcloughlin/lokf-agent-skills --skill lokf-docent --yes` - and ask it anything about this project - *What does "Confirmed 12/40" rest on?*, say. It answers from `.lokf/knowledge/`, the checked part of what the project knows, says how far each answer has been trusted (still a draft, checked by automation only, or confirmed by a named person), opens the source for exact values, and records what it couldn't answer so the gap gets filled. One door for a person at a prompt, an agent reading this file, or a chatbot that can load a skill. **Agents:** if `.lokf/knowledge/index.md` exists, read it first - `llms.txt` says how to weigh it.
 
 ## Why a vault needs a catalogue
 
-The knowledge is already in the vault. What's missing is a way to tell, at a glance, which of it is still sound - and without that you end up re-checking everything yourself, which is the work the vault was supposed to save you, while the notes quietly go stale.
+The knowledge is already in your workshop. What's missing is a way to tell, at a glance, which of it is still sound - and without that you end up re-checking everything yourself, which is the work the vault was supposed to save you, while the notes quietly go stale.
 
 So every concept says how far it has been checked, in plain words:
 
@@ -30,17 +30,38 @@ So every concept says how far it has been checked, in plain words:
 
 Those labels are computed from the frontmatter every time the panel refreshes, never stored, so they cannot drift from what they describe. The number to watch is **confirmed by a person: n of N**, and it is meant to rise slowly - a handful of concepts in a sitting, cumulative and partial by design. A small, young bundle can reach fully-confirmed quickly; a large or fast-growing one never quite does, and the report says so instead of pretending.
 
+## Layout
+
+One repository, two vaults. The skills lay this down; the plugin only needs to know which folder is which.
+
+```text
+my-project/                              one repository - code, notes or documents
+├── my-vault/                            THE WORKSHOP - your everyday Obsidian vault, untouched
+│   ├── ...                              Home, daily notes, MOCs - whatever you keep there
+│   └── .obsidian/                       this plugin has nothing to do here; installed anyway, it reads "Curate: no bundle"
+├── .lokf/                               the sidecar the skills lay down: toolkit, schema, justfile, CI wrapper
+│   └── knowledge/                       THE EXHIBITION - the bundle, one record per file
+│       ├── index.md                     the header that names the bundle; this is what makes the folder a bundle
+│       ├── services/ playbooks/ ...     one folder per kind of record; log.md dates every change, your verdicts included
+│       └── .obsidian/plugins/           LOKF Curator and LOKF Registrar are installed HERE (gitignored by default)
+├── knowledge_bundle -> .lokf/knowledge  the doorway: File → Open folder as vault → pick THIS
+└── .github/workflows/                   knowledge-registrar.yaml: on every pull request, a new "confirmed by a person" must be backed by that person's review or signature
+```
+
+The workshop need not be a vault at all: in a code repository it is `src/` and `docs/`, and the picture is otherwise the same. The doorway is a link (a junction on Windows) because folder pickers hide dot-folders; Obsidian never lists it from the workshop, so the two vaults never index the same file. A git checkout carries the link; sync services carry `.lokf/` but drop links, so on a synced drive the bundle is opened by path (`.lokf/knowledge`) or the link is remade per machine (`just lokf-link` in `.lokf/`).
+
 ## Where it works: the exhibition, not the workshop
 
-The bundle is a **sidecar**: a folder of curated knowledge kept *beside* the raw material it was distilled from - `.lokf/knowledge/` next to the code in a repository, the notes in a vault, or the documents in a shared drive - with a `knowledge_bundle` link beside it, so folder pickers, which hide dot-folders, have a name to open. Obsidian users already live with this shape: `.obsidian/` is a sidecar too. Three ways to meet one:
+**Open the doorway as its own vault.** **File → Open folder as vault**, pick `knowledge_bundle` (or type the path `.lokf/knowledge`), and install this plugin there - and LOKF Registrar, which keeps the records well-formed. Nothing to configure: the root `index.md` carries the bundle's header, so the whole vault is the bundle and every note in it is a record. Your own vault never lists the doorway - Obsidian skips a link that resolves inside the vault, and never indexes a dot-folder - so your notes stay yours. If the link is missing (Windows, a sync service, a name already taken), `ln -s .lokf/knowledge knowledge_bundle` or `mklink /J knowledge_bundle .lokf\knowledge` makes it, with no administrator rights.
 
-1. **Open the exhibition as its own vault** - the intended way. **File → Open folder as vault**, pick `knowledge_bundle` (or type the path `.lokf/knowledge`; to make the link yourself, `ln -s .lokf/knowledge knowledge_bundle`, on Windows `mklink /J knowledge_bundle .lokf\knowledge`, no administrator rights). Install this plugin in that vault - and LOKF Registrar, which keeps the records well-formed. Nothing to configure: a root `index.md` with a header makes the whole vault the bundle. Your own vault never lists the link - Obsidian skips a link that resolves inside the vault, and never indexes a dot-folder - so the two vaults never index the same file, and your notes stay yours.
-2. **A folder inside your vault.** Also works: the plugin finds a top-level `knowledge_bundle/` on its own, and any folder you list under *Bundle root folders* (several, if one vault holds several bundles); its health line and queue cover the bundle, never your notes. Know the cost first: Obsidian indexes that folder like any other, so link suggestions, the quick switcher, graph and search will mix exhibits with everyday notes; *Settings → Files and links → Excluded files* makes them less noticeable, not gone. That is why it is not the default.
-3. **The whole vault is the exhibition** - a team wiki, a handbook. Put the header on the root `index.md` (LOKF Registrar's **Insert the bundle's semantic header** does it) and every note is a record. For a vault that really is one but has no header yet, *Treat the vault root as the bundle* under *Scope* reads it anyway; it is a break-glass switch, and the plugin says so.
+Two other shapes are recognised, so a bundle that arrives some other way still works; neither is the design:
+
+- **The whole vault is the exhibition** - a team wiki, a handbook, a bundle cloned on its own. The same case as the doorway seen from inside: a root `index.md` with a header, and the plugin needs nothing else. For a vault that really is one but has no header yet, *Treat the vault root as the bundle* under *Scope* reads it anyway - a break-glass switch, and the plugin says so.
+- **A folder inside your vault.** A top-level `knowledge_bundle/` is found on its own, and any folder listed under *Bundle root folders* (several, if one vault holds several bundles); the health line and queue cover the bundle, never your notes. Know the cost first: Obsidian indexes that folder like any other, so link suggestions, the quick switcher, graph and search mix exhibits with everyday notes, and *Settings → Files and links → Excluded files* makes them less noticeable, not gone. That is why the skills never lay a bundle down this way.
 
 Your vault is never migrated into an exhibition. What moves is what you would stand behind - the notes you would hand to a teammate, a new hire, a CI gate, or an agent answering questions on your behalf - and only a few at a sitting, which is exactly why the confirmed count is meant to rise slowly. Where the sidecar sits host by host - a repository, a vault kept in git, a shared drive, many repositories into one vault - is in [Where the bundle lives](docs/for-the-curious.md#where-the-bundle-lives-host-by-host).
 
-**With the skills.** In a terminal at the host: `lokf-sidecar` once, then `lokf-librarian` to derive the bundle from code, docs or notes, every concept marked a draft. Open `knowledge_bundle` as a vault, and this plugin ranks what most needs a person, puts each source beside its claim, and writes your verdict into the note; LOKF Registrar keeps it well-formed meanwhile. The skills and the plugins never call each other - the bundle is the only thing they share. This plugin *is* the `lokf-curator` skill, done at the desk instead of in a terminal - the same review session, the same five verbs, the same fields written, specified by the same two reference files - and, like the skill, it is the curator's assistant, not the curator: the verdicts are yours. Role by role:
+**With the skills** - the usual path. In a terminal at the host: `lokf-sidecar` once, then `lokf-librarian` to derive the bundle from code, docs or notes, every concept marked a draft. Open `knowledge_bundle` as a vault, and this plugin ranks what most needs a person, puts each source beside its claim, and writes your verdict into the note; LOKF Registrar keeps it well-formed meanwhile. The skills and the plugins never call each other - the bundle is the only thing they share. This plugin *is* the `lokf-curator` skill, done at the desk instead of in a terminal - the same review session, the same five verbs, the same fields written, specified by the same two reference files - and, like the skill, it is the curator's assistant, not the curator: the verdicts are yours. Role by role:
 
 | Role | In a terminal, or in CI | In Obsidian |
 | --- | --- | --- |
@@ -50,7 +71,7 @@ Your vault is never migrated into an exhibition. What moves is what you would st
 | **Curator** - always a person; confirms, corrects, retires, sends back | the `lokf-curator` skill's review session - the person's assistant in a terminal | **LOKF Curator** - the same assistant in Obsidian |
 | **Docent** - answers readers from the bundle | `lokf-docent` skill; `lokf serve` for SPARQL queries and a graph view | - (readers open the vault; nothing in Obsidian writes on a reader's behalf) |
 
-**Without the skills.** Start with LOKF Registrar: its header command makes an empty vault the exhibition, and its relation aids keep hand-written notes well-formed. Install this plugin once there is a bundle worth confirming - a concept, a source, and a person to read one against the other. Nothing refreshes the bundle for you, which is what the librarian is for.
+**Without the skills** - the narrow path. Start with LOKF Registrar: its header command makes an empty vault the exhibition, and its relation aids keep hand-written notes well-formed. Install this plugin once there is a bundle worth confirming - a concept, a source, and a person to read one against the other. It works, and a small hand-made bundle is a fine way to learn the format; but nothing derives records from your sources or refreshes them when those change, which is the librarian's whole job - so expect to reach for the skills once the bundle is worth keeping.
 
 ## What it looks like
 
@@ -79,11 +100,11 @@ One concept, one verb, one person's answer - there is no "confirm all", and no k
 
 ## Install
 
-Not yet in the community store - the first release is in preparation. Until then, the options are:
+Not yet in the community plugin store. Install it in the **exhibition** vault - `<bundle>/.obsidian/plugins/lokf-curator/` - not in your workshop, where it has nothing to do.
 
-- **From source** - `npm ci && npm run build`, then copy `main.js`, `manifest.json`, and `styles.css` into `<vault>/.obsidian/plugins/lokf-curator/` and enable the plugin under **Settings → Community plugins**.
-- **From a GitHub release** - once one is published, the same three files are attached to it; copy them to the same place.
-- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)** - add `noelmcloughlin/obsidian-lokf-curator` as a beta plugin once a release exists, and BRAT keeps it updated.
+- **From a [GitHub release](https://github.com/noelmcloughlin/obsidian-lokf-curator/releases)** - each carries `main.js`, `manifest.json` and `styles.css`; copy the three into that folder and enable the plugin under **Settings → Community plugins**.
+- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)** - add `noelmcloughlin/obsidian-lokf-curator` as a beta plugin; BRAT installs the latest release and keeps it updated.
+- **From source** - `npm ci && npm run build`, then copy the same three files.
 
 Requires Obsidian **1.13.0** or later (declarative settings API).
 
@@ -143,8 +164,10 @@ src/
   main.ts           plugin lifecycle: scanning, the review session, commands
   curator-view.ts   the "Curate" side panel: report + review card
   settings.ts       declarative settings tab (Obsidian 1.13+)
+  ...               the in-editor tier badge, autocomplete and the field reference - one module each
 scripts/
   smoke-test.ts     the three pure modules against a fixture bundle (npm run smoke-test)
+  build-vocab.mjs   regenerates src/lokf-vocab.json from a pinned lokf.yaml (npm run build-vocab; a maintenance step)
   fixtures/         a bundle with one concept per trust-label state, on purpose
 docs/               the reasoning behind the labels, moved out of this README
 .lokf/              this repository's own LOKF knowledge bundle (a uv/Python sidecar)

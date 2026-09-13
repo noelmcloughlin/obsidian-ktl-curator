@@ -114,6 +114,7 @@ jobs:
       # "Install the lokf sidecar" step's `uv sync` can touch it, the same
       # tool-artifact exception "Detect changes" below already makes.
       - name: Enforce the agent's write scope
+        if: vars.KNOWLEDGE_LIBRARIAN_ENABLED == 'true'
         run: |
           set -euo pipefail
           out="$(git status --porcelain -- . ':!.lokf/knowledge' ':!knowledge_bundle' ':!.lokf/feedback.md' ':!.lokf/uv.lock')"
