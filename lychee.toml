@@ -6,3 +6,10 @@ exclude = [
   # FIXES.md F5. Drop once a real namespace is registered.
   '^https://lokf-curator\.example/',
 ]
+
+# knowledge_bundle is a symlink to .lokf/knowledge (the Obsidian vault entry
+# point, see lokf-sidecar Step 2) - exclude it so lychee doesn't walk the
+# same files twice, once at each path.
+exclude_path = [
+  "(^|/)knowledge_bundle/",
+]
