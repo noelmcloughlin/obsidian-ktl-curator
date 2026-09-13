@@ -6,13 +6,17 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Changed
+
+- **README restructured for the two-vault story.** An early notice says the plugin works on the exhibition, never the workshop vault you already keep, and that it pairs with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) without needing them. *Where it works* replaces *How this fits*: three arrangements, the bundle as its own vault first, with the cost of a bundle folder inside your vault stated plainly. Host-by-host layouts moved to `docs/for-the-curious.md`.
+- **This repository's own sidecar follows the current `lokf-sidecar` templates**: `just lokf-link` creates the `knowledge_bundle` doorway link, and the wrapper and both workflows describe the bundle's second name as the templates do. No plugin change.
+
 ## [1.0.0] - 2026-09-13
 
 ### Changed
 
 - **A vault with no bundle is left alone.** With nothing configured, a root `index.md` carrying a LOKF header makes the whole vault the bundle and a top-level `knowledge_bundle/` makes that the bundle, as before; a vault with neither now has *no bundle* - no report, no queue, nothing written, status bar *Curate: no bundle*, the panel says why - rather than being read as one whole-vault bundle. Mirrors LOKF Registrar. The workshop is never mistaken for the exhibition.
-- **README restructured for the two-vault story.** An early notice says what the plugin is for - the exhibition, a folder of notes opened in Obsidian as a vault of its own, never the workshop vault someone already keeps - and that it was designed together with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) yet needs none of them. *How this fits* is replaced by *Where it works*: three arrangements, leading with the bundle as its own vault, with the cost of a bundle folder inside your vault stated plainly (Obsidian indexes it, so link suggestions, the quick switcher, graph and search mix exhibits with everyday notes; *Excluded files* only makes that less noticeable) and the whole-vault case with its break-glass switch. The host-by-host layouts moved to `docs/for-the-curious.md` ("Where the bundle lives, host by host"), corrected to the skills' one layout - `.lokf/knowledge/` real, `knowledge_bundle` a link beside it. The *For the curious* section is `docs/for-the-curious.md`.
-- **This repository's own sidecar follows the current `lokf-sidecar` templates.** `just lokf-link` in `.lokf/` now creates or recreates the `knowledge_bundle` doorway link at the repository root, the skills' one layout, rather than a tools' link for the retired visible layout; the librarian wrapper and both workflows describe the bundle's second name as the templates do. Nothing about the plugin changes.
+- README trimmed: the *For the curious* section is now `docs/for-the-curious.md`.
 
 ### Added
 
