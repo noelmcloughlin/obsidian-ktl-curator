@@ -5,11 +5,9 @@ title: Obsidian plugin developer guidelines
 description: The platform API surface and review guidelines this plugin is built against - declarative settings (1.13+), processFrontMatter, metadataCache, and the eslint-plugin-obsidianmd ruleset that encodes them.
 genre: reference
 resource: https://docs.obsidian.md/Plugins
-sameAs:
-  - https://docs.obsidian.md/Plugins
 generated:
   by: process:lokf-librarian
-  at: "2026-09-10T00:00:00Z"
+  at: "2026-09-13T19:00:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian

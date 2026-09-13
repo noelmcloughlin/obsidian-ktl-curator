@@ -1,5 +1,43 @@
 # Change Log
 
+## 2026-09-13 (3)
+
+* **Steady-state refresh** (librarian pass, no feedback pending), after a
+  `lokf-sidecar` repair pass that restored `.lokf/.gitignore`'s `.obsidian/`
+  rule and laid the `knowledge_bundle` doorway link. Re-verified
+  `playbooks/knowledge-registrar-gate.md` against the now-committed workflow;
+  it now says the copy also words two comments its own way, not only
+  `persist-credentials: false` and `permissions: {}`.
+  `playbooks/knowledge-sources.md`: `.assets/` row and run note added.
+
+## 2026-09-13 (2)
+
+* **Steady-state refresh** (librarian pass, no feedback pending), against the
+  commits since `248f9e6` (`knowledge-registrar.yaml` gaining the template's
+  `provenance`/`attestation` jobs, `SECURITY.md` restructured to inherit the
+  guard design from `lokf-agent-skills`, two README images) and this
+  session's uncommitted README rewrite around usage. Added
+  `playbooks/knowledge-registrar-gate.md` (a gap: no source-map row, no
+  concept) and two workflow rows to the source map. **Audit fixes:**
+  `just lokf-check-refs` failed on four `sameAs` relations whose targets
+  were the external URLs already carried by `resource` - removed from the
+  four `references/*` concepts, as the sibling bundles do;
+  `references/okf-specification.md` had `derivedFrom` pointing at the LOKF
+  spec, backwards - moved onto `references/lokf-specification.md`, the
+  profile derived from OKF; the LOKF spec's body said a "14-class"
+  vocabulary, corrected to 15 (`Role`); the source map listed `CUR.md`, a
+  file this repository has never had (deleted in the fork parent's 0.2.0).
+  `references/trust-fields.md`'s description no longer claims a README
+  trust-label table - the rewritten README links to the skills' README for
+  the labels and to `docs/for-the-curious.md` for the rules. Re-verified,
+  no change: `policies/no-telemetry.md`, `explanation/why-lokf-curator.md`
+  (first `verified` event), `references/review-session.md` and
+  `references/trust-fields.md` (the installed `.agents/skills/lokf-curator/`
+  copies are identical to the source skill this run). **Drift audit
+  (reported, not fixed):** both workflow copies differ from their templates
+  only by the stricter `persist-credentials: false` / `permissions: {}` and
+  by comments. `lokf` on PyPI is still `0.7.0`, matching the floor.
+
 ## 2026-09-13
 
 * **Steady-state refresh** (librarian pass, no feedback pending): re-verified

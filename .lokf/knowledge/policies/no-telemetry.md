@@ -12,7 +12,7 @@ generated:
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-12T22:00:00Z"
+    at: "2026-09-13T19:00:00Z"
 ---
 
 Stated in `SECURITY.md` ("The plugin" section) and `README.md`'s Privacy
