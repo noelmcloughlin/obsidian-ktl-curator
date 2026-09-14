@@ -137,7 +137,10 @@ export function deleteOpenQuestionsSection(body: string): string {
   const before = lines.slice(0, headingIdx);
   const after = lines.slice(endIdx);
   while (before.length > 0 && (before.at(-1) ?? "").trim() === "") before.pop();
-  return [...before, ...(before.length && after.length ? ["", ""] : []), ...after].join("\n");
+  // One blank line between what was above the section and what was below it:
+  // two would leave the concept failing markdownlint's MD012 in a bundle that
+  // lints, having been tidied by a verb the person pressed.
+  return [...before, ...(before.length && after.length ? [""] : []), ...after].join("\n");
 }
 
 const DAY_HEADING_RE = /^## (\d{4}-\d{2}-\d{2})\s*$/;

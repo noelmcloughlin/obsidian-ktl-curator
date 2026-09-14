@@ -124,6 +124,10 @@ export interface TrustInputs {
   frontmatter: Record<string, unknown>;
   headings: HeadingLine[];
   mintId: (path: string) => string;
+  /** The classes `type` may name without being "outside the vocabulary" -
+   *  the vault's Settings → Type vocabulary list. Omitted, the pinned
+   *  schema's classes apply. */
+  knownTypes?: string[];
 }
 
 /** Builds one concept's trust record from its already-parsed frontmatter and
@@ -220,7 +224,7 @@ export function buildTrustRecord(
     id,
     title,
     type,
-    cls: classify(type),
+    cls: classify(type, inputs.knownTypes),
     invalidStatus,
     status,
     humanConfirmed,
@@ -398,11 +402,35 @@ export function proposeStaleAfter(confirmationDate: string, months: number): str
   return d.toISOString().slice(0, 10);
 }
 
+/**
+ * The spellings of one class a policy row may plausibly use, all normalized
+ * (lower-case, spaces removed): the class itself, plus the plural forms
+ * English actually writes.
+ *
+ * The table is prose a person writes - the skill's own template says
+ * "Glossary terms, explanations" and "Policies, ... people, organizations" -
+ * so a bare case-insensitive match on the class name binds neither
+ * `GlossaryTerm` (written with a space), nor `AttestedComputation` (likewise),
+ * nor `Policy` or `Person` (irregular plurals). Dropping the spaces covers the
+ * multi-word classes and, since the singular is a prefix of the regular
+ * plural, every `+s` form with it; the two irregulars are named.
+ */
+function policyRowForms(cls: string): string[] {
+  const base = normalizeTypeKey(cls);
+  const forms = [base];
+  if (base.endsWith("y")) forms.push(`${base.slice(0, -1)}ies`);
+  if (base === "person") forms.push("people");
+  return forms;
+}
+
 /** Tolerant parse of `policies/knowledge-curation.md`'s markdown table, per
  *  §6.4: any row whose first cell mentions a class name and whose second
  *  cell matches "(\d+)\s*months" overrides that class; anything unparseable
- *  leaves the setting in force. Returns a map keyed by normalized class name. */
-export function parseCurationPolicyTable(body: string): Map<string, number> {
+ *  leaves the setting in force. Returns a map keyed by normalized class name.
+ *  `knownTypes` is the vocabulary a row may name - the vault's Settings →
+ *  Type vocabulary list, so a domain schema's classes can carry an interval
+ *  of their own; omitted, the pinned schema's classes apply. */
+export function parseCurationPolicyTable(body: string, knownTypes: string[] = KNOWN_LOKF_TYPES): Map<string, number> {
   const overrides = new Map<string, number>();
   for (const line of body.split("\n")) {
     if (!line.trim().startsWith("|")) continue;
@@ -415,9 +443,9 @@ export function parseCurationPolicyTable(body: string): Map<string, number> {
     if (!monthsMatch) continue;
     const months = parseInt(monthsMatch[1] ?? "", 10);
     if (!Number.isFinite(months)) continue;
-    const firstCell = cells[0] ?? "";
-    for (const cls of KNOWN_LOKF_TYPES) {
-      if (firstCell.toLowerCase().includes(cls.toLowerCase())) {
+    const firstCell = normalizeTypeKey(cells[0] ?? "");
+    for (const cls of knownTypes) {
+      if (cls && policyRowForms(cls).some((form) => firstCell.includes(form))) {
         overrides.set(normalizeTypeKey(cls), months);
       }
     }

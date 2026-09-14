@@ -7,6 +7,7 @@ genre: how-to
 resource: .github/workflows/knowledge-registrar.yaml
 sources:
   - resource: .github/workflows/knowledge-registrar.yaml
+  - resource: .lokf/scripts/knowledge-conventions.sh
   - resource: SECURITY.md
 relatedTo:
   - https://lokf-curator.example/knowledge/services/edits-engine
@@ -15,11 +16,11 @@ dependsOn:
   - https://lokf-curator.example/knowledge/references/lokf-toolkit
 generated:
   by: process:lokf-librarian
-  at: "2026-09-13T23:00:00Z"
+  at: "2026-09-14T17:30:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-13T23:00:00Z"
+    at: "2026-09-14T17:30:00Z"
 ---
 
 # Overview
@@ -29,15 +30,25 @@ keeping records well-formed and their provenance paperwork straight, never
 judging whether a claim is true. It is a copy of the `lokf-sidecar` template
 in `lokf-agent-skills`; the copy here adds only `persist-credentials: false`
 on its checkout, a top-level `permissions: {}`, and its own wording of two
-comments, the harden-runner note and the `provenance` job's signing setup
-(`SECURITY.md`, "The attribution gate is installed"); the design with its
-stated limits is documented once, in that repository's `SECURITY.md`. It runs on a pull
+comments, the harden-runner note and the `provenance` job's signing setup;
+the design with its stated limits is documented once, in the skills
+repository's shared threat model (`docs/threat-model.md`, since 2026-09-14 -
+this repository's own `SECURITY.md` links there rather than restating it).
+It runs on a pull
 request that touches `.lokf/**`, `knowledge_bundle/**` or the workflow
 itself, on a Monday 06:00 UTC schedule, and on demand. Three jobs:
 
 **`validate` - "Validate the LOKF bundle".** `uv sync` in `.lokf/`, then
 `uv run lokf validate knowledge` - the same check `just lokf-validate` runs
-locally.
+locally. Two more steps close what that check cannot see: `bash
+scripts/knowledge-conventions.sh knowledge` (the sidecar's own script - one
+ISO-date `log.md` heading per day, quoted timestamps, `verified` as a list
+carrying at most one `process:lokf-librarian` event, and `## Open questions`
+bullets in the curator's shape - a concept body is opaque to `lokf validate`,
+which never opens `log.md`), then `uvx --from 'rust-just==1.47.0' just
+lokf-check-refs` (the justfile's SPARQL query - every typed-relation target
+resolves to a real concept in the bundle, which a well-formed but fabricated
+or stale IRI would otherwise pass silently).
 
 **`provenance` - "Check new human confirmations".** Pull requests only;
 `contents: read`, `pull-requests: read`. A `verified` event whose actor is
@@ -92,8 +103,8 @@ It never runs on the librarian's own review pull request, which
 `knowledge-librarian.yaml`'s `publish` job opens with the default
 `GITHUB_TOKEN` - GitHub does not start `pull_request` workflows for such a
 PR - so `publish` carries its own two checks first (a path allow-list, and
-no added `by: human:` claim; `SECURITY.md` links to the skills repository
-for that design). And it is not a required status check: `main`
+no added `by: human:` claim; the skills repository's threat model has that
+design). And it is not a required status check: `main`
 deliberately has no merge gate (`CONTRIBUTING.md`), because a path-filtered
 required check sits at "Expected" for ever on pull requests that never
 trigger it, and a release bot's push cannot be exempted from a ruleset.

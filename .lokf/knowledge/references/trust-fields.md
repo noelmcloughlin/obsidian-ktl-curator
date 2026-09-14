@@ -25,3 +25,18 @@ match), and cross-bundle relation-target resolution. Installed locally at
 `.gitignore`'s "installed agent skills are runtime state" note) - not part
 of the plugin's own source, but the plugin's implementation must not drift
 from it.
+
+## Open questions
+
+- 2026-09-14, process:lokf-librarian: the installed copy at this concept's
+  `resource` is pinned to `LOKF_SKILLS_REF: v0.9.0`
+  (`.github/workflows/knowledge-librarian.yaml`, unchanged this run) and
+  still reads "doesn't fit the **built-in** vocabulary", with no mention of
+  a host's domain schema. `src/curator-view.ts`'s actual wording is "doesn't
+  fit the **known** vocabulary" - the phrasing the skill repository's
+  working tree carries past v0.9.0 (commit `5535d0c`), not the pinned copy.
+  A prior pass's log entry (`log.md`, 2026-09-14) called this settled
+  against the skill repository's live checkout; re-verified against the
+  actual pinned resource, it is not - either bump `LOKF_SKILLS_REF` past
+  `5535d0c` or record that the plugin is currently ahead of its pinned spec
+  of record.

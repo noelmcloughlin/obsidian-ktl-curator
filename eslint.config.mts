@@ -38,6 +38,15 @@ export default defineConfig(
 	...obsidianmd.configs.recommended,
 	{
 		rules: {
+			// The settings tab is declarative (src/settings.ts: definitions, never
+			// DOM, so every setting is indexed by Obsidian's settings search) and
+			// the house style builds DOM with createEl. The recommended config only
+			// warns on these, and `eslint .` passes with warnings, so they are
+			// errors here: the rule lives in lint, not in CONTRIBUTING.
+			'obsidianmd/prefer-create-el': 'error',
+			'obsidianmd/settings-tab/no-deprecated-display': 'error',
+			'obsidianmd/settings-tab/prefer-setting-definitions': 'error',
+			'obsidianmd/settings-tab/prefer-update-over-display': 'error',
 			// This plugin's UI names LOKF things, and the rule's two exception
 			// lists are not interchangeable - which one a term belongs in is
 			// decided by how the rule treats it:

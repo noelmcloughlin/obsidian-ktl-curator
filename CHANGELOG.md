@@ -6,11 +6,25 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Fixed
+
+- **The curation policy's own table was only half readable.** `policies/knowledge-curation.md` names classes in prose ("Glossary terms", "people") but the parser matched literally, so `GlossaryTerm`, `AttestedComputation`, `Policy` and `Person` never bound - unnoticed while their intervals matched the defaults. The parse now ignores spaces and plural forms.
+- **Deleting a concept's `## Open questions` section** left two blank lines behind when content followed it, failing markdownlint's MD012. One blank line now.
+
+### Added
+
+- **Known LOKF types** (*Settings → Type vocabulary*): the classes a concept's `type` may name, defaulting to the pinned schema's fifteen and refreshed on upgrade while untouched, as in LOKF Registrar's setting of the same name. A bundle validated against a domain schema (`lokf validate --schema <file>`) lists that schema's classes here, since the schema sits outside the vault: they stop counting against the report's *Vocabulary fit* line, and `policies/knowledge-curation.md` can set a review interval for them.
+- **`src/settings-model.ts`**: the settings shape, defaults and saved-data merge rule, moved out of the Obsidian-bound `main.ts` so the rule is a pure function the smoke test covers. A drift guard catches a settings control naming a setting that does not exist.
+- **Smoke-test coverage of the write paths and the two record templates.** Both templates are asserted to produce records this project's own tooling accepts, and the policy template is parsed back with the plugin's own parser, which is what surfaced the table bug above.
+
 ### Changed
 
-- **README restructured for the two-vault story.** An early notice says the plugin works on the exhibition, never the workshop vault you already keep, and that it pairs with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) without needing them. *Where it works* replaces *How this fits*: three arrangements, the bundle as its own vault first, with the cost of a bundle folder inside your vault stated plainly. Host-by-host layouts moved to `docs/for-the-curious.md`.
-- **README rewritten around how to use the plugin**, as an extension of the skills: *Two vaults* (two images carry the workshop/exhibition story; per-host link mechanics point at the skills' playbook), a four-step *Quick start*, *Using it* with the verb table, the command table, *Which folder is the bundle*, *Install*, *Settings*. The role table, the library metaphor and the trust-label list now live in the skills' README and are linked once rather than restated; *Install* points at the GitHub releases; the `src/` tree lists what is actually there. No plugin change.
-- **This repository's own sidecar follows the current `lokf-sidecar` templates**: `just lokf-link` creates the `knowledge_bundle` doorway link, and the wrapper and both workflows describe the bundle's second name as the templates do. The doorway link is now committed at the root, `.lokf/.gitignore` keeps Obsidian's workspace state out of git, and markdownlint and lychee skip the link's duplicate path. No plugin change.
+- **README rewritten around how to use the plugin**, as an extension of the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills): an early notice that it works on the exhibition, never the workshop vault you already keep; *Where it works*, with the bundle as its own vault first; a four-step *Quick start*; *Using it* with the verb table; the command table; *Which folder is the bundle*; *Install*; *Settings*. Shared material - the role table, the library metaphor, the trust labels - now lives in the skills' README and is linked once, and host-by-host layouts move to `docs/for-the-curious.md`; no plugin change.
+- **This repository's own sidecar follows the current `lokf-sidecar` templates**: `just lokf-link` creates the `knowledge_bundle` doorway link, now committed at the root, and the wrapper and both workflows describe the bundle's second name as the templates do. `.lokf/.gitignore` keeps Obsidian's workspace state out of git, and markdownlint and lychee skip the link's duplicate path; no plugin change.
+- **`CONTRIBUTING.md` is a checklist again**, with the release pipeline and the signing guide documented once in the skills repository's `docs/` and linked from here. `npm run check` runs build, lint and smoke test together, the settings-tab and `createEl` lint rules are errors rather than warnings, and CI fails an action not pinned to a commit; no plugin change.
+- The README says which line of defence this plugin's work is, and points readers who work under that model at the skills' page on the rest; no plugin change.
+- **The registrar gate checks what `lokf validate` cannot**: `.lokf/scripts/knowledge-conventions.sh` from the sidecar templates (one ISO-date log heading per day, quoted timestamps, `verified` as a list, open questions in the curator's shape) and the justfile's `lokf-check-refs`, on every `.lokf/**` pull request; no plugin change.
+- **`SECURITY.md` is a policy, not a threat model**: a surface table that links to the skills repository's `docs/threat-model.md` instead of restating it, held to a word budget by `npm run check`; no plugin change.
 
 ## [1.0.0] - 2026-09-13
 

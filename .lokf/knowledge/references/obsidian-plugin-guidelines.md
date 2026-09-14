@@ -11,7 +11,7 @@ generated:
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-12T22:00:00Z"
+    at: "2026-09-14T15:30:00Z"
 ---
 
 `manifest.json` sets `minAppVersion: 1.13.0` because `settings-tab.md`'s

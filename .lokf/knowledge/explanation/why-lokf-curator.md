@@ -15,7 +15,7 @@ generated:
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-13T19:00:00Z"
+    at: "2026-09-14T09:30:00Z"
 ---
 
 The companion `lokf-agent-skills` project describes four trust tiers a claim

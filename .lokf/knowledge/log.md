@@ -1,6 +1,108 @@
 # Change Log
 
-## 2026-09-13 (3)
+## 2026-09-14
+
+* **Steady-state refresh**, against the now-committed `96cf5fe` ("docs(security):
+  improved layout"): `SECURITY.md` was slimmed and its design content moved
+  to the skills repository's new `docs/threat-model.md`.
+  `playbooks/knowledge-registrar-gate.md` corrected - two sentences named
+  `SECURITY.md` as the design's home when it now only links there; retitled
+  to name the threat model directly. `policies/no-telemetry.md` re-verified,
+  its cited section unchanged by the rewrite. `playbooks/knowledge-sources.md`'s
+  `SECURITY.md` row updated to describe the slimmed file. No new concept
+  needed: this repository has always treated `SECURITY.md` as a `sources`
+  entry, not a `Policy` concept of its own.
+
+* **Steady-state refresh** (librarian pass, no feedback pending), against the
+  now-committed `feba4e0` ("gate runs the conventions script and
+  lokf-check-refs"): the `validate` job in
+  `.github/workflows/knowledge-registrar.yaml` gained two steps -
+  `scripts/knowledge-conventions.sh` and `just lokf-check-refs` - that
+  `playbooks/knowledge-registrar-gate.md` did not yet describe; corrected,
+  with the script added as a `sources` entry. All other concepts re-checked
+  against current `src/`, `CONTRIBUTING.md`, and the pinned skill copy: no
+  further drift. `references/trust-fields.md`'s open question (the installed
+  copy still pinned to `LOKF_SKILLS_REF: v0.9.0` and reading "built-in
+  vocabulary" against `src/curator-view.ts`'s "known vocabulary") re-checked
+  and still holds, unchanged. `just lokf-validate`, `just lokf-check-refs`,
+  and `scripts/knowledge-conventions.sh` all pass.
+* **Steady-state refresh** against an uncommitted working-tree change
+  (`CONTRIBUTING.md` rewritten as a checklist under a word budget and
+  pointing at the skills repository's `docs/` for release/signing detail;
+  `npm run check`; four lint rules raised to error; a drift guard added to
+  `scripts/smoke-test.ts`; `build.yml`/`lint-and-docs.yaml` hardened with a
+  main-only push trigger, a concurrency group, and an action-pin check).
+  `playbooks/contributing.md` re-derived (the pure-module list grew from
+  four to seven; CI's mirror of `npm run check` and the pin/link checks
+  added). `playbooks/releasing.md`'s `resource` moved from `CONTRIBUTING.md`
+  to `semantic-release.yml`/`release.yml`, since the prose it was derived
+  from no longer lives in `CONTRIBUTING.md`. Four source-map rows added for
+  files that predate this pass but were never listed:  `CONTRIBUTING.md`,
+  `build.yml`/`lint-and-docs.yaml`, `semantic-release.yml`/`release.yml`,
+  `pull_request_template.md`. `playbooks/index.md` was missing
+  `knowledge-registrar-gate.md`; added.
+* **Re-verified against the actual pinned resource, not the skill
+  repository's live checkout:** the prior pass's log entry called
+  `references/trust-fields.md`'s open question closed by pointing at the
+  `lokf-agent-skills` working tree; the concept's own `resource` is the
+  locally installed copy, still pinned to `v0.9.0`
+  (`knowledge-librarian.yaml`'s `LOKF_SKILLS_REF`, unchanged this run) and
+  still reading "built-in vocabulary" with no domain-schema mention, while
+  `src/curator-view.ts` already reads "known vocabulary". Reopened as an
+  open question there rather than left silently settled.
+* **Re-verified, no change:** `references/obsidian-plugin-guidelines.md`
+  (checked against the new `eslint.config.mts` rules) and
+  `playbooks/knowledge-registrar-gate.md` (workflow file unchanged).
+  `lokf` on PyPI is still `0.7.0`, matching the pinned floor - no bump
+  (`uv pip index versions` has no `index` subcommand in this environment;
+  checked directly against `pypi.org/pypi/lokf/json` instead).
+
+* **`CONTRIBUTING.md` corrected, and `playbooks/contributing.md` re-derived
+  from it.** The document still said the smoke test covers "the three pure
+  modules" and its `src/` table had no `settings-model.ts` row, so the
+  concept had been written ahead of its own source - the wrong direction for
+  a derived record. Source and concept now agree, and the same check found
+  the same fault in the sibling `lokf-registrar` repository.
+
+* **Steady-state refresh** (librarian pass, no feedback pending) against the
+  uncommitted `feat/known-types-setting` branch, which adds *Known LOKF
+  types* (`knownTypes`) under a new **Type vocabulary** settings group - the
+  same list and upgrade rule as `lokf-registrar`'s - and threads it into
+  `classify()` and `parseCurationPolicyTable()`, so a bundle validated
+  against a domain schema can list that schema's classes: they stop counting
+  as misfits and can carry a review interval. Updated
+  `services/settings-tab.md`, `services/trust-engine.md` (the class check was
+  still described as "14-class"; it is the manifest's fifteen, or the list
+  handed in), `services/lokf-curator-plugin.md` and
+  `services/curator-view.md` (the vocabulary line's new wording, and an open
+  question on its divergence from the skill's `trust-fields.md`).
+  Re-verified, no change: `explanation/why-lokf-curator.md`.
+  `playbooks/knowledge-sources.md`: settings row and run note.
+* **Two defects found by a coverage pass**, corrected here and in the code.
+  `parseCurationPolicyTable` matched a class name literally, so the prose
+  rows of this plugin's own curation-policy template ("Glossary terms",
+  "people") bound nothing - hidden by their intervals coinciding with the
+  settings defaults. The parse now ignores spaces and English plurals, and
+  `services/trust-engine.md` records rule and history; the upstream skill's
+  `references/review-session.md`, spec of record for that table, states it
+  too, so the two cannot drift apart again. Separately, deleting an
+  `## Open questions` section left two blank lines behind it (markdownlint
+  MD012); one now.
+* **The open question `services/curator-view.md` raised was answered upstream
+  the same day** and is closed: the `lokf-curator` skill's
+  `references/trust-fields.md` now reads a host's domain schema from
+  `.lokf/justfile`'s `--schema` and words the label "doesn't fit the known
+  vocabulary", as this plugin already did. The plugin keeps its *Known LOKF
+  types* setting because it cannot read a file outside the vault; the two no
+  longer disagree about what the vocabulary is.
+* **`src/settings-model.ts` is a new pure module** holding the settings
+  shape, defaults and the saved-data merge rule, moved out of `main.ts` so a
+  test can reach them. Recorded in `services/lokf-curator-plugin.md`, this
+  map's `src/` row, and `playbooks/contributing.md`, whose import-free rule
+  now names it and says why logic leaves `main.ts` rather than being tested
+  through it.
+
+## 2026-09-13
 
 * **Steady-state refresh** (librarian pass, no feedback pending), after a
   `lokf-sidecar` repair pass that restored `.lokf/.gitignore`'s `.obsidian/`
@@ -9,8 +111,6 @@
   it now says the copy also words two comments its own way, not only
   `persist-credentials: false` and `permissions: {}`.
   `playbooks/knowledge-sources.md`: `.assets/` row and run note added.
-
-## 2026-09-13 (2)
 
 * **Steady-state refresh** (librarian pass, no feedback pending), against the
   commits since `248f9e6` (`knowledge-registrar.yaml` gaining the template's
@@ -38,8 +138,6 @@
   only by the stricter `persist-credentials: false` / `permissions: {}` and
   by comments. `lokf` on PyPI is still `0.7.0`, matching the floor.
 
-## 2026-09-13
-
 * **Steady-state refresh** (librarian pass, no feedback pending): re-verified
   `services/settings-tab.md` and `services/lokf-curator-plugin.md` against
   `src/settings.ts` and `src/main.ts` after this session's README-notice
@@ -53,7 +151,7 @@
   `docs/for-the-curious.md`) were not re-checked this run - neither
   resource changed this session.
 
-## 2026-09-12 (5)
+## 2026-09-12
 
 * **Steady-state refresh** (`process:lokf-librarian`), triggered by this
   session's "no bundle" state and break-glass "Treat the vault root as the
@@ -90,8 +188,6 @@
     `>=0.7.0` (latest on PyPI is 0.7.0; a minor-version bump, no major
     change to review).
 
-## 2026-09-12 (4)
-
 * **Semantic-release, hardened** (maintainer decision, matching upstream
   `lokf-registrar`): `playbooks/releasing.md` rewritten (`generated`/`verified`
   refreshed) - a person no longer picks the version. `semantic-release.yml`'s
@@ -104,8 +200,6 @@
   `workflow_call` trigger for the same reason as the sibling plugin;
   unchanged otherwise.
 
-## 2026-09-12 (3)
-
 * **Sibling renamed** (maintainer decision, upstream): LOKF Enforcer is now
   **LOKF Registrar** (`lokf-registrar`, repository `obsidian-lokf-registrar`),
   renamed for its role before either plugin was published.
@@ -115,8 +209,6 @@
   `playbooks/knowledge-sources.md` name it so. No relationship changed:
   siblings, no dependency either way. Entries below keep the name in use at
   the time.
-
-## 2026-09-12 (2)
 
 * **Corrected** `services/lokf-curator-plugin.md` and `services/settings-tab.md`
   after the maintainer had the afternoon's recommendations implemented: with

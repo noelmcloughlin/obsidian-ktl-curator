@@ -212,7 +212,9 @@ export class LokfCuratorView extends ItemView {
       vocab.setText("Vocabulary fit: fine.");
     } else {
       const types = [...new Set(report.vocabularyIssues.map((v) => v.message))].join("; ");
-      vocab.setText(`Vocabulary fit: ${report.vocabularyIssues.length} concept(s) don't fit the built-in vocabulary (${types}).`);
+      vocab.setText(
+        `Vocabulary fit: ${report.vocabularyIssues.length} concept(s) don't fit the known vocabulary (${types}). A domain schema's classes belong under Settings → Type vocabulary.`
+      );
     }
 
     // What is still waiting behind the queue - not "every note not shown".

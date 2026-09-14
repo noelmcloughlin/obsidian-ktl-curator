@@ -10,7 +10,8 @@
     "build-vocab": "node scripts/build-vocab.mjs",
     "version": "node version-bump.mjs && git add manifest.json versions.json",
     "lint": "eslint .",
-    "smoke-test": "tsx scripts/smoke-test.ts"
+    "smoke-test": "tsx scripts/smoke-test.ts",
+    "check": "npm run build && npm run lint && npm run smoke-test"
   },
   "keywords": [
     "obsidian",

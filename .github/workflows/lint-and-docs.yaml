@@ -5,8 +5,16 @@ name: Lint & docs
 # semantics (see knowledge-registrar.yaml) - this is the CI-hardening pass
 # backported from lokf-agent-skills's validate.yml (FIXES.md F1-F3).
 on:
+  # push and pull_request both firing on every branch used to run this
+  # workflow twice for the same commit - once on landing, again when the PR
+  # using that branch opened or synchronized, since the two events aren't
+  # deduplicated by SHA (concurrency doesn't catch it either: github.ref
+  # differs between a push and a pull_request event for the same commit).
+  # push is scoped to main, matching validate.yml/semantic-release.yml
+  # elsewhere in this family - an open PR can never have main as its head, so
+  # the two triggers can no longer cover the same commit.
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
     branches: ['**']
   schedule:
@@ -54,6 +62,17 @@ jobs:
         uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # v1.7.12
         with:
           args: -color
+      # actionlint checks syntax, not pinning. A tag or branch ref floats, so
+      # every `uses:` must name a commit SHA (or an image digest), with the
+      # version in a trailing comment for Dependabot to bump.
+      - name: Every action is pinned to a commit
+        run: |
+          if grep -rnE '^\s*-?\s*uses:' .github/workflows/ \
+            | grep -vE '@([0-9a-f]{40}|sha256:[0-9a-f]{64})\b' \
+            | grep -vE 'uses:\s*\./'; then
+            echo '::error::the action(s) above are not pinned to a commit SHA' >&2
+            exit 1
+          fi
 
   validate-markdown:
     name: Lint Markdown & check links

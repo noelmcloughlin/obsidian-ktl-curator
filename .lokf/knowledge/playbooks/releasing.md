@@ -4,15 +4,18 @@ id: https://lokf-curator.example/knowledge/playbooks/releasing
 title: Releasing a new version
 description: Semantic-release computes the version and promotes CHANGELOG.md on merge to main, behind a required-reviewer Environment; the resulting tag invokes the same hardened build-and-attest workflow a hand-pushed tag always has.
 genre: how-to
-resource: CONTRIBUTING.md
+resource: .github/workflows/semantic-release.yml
+sources:
+  - resource: .github/workflows/semantic-release.yml
+  - resource: .github/workflows/release.yml
 isPartOf:
   - https://lokf-curator.example/knowledge/playbooks/knowledge-sources
 generated:
   by: process:lokf-librarian
-  at: "2026-09-12T18:00:00Z"
+  at: "2026-09-14T15:30:00Z"
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-12T18:00:00Z"
+    at: "2026-09-14T15:30:00Z"
 ---
 
 A person no longer picks the version. `semantic-release.yml`'s `release` job
@@ -48,3 +51,9 @@ Environment approval) in front of it.
 A `pull_request`-triggered `plan` job in `semantic-release.yml` previews
 every PR into `main` with `--dry-run` - no write scope, no commit, no tag -
 so a malformed commit message or a broken exec script surfaces in review.
+
+`CONTRIBUTING.md` no longer carries this detail itself: its own "Releasing"
+section is now a short pointer to
+[how the LOKF repositories release](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/releasing.md)
+in the skills repository, which is why this concept's `resource` is the
+workflow files rather than `CONTRIBUTING.md`.

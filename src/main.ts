@@ -18,6 +18,7 @@ import {
   implicitBundleRoots,
   VISIBLE_BUNDLE_FOLDER,
 } from "./bundle";
+import { DEFAULT_SETTINGS, mergeSavedSettings, type CuratorSettings } from "./settings-model";
 import {
   computeHealth,
   computeReliedOnBy,
@@ -55,44 +56,10 @@ import { FieldReferenceModal } from "./field-modal";
 import { LOKF_FIELD_DOCS } from "./fields";
 import { LokfCuratorSettingTab } from "./settings";
 
-export interface CuratorSettings {
-  curatorId: string;
-  bundleRoots: string[];
-  /** Break-glass: with nothing configured and nothing detected, read a vault
-   *  whose root index.md carries no LOKF header as one whole-vault bundle
-   *  anyway. Off, such a vault has no bundle and the plugin stays out of it. */
-  treatVaultRootAsBundle: boolean;
-  excludeFolders: string[];
-  intervalMonthsGroupA: number; // services/datasets/tables/metrics/attested computations
-  intervalMonthsGroupB: number; // policies/playbooks/tutorials/references/documents/people/organizations
-  intervalMonthsGroupC: number; // glossary terms/explanations
-  preferPolicyFile: boolean;
-  queueSize: number;
-  dueSoonDays: number;
-  feedbackFile: string;
-  /** Show a concept's trust tier inline on its frontmatter while editing (raw
-   *  frontmatter / Source mode). Off leaves the editor untouched. */
-  trustMarker: boolean;
-  /** Offer LOKF-aware value completions while editing a concept's frontmatter
-   *  (the actor string, status, and dates a curator hand-types). */
-  autocomplete: boolean;
-}
-
-export const DEFAULT_SETTINGS: CuratorSettings = {
-  curatorId: "",
-  bundleRoots: [],
-  treatVaultRootAsBundle: false,
-  excludeFolders: [],
-  intervalMonthsGroupA: 6,
-  intervalMonthsGroupB: 12,
-  intervalMonthsGroupC: 24,
-  preferPolicyFile: true,
-  queueSize: 5,
-  dueSoonDays: 30,
-  feedbackFile: "",
-  trustMarker: true,
-  autocomplete: true,
-};
+// The settings shape, their defaults, and the saved-data merge rule live in
+// the import-free `settings-model.ts` so the rule is testable under plain
+// Node; they are re-exported here, where consumers already look for them.
+export { DEFAULT_SETTINGS, mergeSavedSettings, type CuratorSettings };
 
 export interface OpenQuestionEntry {
   path: string;
@@ -356,12 +323,11 @@ export default class LokfCuratorPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
-    const saved = (await this.loadData()) as Record<string, unknown> | null;
-    Object.assign(this.settings, DEFAULT_SETTINGS);
-    if (!saved) return;
-    for (const key of Object.keys(DEFAULT_SETTINGS) as (keyof CuratorSettings)[]) {
-      if (saved[key] !== undefined) (this.settings as unknown as Record<string, unknown>)[key] = saved[key];
-    }
+    // The merge rule - saved values over the defaults, with an untouched
+    // known-types list refreshed to the pinned schema's and an edited one
+    // preserved - is `mergeSavedSettings` in settings-model.ts, pure and
+    // covered by the smoke test.
+    Object.assign(this.settings, mergeSavedSettings((await this.loadData()) as Record<string, unknown> | null));
   }
 
   async saveSettings(): Promise<void> {
@@ -436,7 +402,7 @@ export default class LokfCuratorPlugin extends Plugin {
     try {
       const content = await this.app.vault.read(file);
       const { body } = splitFrontmatter(content);
-      return parseCurationPolicyTable(body);
+      return parseCurationPolicyTable(body, this.settings.knownTypes);
     } catch {
       return new Map();
     }
@@ -531,6 +497,7 @@ export default class LokfCuratorPlugin extends Plugin {
             frontmatter: parsed.fm,
             headings: parsed.headings,
             mintId: (p) => (baseIri ? mintExpectedId(toBundlePath(p, root), baseIri) : p),
+            knownTypes: this.settings.knownTypes,
           },
           today,
           this.settings.dueSoonDays
@@ -539,7 +506,7 @@ export default class LokfCuratorPlugin extends Plugin {
         recordsByRootNext.get(root)!.push(record);
         const vocab = vocabularyByRoot.get(root)!;
         if (record.cls === "unknown" && record.type) {
-          vocab.push({ path: file.path, message: `type "${record.type}" is not one of the LOKF vocabulary classes` });
+          vocab.push({ path: file.path, message: `type "${record.type}" is not one of the known vocabulary classes` });
         }
         if (record.invalidStatus) {
           vocab.push({ path: file.path, message: "status is not one of draft/stable/deprecated" });
@@ -717,7 +684,7 @@ export default class LokfCuratorPlugin extends Plugin {
       heading: h.heading,
     }));
     const record = buildTrustRecord(
-      { path: file.path, bundleRoot: root, frontmatter: fm, headings, mintId: (p) => p },
+      { path: file.path, bundleRoot: root, frontmatter: fm, headings, mintId: (p) => p, knownTypes: this.settings.knownTypes },
       todayIso(),
       this.settings.dueSoonDays
     );
