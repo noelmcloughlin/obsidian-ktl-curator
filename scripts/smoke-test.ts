@@ -1003,18 +1003,24 @@ section("CONTRIBUTING names the modules this suite actually covers (drift guard)
   const notTested = [...listed].filter((m) => !imported.has(m));
   expect("every module CONTRIBUTING claims is tested is imported here", notTested.length === 0, notTested.join(", "));
 
-  // CONTRIBUTING.md is a checklist, not a design log: each rule is a line or
-  // two that links to where its reasoning lives - a code comment, a workflow
-  // header, a docs page. A word budget is the one signal every contributor,
-  // person or agent, reliably reads: the file sits near 850, the four LOKF
-  // repositories' files between 700 and 850, and 1000 is where one has
-  // started to become a design log again.
-  const words = contributing.split(/\s+/).filter(Boolean).length;
-  expect(
-    `CONTRIBUTING.md is within its 1000-word budget (${words} words)`,
-    words <= 1000,
-    "move the reasoning next to the code or workflow it explains, and link to it"
-  );
+  // CONTRIBUTING.md is a checklist, not a design log, and SECURITY.md is a
+  // policy, not a threat model: each rule or surface is a line or two that
+  // links to where its reasoning lives - a code comment, a workflow header,
+  // a docs page. A word budget is the one signal every contributor, person
+  // or agent, reliably reads. CONTRIBUTING sits between 700 and 850 across
+  // the four LOKF repositories and 1000 is where one has started to become
+  // a design log again; SECURITY sits between 450 and 800 and was 1,400 to
+  // 1,900 before the skills repository's docs/threat-model.md took the
+  // design, so 900 is its line. The siblings hold the same budgets.
+  const budgets: Array<[string, number]> = [["CONTRIBUTING.md", 1000], ["SECURITY.md", 900]];
+  for (const [file, budget] of budgets) {
+    const words = readFileSync(join(__dirname, "..", file), "utf8").split(/\s+/).filter(Boolean).length;
+    expect(
+      `${file} is within its ${budget}-word budget (${words} words)`,
+      words <= budget,
+      "move the reasoning next to the code or workflow it explains, or into the skills repository's docs/, and link to it"
+    );
+  }
 });
 
 // ---- edits.ts: the two record templates the commands write ----

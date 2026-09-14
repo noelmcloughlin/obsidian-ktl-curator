@@ -24,6 +24,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 - **`CONTRIBUTING.md` is a checklist again**, with the release pipeline and the signing guide documented once in the skills repository's `docs/` and linked from here. `npm run check` runs build, lint and smoke test together, the settings-tab and `createEl` lint rules are errors rather than warnings, and CI fails an action not pinned to a commit; no plugin change.
 - The README says which line of defence this plugin's work is, and points readers who work under that model at the skills' page on the rest; no plugin change.
 - **The registrar gate checks what `lokf validate` cannot**: `.lokf/scripts/knowledge-conventions.sh` from the sidecar templates (one ISO-date log heading per day, quoted timestamps, `verified` as a list, open questions in the curator's shape) and the justfile's `lokf-check-refs`, on every `.lokf/**` pull request; no plugin change.
+- **`SECURITY.md` is a policy, not a threat model**: a surface table that links to the skills repository's `docs/threat-model.md` instead of restating it, held to a word budget by `npm run check`; no plugin change.
 
 ## [1.0.0] - 2026-09-13
 
