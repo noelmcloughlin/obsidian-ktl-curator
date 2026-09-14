@@ -6,6 +6,10 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Fixed
+
+- **The curation policy's own table was only half readable.** `policies/knowledge-curation.md` names its classes in prose ("Glossary terms", "people"), but the parser matched them literally, so `GlossaryTerm`, `AttestedComputation`, `Policy` and `Person` never bound - unnoticed because their intervals matched the settings defaults until someone edited a row. The parse now ignores spaces and plural forms.
+
 ### Added
 
 - **Known LOKF types** (*Settings → Type vocabulary*): the classes a concept's `type` may name, defaulting to the pinned schema's fifteen and refreshed on upgrade while untouched, as in LOKF Registrar's setting of the same name. A bundle validated against a domain schema (`lokf validate --schema <file>`) lists that schema's classes here, since the schema sits outside the vault: they stop counting against the report's *Vocabulary fit* line, and `policies/knowledge-curation.md` can set a review interval for them.
