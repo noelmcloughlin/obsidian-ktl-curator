@@ -6,6 +6,8 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-14
+
 ### Fixed
 
 - **The curation policy's own table was only half readable.** `policies/knowledge-curation.md` names classes in prose ("Glossary terms", "people") but the parser matched literally, so `GlossaryTerm`, `AttestedComputation`, `Policy` and `Person` never bound - unnoticed while their intervals matched the defaults. The parse now ignores spaces and plural forms.
