@@ -22,6 +22,9 @@ import {
   toBundlePath,
   toVaultPath,
   readBaseIri,
+  parseCsv,
+  joinCsv,
+  isExcluded,
   mintExpectedId,
   resolveRelationTarget,
   isReserved,
@@ -31,6 +34,9 @@ import {
   dirOf,
   implicitBundleRoots,
   VISIBLE_BUNDLE_FOLDER,
+  KNOWN_LOKF_TYPES,
+  HARDCODED_LOKF_TYPES,
+  SCHEMA_VERSION,
 } from "../src/bundle";
 import {
   buildTrustRecord,
@@ -65,7 +71,10 @@ import {
   repeatedSendBackHint,
   parseCurationTally,
   readCurationTally,
+  renderCurationPolicyTemplate,
+  renderMissingPlaceholder,
 } from "../src/edits";
+import { DEFAULT_SETTINGS, mergeSavedSettings } from "../src/settings-model";
 import { FIELD_ORDER, LOKF_FIELD_DOCS, resolveFieldDocs } from "../src/fields";
 import lokfVocab from "../src/lokf-vocab.json";
 
@@ -130,6 +139,16 @@ section("bundle.ts - frontmatter / classify / relations", () => {
   expect("classify known", classify("GlossaryTerm") === "known", classify("GlossaryTerm"));
   expect("classify normalizes spaces", classify("Attested Computation") === "known", classify("Attested Computation"));
   expect("classify unknown", classify("Workflow") === "unknown", classify("Workflow"));
+  expect("known types come from the pinned schema (Role present)", KNOWN_LOKF_TYPES.includes("Role"), KNOWN_LOKF_TYPES.join(", "));
+  expect("hard-coded baseline predates Role", !HARDCODED_LOKF_TYPES.includes("Role"), HARDCODED_LOKF_TYPES.join(", "));
+  expect("manifest carries a schema version", SCHEMA_VERSION.length > 0, SCHEMA_VERSION);
+  // A domain schema's class is unknown by default and known once listed -
+  // the Settings → Type vocabulary case for a bundle validated with --schema.
+  const withDomain = [...KNOWN_LOKF_TYPES, "Module"];
+  expect("classify domain class unknown by default", classify("Module") === "unknown", classify("Module"));
+  expect("classify domain class known once listed", classify("Module", withDomain) === "known", classify("Module", withDomain));
+  expect("classify listed vocabulary still normalizes spaces", classify("Attested Computation", withDomain) === "known", "");
+  expect("classify core class still known with a custom list", classify("Reference", withDomain) === "known", "");
 
   expect(
     "mintExpectedId",
@@ -461,6 +480,36 @@ section("trust.ts - stale_after proposal and policy table", () => {
   const overrides = parseCurationPolicyTable(body);
   expect("policy override applies to matching class", overrides.get("service") === 3, JSON.stringify([...overrides]));
   expect("malformed row (no number of months) leaves no override", !overrides.has("policy"), JSON.stringify([...overrides]));
+
+  // A row naming a domain schema's class is honoured only once that class is
+  // in the vocabulary handed in - the Settings → Type vocabulary list.
+  const domainRow = "| Module | 6 months |\n| Service | 3 months |";
+  const defaultVocab = parseCurationPolicyTable(domainRow);
+  const domainVocab = parseCurationPolicyTable(domainRow, [...KNOWN_LOKF_TYPES, "Module"]);
+  expect("policy row for an unlisted domain class is ignored", !defaultVocab.has("module") && defaultVocab.get("service") === 3, JSON.stringify([...defaultVocab]));
+  expect("policy row for a listed domain class overrides", domainVocab.get("module") === 6, JSON.stringify([...domainVocab]));
+  expect("listed domain class then gets its interval", monthsForClass("Module", DEFAULT_STALE_GROUPS, domainVocab) === 6, "");
+  expect("unlisted domain class keeps the 12-month fallback", monthsForClass("Module", DEFAULT_STALE_GROUPS, defaultVocab) === 12, "");
+
+  // A policy table is prose a person writes, so the plural forms English
+  // actually uses must bind - including the two the class names don't prefix.
+  const prose = parseCurationPolicyTable(
+    [
+      "| Glossary terms, explanations | 24 months |",
+      "| Services, datasets, tables, metrics, attested computations | 6 months |",
+      "| Policies, playbooks, tutorials, references, documents, people, organizations | 12 months |",
+      "| Roles | 9 months |",
+    ].join("\n")
+  );
+  expect("a spaced class name binds (GlossaryTerm <- 'Glossary terms')", prose.get("glossaryterm") === 24, JSON.stringify([...prose]));
+  expect("and AttestedComputation <- 'attested computations'", prose.get("attestedcomputation") === 6, JSON.stringify([...prose]));
+  expect("an -ies plural binds (Policy <- 'Policies')", prose.get("policy") === 12, JSON.stringify([...prose]));
+  expect("an irregular plural binds (Person <- 'people')", prose.get("person") === 12, JSON.stringify([...prose]));
+  expect("a regular plural still binds (Role <- 'Roles')", prose.get("role") === 9, JSON.stringify([...prose]));
+  expect("every class named across those rows is bound", prose.size === 15, JSON.stringify([...prose.keys()]));
+
+  const unrelated = parseCurationPolicyTable("| Anything else | 5 months |");
+  expect("a row naming no class binds nothing", unrelated.size === 0, JSON.stringify([...unrelated]));
 });
 
 section("trust.ts - normalizeDate handles both Date and string", () => {
@@ -735,6 +784,26 @@ section("suggest-context.ts - frontmatter completion detection", () => {
   const at = detectSuggestContext(read, 5, read(5).length);
   expect("a nested `at:` detects a date", at?.kind === "date" && at.query === "2026", JSON.stringify(at));
   expect("a non-completable line yields nothing", detectSuggestContext(read, 1, read(1).length) === null, "expected null");
+
+  // The fence check gates every completion, so its edges matter: a note with
+  // no frontmatter at all, an unclosed block, and the fence lines themselves.
+  const noFm = (i: number) => ["# Title", "prose"][i] ?? "";
+  expect("a note with no frontmatter is never inside one", !withinFrontmatter(noFm, 2, 1), "");
+  const unclosed = (i: number) => ["---", "type: Reference"][i] ?? "";
+  expect("an unclosed block is not treated as frontmatter", !withinFrontmatter(unclosed, 2, 1), "");
+  expect("the opening fence itself is not inside", !withinFrontmatter(read, lines.length, 0), "");
+  expect("the closing fence is not inside", !withinFrontmatter(read, lines.length, 6), "");
+
+  // Completing mid-value, not just at end of line: the query is what precedes
+  // the cursor, and the replacement starts where that query does.
+  const mid = detectSuggestContext(read, 2, "status: d".length);
+  expect("the query stops at the cursor", mid?.query === "d" && mid.startCh === "status: ".length, JSON.stringify(mid));
+  const empty = detectSuggestContext(read, 3, read(3).length);
+  expect("a key with no value yet is not a value slot", empty === null, JSON.stringify(empty));
+  const beforeColon = detectSuggestContext(read, 2, "stat".length);
+  expect("a cursor still inside the key name completes nothing", beforeColon === null, JSON.stringify(beforeColon));
+  const bareItem = detectSuggestContext((i) => ["  - draft"][i] ?? "", 0, 9);
+  expect("a bare list item is not a key: value slot", bareItem === null, JSON.stringify(bareItem));
 });
 
 section("field reference - schema-sourced, drift-guarded, modal-sized", () => {
@@ -762,6 +831,231 @@ section("field reference - schema-sourced, drift-guarded, modal-sized", () => {
   // Conciseness guard: schema descriptions must stay short enough for a one-row lookup.
   const longest = Math.max(...LOKF_FIELD_DOCS.map((f) => f.description.length));
   expect("every field description stays modal-sized (<= 400 chars)", longest <= 400, `longest description is ${longest} chars`);
+});
+
+// ---- edits.ts: the body and log write paths, at their awkward positions ----
+//
+// These transforms edit a file a person also edits by hand, so where exactly
+// a bullet or a day's line lands is the behaviour that matters.
+
+section("edits.ts - Open questions lands in the right place in an existing body", () => {
+  const ask = (body: string) => appendOpenQuestion(body, "ada", "2026-09-14", "Does this still hold?");
+
+  const noHeading = ask("# Overview\n\nSome prose.\n");
+  expect("a body with no section gains one at the end", noHeading.trimEnd().endsWith("- 2026-09-14, human:ada: Does this still hold?"), noHeading);
+  expect("and keeps the prose above it", noHeading.startsWith("# Overview\n\nSome prose."), noHeading);
+
+  // The section is not always last: a bullet must not leak into whatever
+  // heading follows it.
+  const midBody = ask("## Open questions\n\n- 2026-09-01, human:bob: An older one.\n\n## Sources\n\n- somewhere\n");
+  const lines = midBody.split("\n");
+  const newIdx = lines.findIndex((l) => l.includes("Does this still hold?"));
+  const sourcesIdx = lines.findIndex((l) => l.startsWith("## Sources"));
+  expect("the new bullet goes inside the section", newIdx !== -1 && newIdx < sourcesIdx, midBody);
+  expect("after the bullet already there", newIdx > lines.findIndex((l) => l.includes("An older one.")), midBody);
+  expect("and the following heading survives", sourcesIdx !== -1 && midBody.includes("- somewhere"), midBody);
+
+  const emptySection = ask("## Open questions\n");
+  expect("an empty section gets a blank line before its first bullet", emptySection.includes("## Open questions\n\n- 2026-09-14"), JSON.stringify(emptySection));
+
+  const twoAsks = appendOpenQuestion(ask("Body.\n"), "bob", "2026-09-15", "And this?");
+  expect("two questions accumulate under one heading", twoAsks.split("## Open questions").length === 2 && twoAsks.includes("human:ada") && twoAsks.includes("human:bob"), twoAsks);
+});
+
+section("edits.ts - deleting the Open questions section leaves the rest intact", () => {
+  expect("a body without the section is returned unchanged", deleteOpenQuestionsSection("# Overview\n\nProse.\n") === "# Overview\n\nProse.\n", "");
+
+  const trailing = deleteOpenQuestionsSection("# Overview\n\nProse.\n\n## Open questions\n\n- 2026-09-14, human:ada: Why?\n");
+  expect("a trailing section is removed", !trailing.includes("Open questions"), trailing);
+  expect("and the prose above it is kept", trailing.includes("# Overview") && trailing.includes("Prose."), trailing);
+
+  const middle = deleteOpenQuestionsSection("# Overview\n\n## Open questions\n\n- q\n\n## Sources\n\n- somewhere\n");
+  expect("a section in the middle is removed", !middle.includes("Open questions") && !middle.includes("- q"), middle);
+  expect("and what followed it survives", middle.includes("## Sources") && middle.includes("- somewhere"), middle);
+  expect("separated by exactly one blank line (MD012)", middle.includes("# Overview\n\n## Sources"), JSON.stringify(middle));
+
+  const only = deleteOpenQuestionsSection("## Open questions\n\n- q\n");
+  expect("a body that was only the section becomes empty", only.trim() === "", JSON.stringify(only));
+});
+
+section("edits.ts - a day's line is filed newest-first among other days", () => {
+  const withLater = upsertCurationLine("# Change Log\n\n## 2026-09-20\n\n* something\n", "2026-09-14", "ada", {
+    confirmed: 1,
+    sentBack: 0,
+    corrected: 0,
+    retired: 0,
+  });
+  const laterIdx = withLater.indexOf("## 2026-09-20");
+  const todayIdx = withLater.indexOf("## 2026-09-14");
+  expect("a later day already logged stays above today", laterIdx !== -1 && todayIdx > laterIdx, withLater);
+  expect("and its own entry is untouched", withLater.includes("* something"), withLater);
+
+  const withEarlier = upsertCurationLine("# Change Log\n\n## 2026-09-01\n\n* older\n", "2026-09-14", "ada", {
+    confirmed: 1,
+    sentBack: 0,
+    corrected: 0,
+    retired: 0,
+  });
+  expect("an earlier day is pushed below today", withEarlier.indexOf("## 2026-09-14") < withEarlier.indexOf("## 2026-09-01"), withEarlier);
+
+  // Today's heading exists but holds another curator's line: this curator's
+  // line is added to the same section, not a second heading.
+  const shared = upsertCurationLine(
+    "## 2026-09-14\n\n* **Curation**: human:bob confirmed 2, sent back 0, corrected 0, retired 0.\n",
+    "2026-09-14",
+    "ada",
+    { confirmed: 1, sentBack: 0, corrected: 0, retired: 0 }
+  );
+  expect("one heading, two curators", shared.split("## 2026-09-14").length === 2 && shared.includes("human:bob") && shared.includes("human:ada"), shared);
+
+  const withGaps = upsertCurationLine("", "2026-09-14", "ada", { confirmed: 0, sentBack: 1, corrected: 0, retired: 0, gapsRecorded: 1, repeatedSendBackNote: "- 3 similar send-backs; check the librarian's instructions." });
+  expect("a single gap is worded in the singular", withGaps.includes("recorded 1 gap."), withGaps);
+  expect("and the repeated send-back note rides along", withGaps.includes("3 similar send-backs"), withGaps);
+  expect("the tally still reads back", readCurationTally(withGaps, "2026-09-14", "ada").sentBack === 1, withGaps);
+});
+
+section("bundle.ts - the small helpers the settings tab leans on", () => {
+  expect("parseCsv trims, drops blanks", parseCsv(" Dataset ,, Table ,").join("|") === "Dataset|Table", parseCsv(" Dataset ,, Table ,").join("|"));
+  expect("joinCsv round-trips through parseCsv", parseCsv(joinCsv(["Dataset", "Table"])).join("|") === "Dataset|Table", "");
+  expect("an empty string yields no entries", parseCsv("   ").length === 0, String(parseCsv("   ").length));
+
+  expect("isExcluded matches a folder and what is under it", isExcluded("notes/deep/x.md", ["notes"]) && isExcluded("notes", ["notes"]), "");
+  expect("but not a folder that merely shares a prefix", !isExcluded("notestalgia/x.md", ["notes"]), "");
+  expect("a blank exclude entry excludes nothing", !isExcluded("x.md", [""]), "");
+
+  expect("readBaseIri ignores a non-string", readBaseIri({ base_iri: 42 }) === null && readBaseIri({ base_iri: "" }) === null, "");
+});
+
+// ---- settings-model.ts: the saved-data merge rule ----
+
+section("settings-model.ts - mergeSavedSettings", () => {
+  const fresh = mergeSavedSettings(null);
+  expect("no saved data gives the defaults", fresh.queueSize === DEFAULT_SETTINGS.queueSize && fresh.knownTypes.includes("Role"), fresh.knownTypes.join());
+  expect("undefined is treated as no saved data", mergeSavedSettings(undefined).queueSize === DEFAULT_SETTINGS.queueSize, "");
+
+  const partial = mergeSavedSettings({ curatorId: "ada-lovelace", queueSize: 3 });
+  expect("a saved value overrides its default", partial.curatorId === "ada-lovelace" && partial.queueSize === 3, JSON.stringify(partial));
+  expect("an unsaved key keeps its default", partial.dueSoonDays === DEFAULT_SETTINGS.dueSoonDays, String(partial.dueSoonDays));
+
+  const stray = mergeSavedSettings({ removedSetting: 1 }) as unknown as Record<string, unknown>;
+  expect("a setting the plugin no longer has is dropped", stray["removedSetting"] === undefined, JSON.stringify(stray["removedSetting"]));
+
+  // The upgrade rule, both ways round: an untouched list gains Role, an edited
+  // one (a domain schema's classes, typically) is left exactly as written.
+  const untouched = mergeSavedSettings({ knownTypes: [...HARDCODED_LOKF_TYPES] });
+  expect("a list still at the pre-schema default is refreshed", untouched.knownTypes.includes("Role"), untouched.knownTypes.join());
+
+  const domain = [...KNOWN_LOKF_TYPES, "Module", "Programme"];
+  const customised = mergeSavedSettings({ knownTypes: domain });
+  expect("a domain-schema list is preserved verbatim", customised.knownTypes.join() === domain.join(), customised.knownTypes.join());
+
+  const shortened = mergeSavedSettings({ knownTypes: ["Dataset"] });
+  expect("a deliberately narrowed list is preserved too", shortened.knownTypes.join() === "Dataset", shortened.knownTypes.join());
+
+  const notAList = mergeSavedSettings({ knownTypes: "Dataset, Table" });
+  expect("a non-array saved value is left as saved, not refreshed", (notAList.knownTypes as unknown) === "Dataset, Table", String(notAList.knownTypes));
+
+  // The list feeds both consumers; this is the whole point of the setting.
+  const listed = mergeSavedSettings({ knownTypes: domain });
+  expect("the merged list makes a domain class known", classify("Module", listed.knownTypes) === "known", classify("Module", listed.knownTypes));
+  expect("and lets the policy table set its interval", parseCurationPolicyTable("| Module | 6 months |", listed.knownTypes).get("module") === 6, "");
+});
+
+section("settings tab and settings model agree (drift guard)", () => {
+  // The tab is Obsidian-bound, so it is read as text rather than imported: a
+  // control key that is not a real setting, or a list-valued setting missing
+  // from CSV_KEYS, silently half-works in the UI. Both are caught here.
+  const tabSrc = readFileSync(join(__dirname, "..", "src", "settings.ts"), "utf8");
+  const settingKeys = new Set(Object.keys(DEFAULT_SETTINGS));
+  const controlKeys = [...tabSrc.matchAll(/\bkey:\s*"([^"]+)"/g)].map((m) => m[1]!);
+  expect("the tab defines controls", controlKeys.length > 5, String(controlKeys.length));
+  const unknown = controlKeys.filter((k) => !settingKeys.has(k));
+  expect("every control key is a real setting", unknown.length === 0, unknown.join(", "));
+
+  const csvBlock = tabSrc.match(/CSV_KEYS = new Set<SettingKey>\(\[([\s\S]*?)\]\)/);
+  expect("CSV_KEYS is declared as a literal set", csvBlock !== null, "could not find CSV_KEYS");
+  const csvKeys = new Set([...(csvBlock?.[1] ?? "").matchAll(/"([^"]+)"/g)].map((m) => m[1]!));
+  const listSettings = Object.entries(DEFAULT_SETTINGS)
+    .filter(([, v]) => Array.isArray(v))
+    .map(([k]) => k);
+  const missingFromCsv = listSettings.filter((k) => controlKeys.includes(k) && !csvKeys.has(k));
+  expect("every list-valued setting the tab exposes is CSV-backed", missingFromCsv.length === 0, missingFromCsv.join(", "));
+  const notALists = [...csvKeys].filter((k) => !listSettings.includes(k));
+  expect("nothing scalar is treated as a CSV list", notALists.length === 0, notALists.join(", "));
+});
+
+// ---- edits.ts: the two record templates the commands write ----
+//
+// Both write a concept into the bundle, so what matters is not the prose but
+// that the result is a record this project's own tooling accepts: LOKF
+// frontmatter the registrar would pass, and - for the policy - a table this
+// plugin can read back.
+
+section("edits.ts - the curation policy template is a valid, re-readable record", () => {
+  const rendered = renderCurationPolicyTemplate("https://acme.example/knowledge/", "ada-lovelace", "2026-09-14T09:00:00Z");
+  const { hasFm, raw, body } = splitFrontmatter(rendered);
+  expect("it carries frontmatter", hasFm, rendered.slice(0, 40));
+  const fm = (loadYaml(raw) ?? {}) as Record<string, unknown>;
+  expect("typed Policy, a class in the vocabulary", fm["type"] === "Policy" && classify("Policy") === "known", String(fm["type"]));
+  expect("id is minted from the bundle's base_iri", fm["id"] === "https://acme.example/knowledge/policies/knowledge-curation", String(fm["id"]));
+  expect("id matches what this path would mint", fm["id"] === mintExpectedId("policies/knowledge-curation.md", "https://acme.example/knowledge/"), String(fm["id"]));
+  expect("title and description are present", typeof fm["title"] === "string" && typeof fm["description"] === "string", JSON.stringify(fm));
+
+  // A person ran the command, so the record says a person made it - and the
+  // actor spelling is the one the registrar's `by` pattern accepts.
+  const generated = fm["generated"] as Record<string, unknown>;
+  expect("generated.by is the curator, as a human: actor", generated?.["by"] === "human:ada-lovelace", JSON.stringify(generated));
+  expect("verified carries the same human event", normalizeVerified(fm["verified"]).some((e) => e.by === "human:ada-lovelace"), JSON.stringify(fm["verified"]));
+
+  // The table is the point of the file: this plugin must read back what it wrote.
+  const overrides = parseCurationPolicyTable(body);
+  expect("the rendered table parses back", overrides.size > 0, JSON.stringify([...overrides]));
+  expect("services get the 6-month row", overrides.get("service") === 6, JSON.stringify([...overrides]));
+  expect("glossary terms get the 24-month row", overrides.get("glossaryterm") === 24, JSON.stringify([...overrides]));
+  expect(
+    "and the parsed table drives monthsForClass",
+    monthsForClass("GlossaryTerm", DEFAULT_STALE_GROUPS, overrides) === 24 && monthsForClass("Service", DEFAULT_STALE_GROUPS, overrides) === 6,
+    ""
+  );
+  expect("every default group is represented", DEFAULT_STALE_GROUPS.every((g) => g.classes.every((c) => overrides.has(c.toLowerCase()))), JSON.stringify([...overrides]));
+});
+
+section("edits.ts - the missing-concept placeholder is a valid draft record", () => {
+  const rendered = renderMissingPlaceholder(
+    "https://acme.example/knowledge/",
+    "Dataset",
+    "datasets/orders",
+    "Orders",
+    "ada-lovelace",
+    "2026-09-14T09:00:00Z",
+    "2026-09-14",
+    "Asked about in the Tuesday review."
+  );
+  const { hasFm, raw, body } = splitFrontmatter(rendered);
+  expect("it carries frontmatter", hasFm, rendered.slice(0, 40));
+  const fm = (loadYaml(raw) ?? {}) as Record<string, unknown>;
+  expect("the type the person chose is kept", fm["type"] === "Dataset", String(fm["type"]));
+  expect("id is minted under base_iri", fm["id"] === "https://acme.example/knowledge/datasets/orders", String(fm["id"]));
+  expect("it is a draft - nothing has been derived yet", fm["status"] === "draft", String(fm["status"]));
+  expect("generated.by is the person who reported it", (fm["generated"] as Record<string, unknown>)?.["by"] === "human:ada-lovelace", JSON.stringify(fm["generated"]));
+
+  // The heading must be the exact one the librarian and this plugin look for,
+  // or the placeholder's question is invisible to both.
+  const headings = body
+    .split("\n")
+    .map((l) => l.match(/^(#{1,6})\s+(.*)$/))
+    .filter((m): m is RegExpMatchArray => m !== null)
+    .map((m) => ({ level: m[1]!.length, heading: m[2]!.trim() }));
+  expect("the Open questions heading is the exact one", hasOpenQuestionsHeading(headings), JSON.stringify(headings));
+  expect("the question names the date, the person and the hint", body.includes("2026-09-14, human:ada-lovelace") && body.includes("Asked about in the Tuesday review."), body);
+
+  const record = buildTrustRecord(
+    { path: "datasets/orders.md", bundleRoot: "", frontmatter: fm, headings, mintId: (p) => p },
+    "2026-09-14",
+    30
+  );
+  expect("it reads back as an unchecked draft with open questions", record.unchecked && record.status === "draft" && record.hasOpenQuestions, JSON.stringify({ u: record.unchecked, s: record.status, q: record.hasOpenQuestions }));
+  expect("so it lands in the review queue", rankQueueAll([record]).length === 1, "");
 });
 
 // ---- summary ----

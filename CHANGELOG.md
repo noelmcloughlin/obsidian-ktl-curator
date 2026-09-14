@@ -15,6 +15,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 - **Known LOKF types** (*Settings → Type vocabulary*): the classes a concept's `type` may name, defaulting to the pinned schema's fifteen and refreshed on upgrade while untouched, as in LOKF Registrar's setting of the same name. A bundle validated against a domain schema (`lokf validate --schema <file>`) lists that schema's classes here, since the schema sits outside the vault: they stop counting against the report's *Vocabulary fit* line, and `policies/knowledge-curation.md` can set a review interval for them.
 - **`src/settings-model.ts`**: the settings shape, defaults and saved-data merge rule, moved out of the Obsidian-bound `main.ts` so the rule is a pure function the smoke test covers. A drift guard catches a settings control naming a setting that does not exist.
+- **Smoke-test coverage of the write paths and the two record templates**: 245 expectations (was 165). Both templates are asserted to produce records this project's own tooling accepts, and the policy template is parsed back with the plugin's own parser - which is what surfaced the table bug above. Pure-module coverage is 98.7% of statements, 85.5% of branches.
 
 ### Changed
 
