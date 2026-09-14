@@ -23,6 +23,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 - **This repository's own sidecar follows the current `lokf-sidecar` templates**: `just lokf-link` creates the `knowledge_bundle` doorway link, now committed at the root, and the wrapper and both workflows describe the bundle's second name as the templates do. `.lokf/.gitignore` keeps Obsidian's workspace state out of git, and markdownlint and lychee skip the link's duplicate path; no plugin change.
 - **`CONTRIBUTING.md` is a checklist again**, with the release pipeline and the signing guide documented once in the skills repository's `docs/` and linked from here. `npm run check` runs build, lint and smoke test together, the settings-tab and `createEl` lint rules are errors rather than warnings, and CI fails an action not pinned to a commit; no plugin change.
 - The README says which line of defence this plugin's work is, and points readers who work under that model at the skills' page on the rest; no plugin change.
+- **The registrar gate checks what `lokf validate` cannot**: `.lokf/scripts/knowledge-conventions.sh` from the sidecar templates (one ISO-date log heading per day, quoted timestamps, `verified` as a list, open questions in the curator's shape) and the justfile's `lokf-check-refs`, on every `.lokf/**` pull request; no plugin change.
 
 ## [1.0.0] - 2026-09-13
 
