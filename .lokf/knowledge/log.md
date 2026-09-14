@@ -1,6 +1,6 @@
 # Change Log
 
-## 2026-09-14 (3)
+## 2026-09-14
 
 * **Steady-state refresh** against an uncommitted working-tree change
   (`CONTRIBUTING.md` rewritten as a checklist under a word budget and
@@ -33,16 +33,12 @@
   (`uv pip index versions` has no `index` subcommand in this environment;
   checked directly against `pypi.org/pypi/lokf/json` instead).
 
-## 2026-09-14 (2)
-
 * **`CONTRIBUTING.md` corrected, and `playbooks/contributing.md` re-derived
   from it.** The document still said the smoke test covers "the three pure
   modules" and its `src/` table had no `settings-model.ts` row, so the
   concept had been written ahead of its own source - the wrong direction for
   a derived record. Source and concept now agree, and the same check found
   the same fault in the sibling `lokf-registrar` repository.
-
-## 2026-09-14
 
 * **Steady-state refresh** (librarian pass, no feedback pending) against the
   uncommitted `feat/known-types-setting` branch, which adds *Known LOKF
@@ -82,7 +78,7 @@
   now names it and says why logic leaves `main.ts` rather than being tested
   through it.
 
-## 2026-09-13 (3)
+## 2026-09-13
 
 * **Steady-state refresh** (librarian pass, no feedback pending), after a
   `lokf-sidecar` repair pass that restored `.lokf/.gitignore`'s `.obsidian/`
@@ -91,8 +87,6 @@
   it now says the copy also words two comments its own way, not only
   `persist-credentials: false` and `permissions: {}`.
   `playbooks/knowledge-sources.md`: `.assets/` row and run note added.
-
-## 2026-09-13 (2)
 
 * **Steady-state refresh** (librarian pass, no feedback pending), against the
   commits since `248f9e6` (`knowledge-registrar.yaml` gaining the template's
@@ -120,8 +114,6 @@
   only by the stricter `persist-credentials: false` / `permissions: {}` and
   by comments. `lokf` on PyPI is still `0.7.0`, matching the floor.
 
-## 2026-09-13
-
 * **Steady-state refresh** (librarian pass, no feedback pending): re-verified
   `services/settings-tab.md` and `services/lokf-curator-plugin.md` against
   `src/settings.ts` and `src/main.ts` after this session's README-notice
@@ -135,7 +127,7 @@
   `docs/for-the-curious.md`) were not re-checked this run - neither
   resource changed this session.
 
-## 2026-09-12 (5)
+## 2026-09-12
 
 * **Steady-state refresh** (`process:lokf-librarian`), triggered by this
   session's "no bundle" state and break-glass "Treat the vault root as the
@@ -172,8 +164,6 @@
     `>=0.7.0` (latest on PyPI is 0.7.0; a minor-version bump, no major
     change to review).
 
-## 2026-09-12 (4)
-
 * **Semantic-release, hardened** (maintainer decision, matching upstream
   `lokf-registrar`): `playbooks/releasing.md` rewritten (`generated`/`verified`
   refreshed) - a person no longer picks the version. `semantic-release.yml`'s
@@ -186,8 +176,6 @@
   `workflow_call` trigger for the same reason as the sibling plugin;
   unchanged otherwise.
 
-## 2026-09-12 (3)
-
 * **Sibling renamed** (maintainer decision, upstream): LOKF Enforcer is now
   **LOKF Registrar** (`lokf-registrar`, repository `obsidian-lokf-registrar`),
   renamed for its role before either plugin was published.
@@ -197,8 +185,6 @@
   `playbooks/knowledge-sources.md` name it so. No relationship changed:
   siblings, no dependency either way. Entries below keep the name in use at
   the time.
-
-## 2026-09-12 (2)
 
 * **Corrected** `services/lokf-curator-plugin.md` and `services/settings-tab.md`
   after the maintainer had the afternoon's recommendations implemented: with
