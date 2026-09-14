@@ -1,5 +1,38 @@
 # Change Log
 
+## 2026-09-14 (3)
+
+* **Steady-state refresh** against an uncommitted working-tree change
+  (`CONTRIBUTING.md` rewritten as a checklist under a word budget and
+  pointing at the skills repository's `docs/` for release/signing detail;
+  `npm run check`; four lint rules raised to error; a drift guard added to
+  `scripts/smoke-test.ts`; `build.yml`/`lint-and-docs.yaml` hardened with a
+  main-only push trigger, a concurrency group, and an action-pin check).
+  `playbooks/contributing.md` re-derived (the pure-module list grew from
+  four to seven; CI's mirror of `npm run check` and the pin/link checks
+  added). `playbooks/releasing.md`'s `resource` moved from `CONTRIBUTING.md`
+  to `semantic-release.yml`/`release.yml`, since the prose it was derived
+  from no longer lives in `CONTRIBUTING.md`. Four source-map rows added for
+  files that predate this pass but were never listed:  `CONTRIBUTING.md`,
+  `build.yml`/`lint-and-docs.yaml`, `semantic-release.yml`/`release.yml`,
+  `pull_request_template.md`. `playbooks/index.md` was missing
+  `knowledge-registrar-gate.md`; added.
+* **Re-verified against the actual pinned resource, not the skill
+  repository's live checkout:** the prior pass's log entry called
+  `references/trust-fields.md`'s open question closed by pointing at the
+  `lokf-agent-skills` working tree; the concept's own `resource` is the
+  locally installed copy, still pinned to `v0.9.0`
+  (`knowledge-librarian.yaml`'s `LOKF_SKILLS_REF`, unchanged this run) and
+  still reading "built-in vocabulary" with no domain-schema mention, while
+  `src/curator-view.ts` already reads "known vocabulary". Reopened as an
+  open question there rather than left silently settled.
+* **Re-verified, no change:** `references/obsidian-plugin-guidelines.md`
+  (checked against the new `eslint.config.mts` rules) and
+  `playbooks/knowledge-registrar-gate.md` (workflow file unchanged).
+  `lokf` on PyPI is still `0.7.0`, matching the pinned floor - no bump
+  (`uv pip index versions` has no `index` subcommand in this environment;
+  checked directly against `pypi.org/pypi/lokf/json` instead).
+
 ## 2026-09-14 (2)
 
 * **`CONTRIBUTING.md` corrected, and `playbooks/contributing.md` re-derived

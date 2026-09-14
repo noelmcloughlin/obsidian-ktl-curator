@@ -1,8 +1,18 @@
 name: Node.js build
 
 on:
+    # push and pull_request both firing on every branch used to run this
+    # workflow twice for the same commit — once when it landed on the branch,
+    # again when the PR using that branch opened or synchronized, since the
+    # two events aren't deduplicated by SHA. push is scoped to main, matching
+    # validate.yml/semantic-release.yml elsewhere in this family: an open PR
+    # can never have main as its head, so the two triggers can no longer
+    # cover the same commit. A branch pushed before its PR exists goes
+    # untested until the PR opens — acceptable given CONTRIBUTING.md's own
+    # convention that changes reach main by pull request; workflow_dispatch
+    # remains for anyone who wants a result sooner.
     push:
-        branches: ['**']
+        branches: [main]
     pull_request:
         branches: ['**']
 
@@ -13,6 +23,12 @@ on:
 # its run secret-free, regardless of this setting — this is defense in depth,
 # not what makes fork PRs safe here.
 permissions: {}
+
+# Cancel a superseded run on the same ref — a rapid re-push to an open PR, or
+# to main — to save runner time; no run outlives the commit it was testing.
+concurrency:
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     build:

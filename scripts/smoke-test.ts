@@ -984,6 +984,39 @@ section("settings tab and settings model agree (drift guard)", () => {
   expect("nothing scalar is treated as a CSV list", notALists.length === 0, notALists.join(", "));
 });
 
+section("CONTRIBUTING names the modules this suite actually covers (drift guard)", () => {
+  // Which modules are import-free, and therefore testable here, is stated as
+  // prose with nothing behind it - and went stale on 2026-09-14, when
+  // settings-model.ts was added and the document still said three. The claim
+  // is checked against this file's own imports instead.
+  const suiteSrc = readFileSync(join(__dirname, "smoke-test.ts"), "utf8");
+  const imported = new Set(
+    [...suiteSrc.matchAll(/from "\.\.\/src\/([a-z-]+)"/g)].map((m) => m[1]!)
+  );
+  const contributing = readFileSync(join(__dirname, "..", "CONTRIBUTING.md"), "utf8");
+  const runLine = contributing.split("\n").find((l) => l.includes("must pass their fixture checks")) ?? "";
+  const claim = runLine.split("must pass")[0] ?? "";
+  const listed = new Set([...claim.matchAll(/`([a-z-]+)\.ts`/g)].map((m) => m[1]!));
+  expect("CONTRIBUTING names the modules under test", listed.size > 0, runLine.slice(0, 60));
+  const undocumented = [...imported].filter((m) => !listed.has(m));
+  expect("every module the suite tests is named in CONTRIBUTING", undocumented.length === 0, undocumented.join(", "));
+  const notTested = [...listed].filter((m) => !imported.has(m));
+  expect("every module CONTRIBUTING claims is tested is imported here", notTested.length === 0, notTested.join(", "));
+
+  // CONTRIBUTING.md is a checklist, not a design log: each rule is a line or
+  // two that links to where its reasoning lives - a code comment, a workflow
+  // header, a docs page. A word budget is the one signal every contributor,
+  // person or agent, reliably reads: the file sits near 850, the four LOKF
+  // repositories' files between 700 and 850, and 1000 is where one has
+  // started to become a design log again.
+  const words = contributing.split(/\s+/).filter(Boolean).length;
+  expect(
+    `CONTRIBUTING.md is within its 1000-word budget (${words} words)`,
+    words <= 1000,
+    "move the reasoning next to the code or workflow it explains, and link to it"
+  );
+});
+
 // ---- edits.ts: the two record templates the commands write ----
 //
 // Both write a concept into the bundle, so what matters is not the prose but
