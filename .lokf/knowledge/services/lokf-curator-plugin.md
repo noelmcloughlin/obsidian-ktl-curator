@@ -13,11 +13,11 @@ hasPart:
   - https://lokf-curator.example/knowledge/services/in-editor-aids
 generated:
   by: process:lokf-librarian
-  at: "2026-09-12T22:00:00Z"
+  at: "2026-09-14T09:30:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-13T15:00:00Z"
+    at: "2026-09-14T09:30:00Z"
 ---
 
 # Overview
@@ -33,3 +33,5 @@ holds no rule logic of its own - every trust label comes from
 - The five verdict methods (`confirm`, `sendBack`, `corrected`, `retire`, `later`), each writing through `app.fileManager.processFrontMatter` and `app.vault.modify`, and upserting the day's `**Curation**` line in the bundle's `log.md`.
 - The mtime guard: `canMarkCorrected(file)` is true only once the review card has been opened for that file and its `mtime` has since changed - the guard against pressing "Wrong - I corrected it" without having actually edited the note.
 - The `Create curation policy` and `Record something missing` commands.
+- The type vocabulary (added 2026-09-14): `CuratorSettings.knownTypes`, defaulting to the manifest's `KNOWN_LOKF_TYPES`, is handed to every `buildTrustRecord` call and to `policyOverridesFor`'s `parseCurationPolicyTable`. A vocabulary-fit entry's message now reads "not one of the known vocabulary classes".
+- **The settings themselves are not this module's.** `src/settings-model.ts` (import-free, added 2026-09-14) holds the `CuratorSettings` shape, `DEFAULT_SETTINGS` and `mergeSavedSettings` - saved values over the defaults, a `knownTypes` list still at the pre-schema `HARDCODED_LOKF_TYPES` refreshed to the manifest's and an edited one preserved, the same rule as `lokf-registrar`'s. `loadSettings` is one call and an assignment; `main.ts` re-exports the type and the defaults. The rule moved so the smoke test could cover it - the boundary this plugin draws generally: logic worth testing leaves `main.ts` rather than being tested through it.

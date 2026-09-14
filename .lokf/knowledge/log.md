@@ -1,5 +1,54 @@
 # Change Log
 
+## 2026-09-14 (2)
+
+* **`CONTRIBUTING.md` corrected, and `playbooks/contributing.md` re-derived
+  from it.** The document still said the smoke test covers "the three pure
+  modules" and its `src/` table had no `settings-model.ts` row, so the
+  concept had been written ahead of its own source - the wrong direction for
+  a derived record. Source and concept now agree, and the same check found
+  the same fault in the sibling `lokf-registrar` repository.
+
+## 2026-09-14
+
+* **Steady-state refresh** (librarian pass, no feedback pending) against the
+  uncommitted `feat/known-types-setting` branch, which adds *Known LOKF
+  types* (`knownTypes`) under a new **Type vocabulary** settings group - the
+  same list and upgrade rule as `lokf-registrar`'s - and threads it into
+  `classify()` and `parseCurationPolicyTable()`, so a bundle validated
+  against a domain schema can list that schema's classes: they stop counting
+  as misfits and can carry a review interval. Updated
+  `services/settings-tab.md`, `services/trust-engine.md` (the class check was
+  still described as "14-class"; it is the manifest's fifteen, or the list
+  handed in), `services/lokf-curator-plugin.md` and
+  `services/curator-view.md` (the vocabulary line's new wording, and an open
+  question on its divergence from the skill's `trust-fields.md`).
+  Re-verified, no change: `explanation/why-lokf-curator.md`.
+  `playbooks/knowledge-sources.md`: settings row and run note.
+* **Two defects found by a coverage pass**, corrected here and in the code.
+  `parseCurationPolicyTable` matched a class name literally, so the prose
+  rows of this plugin's own curation-policy template ("Glossary terms",
+  "people") bound nothing - hidden by their intervals coinciding with the
+  settings defaults. The parse now ignores spaces and English plurals, and
+  `services/trust-engine.md` records rule and history; the upstream skill's
+  `references/review-session.md`, spec of record for that table, states it
+  too, so the two cannot drift apart again. Separately, deleting an
+  `## Open questions` section left two blank lines behind it (markdownlint
+  MD012); one now.
+* **The open question `services/curator-view.md` raised was answered upstream
+  the same day** and is closed: the `lokf-curator` skill's
+  `references/trust-fields.md` now reads a host's domain schema from
+  `.lokf/justfile`'s `--schema` and words the label "doesn't fit the known
+  vocabulary", as this plugin already did. The plugin keeps its *Known LOKF
+  types* setting because it cannot read a file outside the vault; the two no
+  longer disagree about what the vocabulary is.
+* **`src/settings-model.ts` is a new pure module** holding the settings
+  shape, defaults and the saved-data merge rule, moved out of `main.ts` so a
+  test can reach them. Recorded in `services/lokf-curator-plugin.md`, this
+  map's `src/` row, and `playbooks/contributing.md`, whose import-free rule
+  now names it and says why logic leaves `main.ts` rather than being tested
+  through it.
+
 ## 2026-09-13 (3)
 
 * **Steady-state refresh** (librarian pass, no feedback pending), after a

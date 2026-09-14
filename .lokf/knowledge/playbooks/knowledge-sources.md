@@ -7,7 +7,7 @@ genre: how-to
 resource: .
 generated:
   by: process:lokf-librarian
-  at: "2026-09-13T23:00:00Z"
+  at: "2026-09-14T09:30:00Z"
 status: draft
 ---
 
@@ -23,10 +23,10 @@ it fed and log the removal.
 | --- | --- | --- | --- |
 | `package.json`, `manifest.json` | plugin identity, id, version, dependencies | `Service` | reading `name`/`version`/`description`/`devDependencies` |
 | `src/main.ts` | plugin lifecycle, commands, the review session, the five verbs' write paths | `Service` | reading exported class `LokfCuratorPlugin` and its public methods |
-| `src/bundle.ts`, `src/trust.ts` | bundle-root resolution, the trust-record model, health counts, the ranked queue | `Service` | reading the exported functions and their doc comments |
+| `src/bundle.ts`, `src/trust.ts`, `src/settings-model.ts` | bundle-root resolution, the trust-record model, health counts, the ranked queue, and the settings shape/defaults/merge rule | `Service` | reading the exported functions and their doc comments |
 | `src/edits.ts` | the five verbs' exact frontmatter/body transforms, the `log.md` upsert | `Service` | reading the exported `apply*`/`upsert*` functions |
 | `src/curator-view.ts` | the "Curate" side panel: report + review card, and the "no bundle" message | `Service` | reading the `LokfCuratorView` class |
-| `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle | `Service` | reading `LokfCuratorSettingTab.getSettingDefinitions()` |
+| `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle and, since 2026-09-14, the Type vocabulary group (*Known LOKF types*) | `Service` | reading `LokfCuratorSettingTab.getSettingDefinitions()`; the known-types list must stay the same shape and rule as `lokf-registrar`'s |
 | `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`, `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` | the in-editor aids: field lookup, the inline trust badge, and frontmatter autocomplete | `Service` | reading the exported classes/functions in each file against `services/in-editor-aids.md` |
 | `.agents/skills/lokf-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
 | `SECURITY.md` | the plugin's privacy/write-surface guarantees; what this repository owns versus inherits in its librarian automation | `Policy` | re-reading for a changed write surface, and diffing the "what is inherited, what this repository owns" section |
@@ -41,6 +41,34 @@ it fed and log the removal.
 | glossary terms recurring across `src/`, the skill, and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
 
 ## Re-check notes
+
+**2026-09-14 (second pass)**, whole repository. `CONTRIBUTING.md` had not
+been updated when `settings-model.ts` was added, so it still named three pure
+modules; corrected at the source and `playbooks/contributing.md` re-derived
+from it. For the next run: when a `src/` module is added or its testability
+changes, check `CONTRIBUTING.md`'s table and pre-PR checklist against
+`scripts/smoke-test.ts`, not only against the concept - a concept written
+ahead of its source hides the drift instead of showing it.
+
+**2026-09-14**, against the uncommitted `feat/known-types-setting` branch
+(no feedback pending): swept `src/bundle.ts`, `src/trust.ts`, `src/main.ts`,
+`src/settings.ts`, `src/curator-view.ts`, `scripts/smoke-test.ts`,
+`README.md`, `docs/for-the-curious.md`, `CHANGELOG.md`. Corrected
+`services/trust-engine.md` (the class check was still described as
+"14-class"; it is the manifest's fifteen, or the list handed in) and
+extended it, `services/lokf-curator-plugin.md`, `services/settings-tab.md`
+and `services/curator-view.md` (with an open question on the vocabulary
+line's wording versus the skill's `trust-fields.md`). Re-verified, no
+change: `explanation/why-lokf-curator.md`. PyPI's `lokf` is still `0.7.0`.
+
+Later the same day, a coverage pass on the same branch added
+`src/settings-model.ts` and took the suite from 165 to 245 expectations,
+surfacing the two defects `log.md` records. Updated this map's `src/` row,
+`playbooks/contributing.md` (the import-free rule now names
+`settings-model.ts`), `services/trust-engine.md` and
+`services/lokf-curator-plugin.md`. The import-free modules are at 98.7% of
+statements, 85.5% of branches; the Obsidian-bound half still has no
+automated test, as `playbooks/contributing.md` says.
 
 **2026-09-13 (night)**, after a `lokf-sidecar` repair pass on this
 repository: `.lokf/.gitignore` regained the template's `.obsidian/` rule, so
