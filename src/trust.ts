@@ -124,6 +124,10 @@ export interface TrustInputs {
   frontmatter: Record<string, unknown>;
   headings: HeadingLine[];
   mintId: (path: string) => string;
+  /** The classes `type` may name without being "outside the vocabulary" -
+   *  the vault's Settings → Type vocabulary list. Omitted, the pinned
+   *  schema's classes apply. */
+  knownTypes?: string[];
 }
 
 /** Builds one concept's trust record from its already-parsed frontmatter and
@@ -220,7 +224,7 @@ export function buildTrustRecord(
     id,
     title,
     type,
-    cls: classify(type),
+    cls: classify(type, inputs.knownTypes),
     invalidStatus,
     status,
     humanConfirmed,
@@ -401,8 +405,11 @@ export function proposeStaleAfter(confirmationDate: string, months: number): str
 /** Tolerant parse of `policies/knowledge-curation.md`'s markdown table, per
  *  §6.4: any row whose first cell mentions a class name and whose second
  *  cell matches "(\d+)\s*months" overrides that class; anything unparseable
- *  leaves the setting in force. Returns a map keyed by normalized class name. */
-export function parseCurationPolicyTable(body: string): Map<string, number> {
+ *  leaves the setting in force. Returns a map keyed by normalized class name.
+ *  `knownTypes` is the vocabulary a row may name - the vault's Settings →
+ *  Type vocabulary list, so a domain schema's classes can carry an interval
+ *  of their own; omitted, the pinned schema's classes apply. */
+export function parseCurationPolicyTable(body: string, knownTypes: string[] = KNOWN_LOKF_TYPES): Map<string, number> {
   const overrides = new Map<string, number>();
   for (const line of body.split("\n")) {
     if (!line.trim().startsWith("|")) continue;
@@ -416,7 +423,7 @@ export function parseCurationPolicyTable(body: string): Map<string, number> {
     const months = parseInt(monthsMatch[1] ?? "", 10);
     if (!Number.isFinite(months)) continue;
     const firstCell = cells[0] ?? "";
-    for (const cls of KNOWN_LOKF_TYPES) {
+    for (const cls of knownTypes) {
       if (firstCell.toLowerCase().includes(cls.toLowerCase())) {
         overrides.set(normalizeTypeKey(cls), months);
       }

@@ -16,7 +16,7 @@ Every label is arithmetic over frontmatter, computed fresh on each refresh and n
 | Edited since a person last confirmed it | `generated.at` later than the newest `human:` `verified[].at` |
 | Past its review date / due soon | `stale_after` against today |
 | *N* other concepts rely on this | concepts whose typed relations target this concept's `id`, across every configured bundle |
-| Doesn't fit the built-in vocabulary | `type` outside the LOKF vocabulary classes |
+| Doesn't fit the known vocabulary | `type` outside the classes listed under *Settings → Type vocabulary* - the pinned LOKF schema's, plus a domain schema's where a bundle has one. Cosmetic: it never moves a concept into the queue |
 
 The rules, with every parsing edge case (a bare `verified` mapping, an exact `## Open questions` heading versus a passing mention of one in prose, cross-bundle relation targets), are `references/trust-fields.md` in the `lokf-curator` skill. This plugin implements that document; it does not relax or restate it.
 

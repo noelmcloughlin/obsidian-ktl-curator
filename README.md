@@ -102,6 +102,7 @@ Under **Settings → LOKF Curator**; every setting is also reachable through Obs
 - **Who is curating** - the curator id.
 - **In-editor** - the tier badge and the autocomplete, both on by default.
 - **Scope** - the bundle-root settings above, and excluded folders.
+- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/skills/lokf-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as LOKF Registrar's *Known LOKF types*.
 - **Review intervals** - months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
 - **Queue** - how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
 - **Feedback** - an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](docs/for-the-curious.md#on-the-feedback-file)).

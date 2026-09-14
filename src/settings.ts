@@ -5,14 +5,14 @@
 import { App, Notice, PluginSettingTab, TFolder } from "obsidian";
 import type { SettingDefinitionItem } from "obsidian";
 import type LokfCuratorPlugin from "./main";
-import type { CuratorSettings } from "./main";
-import { joinCsv, parseCsv, hiddenRootSegment } from "./bundle";
+import type { CuratorSettings } from "./settings-model";
+import { joinCsv, parseCsv, hiddenRootSegment, SCHEMA_VERSION } from "./bundle";
 
 type SettingKey = keyof CuratorSettings;
 
 /** Settings a user edits as comma-separated text but that are stored - and
  *  validated against - as string arrays. */
-const CSV_KEYS = new Set<SettingKey>(["excludeFolders", "bundleRoots"]);
+const CSV_KEYS = new Set<SettingKey>(["excludeFolders", "bundleRoots", "knownTypes"]);
 
 function isCsvKey(key: string): key is SettingKey {
   return CSV_KEYS.has(key as SettingKey);
@@ -39,6 +39,9 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
     else settings[key] = value;
     await this.plugin.saveSettings();
     if (key === "treatVaultRootAsBundle") this.plugin.invalidateBundleCache();
+    // The vocabulary decides which concepts the report counts as outside it,
+    // so a changed list wants the next report computed afresh.
+    if (key === "knownTypes") this.plugin.invalidateBundleCache();
     if (key === "bundleRoots") {
       this.plugin.invalidateBundleCache();
       // A dot-folder root is accepted rather than refused: Obsidian's own index
@@ -124,6 +127,22 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
             name: "Excluded folders",
             desc: "Comma-separated folder paths to skip during a scan.",
             control: { type: "text", key: "excludeFolders" },
+          },
+        ],
+      },
+      {
+        type: "group",
+        heading: "Type vocabulary",
+        items: [
+          {
+            name: "Known LOKF types",
+            desc: `${
+              SCHEMA_VERSION
+                ? `Comma-separated classes a concept's type may name. Defaults track the pinned LOKF schema ${SCHEMA_VERSION}; an untouched list is refreshed automatically on upgrade.`
+                : "Comma-separated classes a concept's type may name."
+            } A bundle validated against a domain schema (lokf validate --schema <file>) lists that schema's classes here too - the plugin cannot read the schema, which sits outside the vault - so they stop counting against Vocabulary fit and can carry a review interval. Keep the list the same as LOKF Registrar's.`,
+            aliases: ["vocabulary", "classes", "domain schema", "custom type", "knownTypes", "vocabulary fit"],
+            control: { type: "textarea", key: "knownTypes", rows: 3 },
           },
         ],
       },

@@ -22,13 +22,23 @@ function manifestClassNames(): string[] | null {
   return names.length ? names : null;
 }
 
-const FALLBACK_LOKF_TYPES = [
+/** The pre-schema baseline list. Exported so `loadSettings` can tell a saved
+ *  `knownTypes` still at this old default (safe to refresh to the manifest's)
+ *  from one a person customised - the same rule LOKF Registrar applies. */
+export const HARDCODED_LOKF_TYPES = [
   "Dataset", "Table", "Metric", "Service", "Playbook", "Tutorial", "Explanation",
   "Policy", "GlossaryTerm", "Reference", "Document", "Person", "Organization",
   "AttestedComputation",
 ];
 
-export const KNOWN_LOKF_TYPES = manifestClassNames() ?? FALLBACK_LOKF_TYPES;
+export const KNOWN_LOKF_TYPES = manifestClassNames() ?? HARDCODED_LOKF_TYPES;
+
+/** The pinned schema the shipped vocabulary was derived from, for the settings
+ *  tab to cite; empty when the manifest carries no version. */
+export const SCHEMA_VERSION: string = (() => {
+  const v = (lokfVocab as { schemaVersion?: unknown }).schemaVersion;
+  return typeof v === "string" ? v : "";
+})();
 
 export const RELATION_FIELDS = [
   "isPartOf",
@@ -226,11 +236,23 @@ export function normalizeTypeKey(type: string): string {
   return type.trim().replace(/\s+/g, "").toLowerCase();
 }
 
-const normalizedKnownTypes = new Set(KNOWN_LOKF_TYPES.map(normalizeTypeKey));
+// classify runs once per concept per report, so the normalized vocabulary is
+// cached rather than rebuilt per call. Keyed by array identity, which is sound
+// only because a settings list is always REPLACED, never mutated in place
+// (settings.ts assigns a fresh parseCsv() array on every edit).
+const normalizedTypeSets = new WeakMap<string[], Set<string>>();
 
-export function classify(type: string | null): "known" | "unknown" {
+/** Whether `type` names a class in `knownTypes`: the pinned schema's classes by
+ *  default, or the vault's own list once Settings → Type vocabulary has added
+ *  a domain schema's classes to it. */
+export function classify(type: string | null, knownTypes: string[] = KNOWN_LOKF_TYPES): "known" | "unknown" {
   if (!type) return "unknown";
-  return normalizedKnownTypes.has(normalizeTypeKey(type)) ? "known" : "unknown";
+  let set = normalizedTypeSets.get(knownTypes);
+  if (!set) {
+    set = new Set(knownTypes.map(normalizeTypeKey));
+    normalizedTypeSets.set(knownTypes, set);
+  }
+  return set.has(normalizeTypeKey(type)) ? "known" : "unknown";
 }
 
 // ---- Relation target resolution ----

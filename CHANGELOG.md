@@ -6,6 +6,11 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Added
+
+- **Known LOKF types** (*Settings → Type vocabulary*): the classes a concept's `type` may name, defaulting to the pinned schema's fifteen and refreshed on upgrade while untouched, as in LOKF Registrar's setting of the same name. A bundle validated against a domain schema (`lokf validate --schema <file>`) lists that schema's classes here, since the schema sits outside the vault: they stop counting against the report's *Vocabulary fit* line, and `policies/knowledge-curation.md` can set a review interval for them.
+- **`src/settings-model.ts`**: the settings shape, defaults and saved-data merge rule, moved out of the Obsidian-bound `main.ts` so the rule is a pure function the smoke test covers. A drift guard catches a settings control naming a setting that does not exist.
+
 ### Changed
 
 - **README restructured for the two-vault story.** An early notice says the plugin works on the exhibition, never the workshop vault you already keep, and that it pairs with the [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) without needing them. *Where it works* replaces *How this fits*: three arrangements, the bundle as its own vault first, with the cost of a bundle folder inside your vault stated plainly. Host-by-host layouts moved to `docs/for-the-curious.md`.
