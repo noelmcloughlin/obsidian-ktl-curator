@@ -9,6 +9,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 ### Fixed
 
 - **The curation policy's own table was only half readable.** `policies/knowledge-curation.md` names its classes in prose ("Glossary terms", "people"), but the parser matched them literally, so `GlossaryTerm`, `AttestedComputation`, `Policy` and `Person` never bound - unnoticed because their intervals matched the settings defaults until someone edited a row. The parse now ignores spaces and plural forms.
+- **Deleting a concept's `## Open questions` section** left two blank lines behind when content followed it, failing markdownlint's MD012. One blank line now.
 
 ### Added
 
