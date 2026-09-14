@@ -7,6 +7,7 @@ genre: how-to
 resource: .github/workflows/knowledge-registrar.yaml
 sources:
   - resource: .github/workflows/knowledge-registrar.yaml
+  - resource: .lokf/scripts/knowledge-conventions.sh
   - resource: SECURITY.md
 relatedTo:
   - https://lokf-curator.example/knowledge/services/edits-engine
@@ -15,11 +16,11 @@ dependsOn:
   - https://lokf-curator.example/knowledge/references/lokf-toolkit
 generated:
   by: process:lokf-librarian
-  at: "2026-09-13T23:00:00Z"
+  at: "2026-09-14T16:15:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-14T15:30:00Z"
+    at: "2026-09-14T16:15:00Z"
 ---
 
 # Overview
@@ -37,7 +38,15 @@ itself, on a Monday 06:00 UTC schedule, and on demand. Three jobs:
 
 **`validate` - "Validate the LOKF bundle".** `uv sync` in `.lokf/`, then
 `uv run lokf validate knowledge` - the same check `just lokf-validate` runs
-locally.
+locally. Two more steps close what that check cannot see: `bash
+scripts/knowledge-conventions.sh knowledge` (the sidecar's own script - one
+ISO-date `log.md` heading per day, quoted timestamps, `verified` as a list
+carrying at most one `process:lokf-librarian` event, and `## Open questions`
+bullets in the curator's shape - a concept body is opaque to `lokf validate`,
+which never opens `log.md`), then `uvx --from 'rust-just==1.47.0' just
+lokf-check-refs` (the justfile's SPARQL query - every typed-relation target
+resolves to a real concept in the bundle, which a well-formed but fabricated
+or stale IRI would otherwise pass silently).
 
 **`provenance` - "Check new human confirmations".** Pull requests only;
 `contents: read`, `pull-requests: read`. A `verified` event whose actor is

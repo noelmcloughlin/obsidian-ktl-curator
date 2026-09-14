@@ -2,6 +2,19 @@
 
 ## 2026-09-14
 
+* **Steady-state refresh** (librarian pass, no feedback pending), against the
+  now-committed `feba4e0` ("gate runs the conventions script and
+  lokf-check-refs"): the `validate` job in
+  `.github/workflows/knowledge-registrar.yaml` gained two steps -
+  `scripts/knowledge-conventions.sh` and `just lokf-check-refs` - that
+  `playbooks/knowledge-registrar-gate.md` did not yet describe; corrected,
+  with the script added as a `sources` entry. All other concepts re-checked
+  against current `src/`, `CONTRIBUTING.md`, and the pinned skill copy: no
+  further drift. `references/trust-fields.md`'s open question (the installed
+  copy still pinned to `LOKF_SKILLS_REF: v0.9.0` and reading "built-in
+  vocabulary" against `src/curator-view.ts`'s "known vocabulary") re-checked
+  and still holds, unchanged. `just lokf-validate`, `just lokf-check-refs`,
+  and `scripts/knowledge-conventions.sh` all pass.
 * **Steady-state refresh** against an uncommitted working-tree change
   (`CONTRIBUTING.md` rewritten as a checklist under a word budget and
   pointing at the skills repository's `docs/` for release/signing detail;
