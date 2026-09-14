@@ -12,9 +12,11 @@ generated:
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-13T19:00:00Z"
+    at: "2026-09-14T17:30:00Z"
 ---
 
-Stated in `SECURITY.md` ("The plugin" section) and `README.md`'s Privacy
+Stated in `SECURITY.md` ("The plugin" section, kept even after the
+2026-09-14 rewrite that slimmed the rest of the file to a policy plus a link
+to the skills repository's shared threat model) and `README.md`'s Privacy
 section. Every write is something a person explicitly asked for by pressing
 a verb button or running a command - there is no background write path.

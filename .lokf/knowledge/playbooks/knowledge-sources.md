@@ -29,7 +29,7 @@ it fed and log the removal.
 | `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle and, since 2026-09-14, the Type vocabulary group (*Known LOKF types*) | `Service` | reading `LokfCuratorSettingTab.getSettingDefinitions()`; the known-types list must stay the same shape and rule as `lokf-registrar`'s |
 | `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`, `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` | the in-editor aids: field lookup, the inline trust badge, and frontmatter autocomplete | `Service` | reading the exported classes/functions in each file against `services/in-editor-aids.md` |
 | `.agents/skills/lokf-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
-| `SECURITY.md` | the plugin's privacy/write-surface guarantees; what this repository owns versus inherits in its librarian automation | `Policy` | re-reading for a changed write surface, and diffing the "what is inherited, what this repository owns" section |
+| `SECURITY.md` | the plugin's privacy/write-surface guarantees, reporting, supported versions, and a surface table (slimmed 2026-09-14; the hardening/attribution/prompt-injection design moved to the skills repository's `docs/threat-model.md`, linked rather than restated) | `Policy` | re-reading for a changed write surface, and diffing the surface table's links |
 | `.github/workflows/knowledge-registrar.yaml` | the gate a new `human:` confirmation must pass before it merges | `Playbook` | diff the three jobs (`validate`, `provenance`, `attestation`) against the `lokf-sidecar` template; the copy is meant to differ only by `persist-credentials: false` and a top-level `permissions: {}`, and any other difference is drift to report, not fix |
 | `.github/workflows/knowledge-librarian.yaml`, `.lokf/scripts/knowledge-librarian.sh` | the scheduled librarian automation - no concept of its own here, since the design is the `lokf-sidecar` template's and `SECURITY.md` links to it | - | diff both against their templates the same way |
 | `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`), and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module list against `scripts/smoke-test.ts`'s own imports and its drift-guard section |
@@ -45,6 +45,24 @@ it fed and log the removal.
 | glossary terms recurring across `src/`, the skill, and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
 
 ## Re-check notes
+
+**2026-09-14 (fourth pass)**, against the now-committed `96cf5fe` ("docs(security):
+improved layout"): `SECURITY.md` shrank from ~1,700 to ~800 words, moving its
+hardening/`human:`-attribution/prompt-injection design to the skills
+repository's new `docs/threat-model.md`, and gained a `Surface | What holds
+it` table plus a word-budget check (`scripts/smoke-test.ts`, extended to
+check `SECURITY.md` at 900 words alongside `CONTRIBUTING.md`'s 1000).
+`policies/no-telemetry.md` re-verified unchanged (its cited "The plugin"
+section survives the rewrite). `playbooks/knowledge-registrar-gate.md`
+corrected: two sentences said the design "is documented once, in that
+repository's `SECURITY.md`" and "`SECURITY.md` links to the skills repository
+for that design" - both now point at the skills repository's threat model by
+name, since that is where the design actually lives; `SECURITY.md` here only
+links to it. This repository has no `policies/security.md` concept of its
+own (unlike `lokf-agent-skills`, which does) - `SECURITY.md` has always been
+covered only as a `sources` entry on `no-telemetry.md` and
+`knowledge-registrar-gate.md`, so no new concept was needed. `lokf` on PyPI
+is still `0.7.0`, matching the floor; `.lokf/feedback.md` has no entries.
 
 **2026-09-14 (third pass)**, steady-state refresh against an uncommitted
 working-tree change (`CONTRIBUTING.md` rewritten to a checklist under a

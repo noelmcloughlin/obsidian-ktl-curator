@@ -2,6 +2,17 @@
 
 ## 2026-09-14
 
+* **Steady-state refresh**, against the now-committed `96cf5fe` ("docs(security):
+  improved layout"): `SECURITY.md` was slimmed and its design content moved
+  to the skills repository's new `docs/threat-model.md`.
+  `playbooks/knowledge-registrar-gate.md` corrected - two sentences named
+  `SECURITY.md` as the design's home when it now only links there; retitled
+  to name the threat model directly. `policies/no-telemetry.md` re-verified,
+  its cited section unchanged by the rewrite. `playbooks/knowledge-sources.md`'s
+  `SECURITY.md` row updated to describe the slimmed file. No new concept
+  needed: this repository has always treated `SECURITY.md` as a `sources`
+  entry, not a `Policy` concept of its own.
+
 * **Steady-state refresh** (librarian pass, no feedback pending), against the
   now-committed `feba4e0` ("gate runs the conventions script and
   lokf-check-refs"): the `validate` job in
