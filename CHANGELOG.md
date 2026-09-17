@@ -6,15 +6,6 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
-### Security
-
-- **The sidecar's scheduled-agent wrapper restores `.git/config` and `.git/hooks/` on every exit.** The copy here predated the `EXIT` trap, so an agent that poisoned `core.hooksPath` and then failed, or a cancelled job, left it for the workflow's later steps to read.
-- **The registrar gate reads a confirmation whole, not its `by:` line.** Re-dating an existing `human:` event, moving its `revision` or writing it in flow style added no `by: human:` line and so passed the old gate unseen. The gate also refuses a `human:` id it cannot look up, resolves a commit-shaped `revision` against the tree, and now runs under a top-level `permissions: {}` with no checkout credential on disk.
-
-### Fixed
-
-- **Two bundle concepts named a resource git ignores.** They pointed at the curator skill's installed copy under `.agents/`, which exists only on a machine that has it, so the new conventions gate failed on a clean checkout. Both now name the published file at the release the workflow installs.
-
 ### Added
 
 - **The sidecar gains the preflight, the forge-free provenance gate and the conventions parser** - `knowledge-preflight.sh`, `knowledge-provenance.sh` and `knowledge-conventions.py` - plus `.lokf/.gitattributes`, keeping the bundle on LF so a Windows checkout gives CI's verdict.
@@ -23,6 +14,16 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 ### Changed
 
 - **The pinned toolkit is lokf 0.8.0**, and `src/lokf-vocab.json` is rebuilt from it. `npm run build-vocab` reads the schema from the sidecar's pinned toolkit, not a sibling `../lokf` checkout; `LOKF_SCHEMA` still overrides it. No plugin behaviour change.
+
+### Fixed
+
+- **Retitling a pull request re-runs the release checks.** The title check told the author to retitle, but the workflow listened only for the default pull-request types, so a title change fired nothing and the check stayed red whatever the author did. The trigger now names `edited`.
+- **Two bundle concepts named a resource git ignores.** They pointed at the curator skill's installed copy under `.agents/`, which exists only on a machine that has it, so the new conventions gate failed on a clean checkout. Both now name the published file at the release the workflow installs.
+
+### Security
+
+- **The sidecar's scheduled-agent wrapper restores `.git/config` and `.git/hooks/` on every exit.** The copy here predated the `EXIT` trap, so an agent that poisoned `core.hooksPath` and then failed, or a cancelled job, left it for the workflow's later steps to read.
+- **The registrar gate reads a confirmation whole, not its `by:` line.** Re-dating an existing `human:` event, moving its `revision` or writing it in flow style added no `by: human:` line and so passed the old gate unseen. The gate also refuses a `human:` id it cannot look up, resolves a commit-shaped `revision` against the tree, and now runs under a top-level `permissions: {}` with no checkout credential on disk.
 
 ## [1.1.0] - 2026-09-14
 
