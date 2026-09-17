@@ -1,14 +1,17 @@
 // build-vocab.mjs - derive src/lokf-vocab.json from a pinned lokf.yaml.
 //
 // A maintenance step, not part of `npm run build`: it reads the LinkML schema
-// from a sibling checkout (or $LOKF_SCHEMA) and writes the small JSON manifest
-// the plugin ships as static data. The curator consumes the `slots` (each
-// field's schema description) for its "Look up a LOKF field" reference
-// (src/fields.ts); the rest of the manifest is kept in step with LOKF Registrar.
-// Re-run it, and commit the result, when bumping the pinned schema version.
+// the sidecar's pinned `lokf` toolkit ships (`.lokf/uv.lock` decides the
+// version, and the package carries `lokf/data/lokf.yaml`) and writes the small
+// JSON manifest the plugin ships as static data - so the manifest can never
+// drift from what `just lokf-validate` checks a bundle against. The curator
+// consumes the `slots` (each field's schema description) for its "Look up a
+// LOKF field" reference (src/fields.ts); the rest of the manifest is kept in
+// step with LOKF Registrar. Re-run it, and commit the result, when bumping
+// the pin.
 //
-//   node scripts/build-vocab.mjs
-//   LOKF_SCHEMA=/path/to/lokf.yaml node scripts/build-vocab.mjs
+//   node scripts/build-vocab.mjs                        # the pinned toolkit's schema
+//   LOKF_SCHEMA=/path/to/lokf.yaml node scripts/build-vocab.mjs   # a schema under development
 import { readFileSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -17,9 +20,30 @@ import { load as loadYaml } from "js-yaml";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..");
-const schemaPath = process.env.LOKF_SCHEMA
-  ? resolve(process.env.LOKF_SCHEMA)
-  : resolve(repoRoot, "..", "lokf", "lokf.yaml");
+const sidecar = join(repoRoot, ".lokf");
+
+/** Run a command inside the sidecar's own environment (`uv run --project`),
+ *  which resolves and installs the pinned toolkit on first use. */
+function inSidecar(cmd) {
+  return execSync(`uv run --project "${sidecar}" ${cmd}`, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
+}
+
+function pinnedSchemaPath() {
+  try {
+    return inSidecar(`python -c "from importlib.resources import files; print(files('lokf') / 'data' / 'lokf.yaml')"`);
+  } catch (e) {
+    // uv's own message (not installed, no network, a broken lock) is the
+    // useful part, so it is passed through rather than paraphrased.
+    console.error(String(e?.stderr ?? e?.message ?? e).trim());
+    console.error("build-vocab: could not locate the pinned schema via `uv run --project .lokf`; install uv (https://docs.astral.sh/uv/) or set LOKF_SCHEMA.");
+    process.exit(1);
+  }
+}
+
+const schemaPath = process.env.LOKF_SCHEMA ? resolve(process.env.LOKF_SCHEMA) : pinnedSchemaPath();
 
 const doc = loadYaml(readFileSync(schemaPath, "utf8"));
 const classes = doc.classes ?? {};
@@ -60,13 +84,13 @@ const genres = Object.entries(enums.DiataxisMode?.permissible_values ?? {}).map(
 });
 
 // Field descriptions for the plugin's "Look up a LOKF field" reference. Prefer
-// the toolkit's own `lokf vocab --all --json` export (a versioned contract);
+// the pinned toolkit's own `lokf vocab --all --json` export (a versioned contract);
 // fall back to reading the slot descriptions straight from lokf.yaml when that
 // CLI (or its --all flag) isn't installed yet - so a schema bump refreshes the
 // field reference either way.
 function slotsFromCli() {
   try {
-    const out = execSync("lokf vocab --all --json", { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+    const out = inSidecar("lokf vocab --all --json");
     const rows = JSON.parse(out).slots;
     if (!Array.isArray(rows)) return null;
     const slots = rows

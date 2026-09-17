@@ -6,6 +6,10 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Changed
+
+- **The pinned toolkit is lokf 0.8.0**, and `src/lokf-vocab.json` is rebuilt from it. `npm run build-vocab` reads the schema from the sidecar's pinned toolkit, not a sibling `../lokf` checkout; `LOKF_SCHEMA` still overrides it. No plugin behaviour change.
+
 ## [1.1.0] - 2026-09-14
 
 ### Fixed
