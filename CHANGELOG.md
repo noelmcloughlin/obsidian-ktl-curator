@@ -6,6 +6,8 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-17
+
 ### Security
 
 - **The sidecar's scheduled-agent wrapper restores `.git/config` and `.git/hooks/` on every exit.** The copy here predated the `EXIT` trap, so an agent that poisoned `core.hooksPath` and then failed, or a cancelled job, left it for the workflow's later steps to read.
