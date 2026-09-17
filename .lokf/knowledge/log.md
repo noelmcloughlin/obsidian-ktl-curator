@@ -2,6 +2,12 @@
 
 ## 2026-09-18
 
+* **Resources repinned off runtime state**: `references/trust-fields.md`
+  and `references/review-session.md` named their installed copies under
+  `.agents/`, which git ignores, so the conventions gate failed in a clean
+  CI checkout. Both now name the published file at the `v0.19.2` tag the
+  workflow installs.
+
 * **Sidecar brought up to the skills templates**: the scripts here were the
   pre-0.19 copies, so the wrapper lacked the `EXIT`-trap restore and the
   registrar gate still read confirmations by their `by:` line. Synced all
