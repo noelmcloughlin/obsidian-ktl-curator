@@ -4,16 +4,16 @@ id: https://lokf-curator.example/knowledge/references/review-session
 title: Review session (lokf-curator skill)
 description: The exact frontmatter/body edit for each of the five verbs, the log.md line format, and the curation-policy and missing-placeholder templates - the spec of record edits-engine.md implements.
 genre: reference
-resource: .agents/skills/lokf-curator/references/review-session.md
+resource: https://github.com/noelmcloughlin/lokf-agent-skills/blob/v0.19.2/skills/lokf-curator/references/review-session.md
 about:
   - https://lokf-curator.example/knowledge/references/lokf-specification
 generated:
   by: process:lokf-librarian
-  at: "2026-09-10T00:00:00Z"
+  at: "2026-09-18T11:00:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-13T19:00:00Z"
+    at: "2026-09-18T11:00:00Z"
 ---
 
 Specifies who records (`human:<id>`, never an email), the five verbs'
