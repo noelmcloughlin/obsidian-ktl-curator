@@ -812,7 +812,7 @@ section("field reference - schema-sourced, drift-guarded, modal-sized", () => {
     expect(`documents ${key}`, byName.has(key), `missing ${key}`);
   }
   const baseIri = byName.get("base_iri") ?? "";
-  expect("base_iri is framed as an identifier that need not resolve", /identifier/i.test(baseIri) && /need not resolve/i.test(baseIri), baseIri);
+  expect("base_iri is framed as an identifier that need not resolve", /identifier/i.test(baseIri) && /not a hyperlink|need not resolve/i.test(baseIri), baseIri);
   expect("every field doc carries a non-empty description", LOKF_FIELD_DOCS.every((f) => f.description.trim().length > 0), "empty description");
 
   // The description flows straight from the schema manifest, unchanged.

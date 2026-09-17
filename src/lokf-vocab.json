@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.7.0",
+  "schemaVersion": "0.8.0",
   "generatedFrom": "lokf.yaml",
   "classes": [
     {
@@ -354,6 +354,10 @@
       "description": "A URL."
     },
     {
+      "name": "supporting_text",
+      "description": "Exact excerpt/quote from the referenced source."
+    },
+    {
       "name": "lokf_version",
       "description": "The LOKF version the bundle targets (e.g. \"0.2\")."
     },
@@ -363,7 +367,7 @@
     },
     {
       "name": "base_iri",
-      "description": "The base IRI against which Concept IDs are resolved to produce each concept's stable `id`. An identifier namespace, not a hyperlink: it need not resolve to a live page (a 404 is valid), so it is only required to be a well-formed absolute IRI with an authority. A resolvable \"Cool URI\" is the ideal, not a requirement."
+      "description": "The base IRI against which Concept IDs are resolved to produce each concept's stable `id`. An identifier namespace, not a hyperlink. Absolute http(s), ending in `/` or `#` so ids mint by plain concatenation and prefix routing respects segment boundaries (`…/team/` never captures `…/team-archive/`)."
     },
     {
       "name": "context",
@@ -444,6 +448,14 @@
     {
       "name": "attester",
       "description": "The deterministic, non-LLM verdict check over a receipt."
+    },
+    {
+      "name": "id",
+      "description": "Optional stable key joining markdown footnote labels to this entry (e.g. `ga4-schema`)."
+    },
+    {
+      "name": "type",
+      "description": "The parameter's datatype, written with the authoring key `type` verbatim and drawn from ParameterType."
     }
   ]
 }
