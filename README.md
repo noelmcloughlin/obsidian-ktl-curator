@@ -1,3 +1,5 @@
+<img src=".assets/knowledge-trust-ladder-logo.svg" alt="" width="56" align="right" />
+
 # LOKF Curator
 
 > "We lasso the world with networks of silver-coloured Italian hemp,\

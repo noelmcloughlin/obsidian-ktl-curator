@@ -6,6 +6,15 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Added
+
+- **The family logo**, `.assets/knowledge-trust-ladder-logo.svg`: three rungs in the trust ladder's grey, amber and blue, shared byte-for-byte with the other two repositories. Shown beside the README title; also the mark to use for the repository avatar.
+
+### Changed
+
+- **The diagrams no longer glare.** Their canvas was pure white - the largest area on the page and the brightest thing on it, with the tinted cards sitting *below* it. The canvas is now the warm `#E4E1D7`, a quarter less luminous, so the cards read as raised rather than sunken.
+- **Small grey labels are legible again.** The faint ink moved from `#888780` to `#6E6D66`, which clears 4.5:1 on a white card where it had been 3.6:1 - a contrast failure that predated the calmer canvas.
+
 ### Changed
 
 - **The skills repository is now `knowledge-trust-ladder`**, formerly `lokf-agent-skills`: upstream LOKF ships its own bundled skills, and a third-party repository named after the format read as their official home. Every link here follows it, and `LOKF_SKILLS_REPO` in the scheduled librarian points at the new name. The skill names, the pinned `LOKF_SKILLS_REF` tag and this plugin's own name are unchanged; GitHub redirects the old paths either way.

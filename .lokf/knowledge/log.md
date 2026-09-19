@@ -2,6 +2,13 @@
 
 ## 2026-09-19
 
+* **Assets restacked, and the family logo added.** The diagrams' canvas was
+  pure white while their cards were tinted, so the biggest area was the
+  brightest and the cards read as sunken. The canvas is now `#E4E1D7` and the
+  faint ink `#6E6D66`, which also lifts 10px grey labels past 4.5:1. New
+  `.assets/knowledge-trust-ladder-logo.svg`, identical in all three
+  repositories. The `.assets/*.svg` source-map row covers it.
+
 * **Skills repository renamed to `knowledge-trust-ladder`**, from
   `lokf-agent-skills`, because upstream LOKF now ships its own bundled skills.
   Every deep link and the scheduled librarian's `LOKF_SKILLS_REPO` follow it,
