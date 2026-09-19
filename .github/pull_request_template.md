@@ -11,6 +11,7 @@
 - [ ] `npm run check` passes locally (build, lint, smoke test - the same steps `build.yml` runs)
 - [ ] Anything needing a real Obsidian `App` (a vault scan, bundle-root resolution, a review verb writing frontmatter or `log.md`, the modals) was checked by hand in a real vault - there is no headless Obsidian to test it in
 - [ ] `CHANGELOG.md` has a line or two under `[Unreleased]` if this changes plugin behavior
+- [ ] If the commits would release, this pull request's title carries `feat:`, `fix:` or `security:` too
 - [ ] If `.lokf/` changed, `cd .lokf && just lokf-validate` passes
 
 ## AI Assistance
