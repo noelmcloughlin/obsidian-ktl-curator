@@ -6,6 +6,11 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Fixed
+
+- **The scheduled librarian installs `v0.21.0`**, up from `v0.19.7`, so it runs the current skill rather than two releases behind.
+- **The publish job's path check reads a concept named outside ASCII.** It listed the patch's paths with git's default quoting, so such a path arrived C-quoted and was refused as outside the bundle. Synced from the skills repository's template: it now lists with `core.quotePath` off.
+
 ## [1.1.6] - 2026-09-19
 
 ### Fixed
