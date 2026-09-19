@@ -33,6 +33,21 @@
   below this day keep the name the skills repository had when they were
   written, as `CHANGELOG.md` does.
 
+* **Reference audit moved onto the toolkit's own flag**: `just lokf-check-refs`
+  ran a hand-written SPARQL query over ten relation predicates, which reported
+  an external `source:` or `definedBy:` URL - correct usage for both slots - as
+  a dangling target, and had drifted against the schema (missing `holder`,
+  `measures`, `memberOf` and reified `relations`). It calls `lokf validate
+  --check-refs` now, so the slot list comes from the schema. Only Knowledge
+  registrar gate changed here, to describe the recipe as it now runs; the
+  workflow no longer invokes it through `uvx ... just`: the gate's third
+  step is gone and `--check-refs` rides on its validate step. That change
+  has not reached the skills template yet, so this copy is ahead of it and
+  the preflight's `copies` line reports the file as drifted until it does. That concept
+  described the recipe while citing only the workflow, the conventions
+  script and `SECURITY.md`, so `.lokf/justfile` is now one of its
+  `sources`.
+
 ## 2026-09-18
 
 * **Resources repinned off runtime state**: `references/trust-fields.md`

@@ -6,6 +6,16 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Fixed
+
+- **An external `source` or `definedBy` is no longer flagged as dangling.** Both slots are documented as taking an off-site URL, but the audit reported any untyped IRI target as missing. Nothing in this bundle tripped it - every target happens to point at a concept.
+- **The predicate list cannot go stale again.** It had drifted against the schema, missing `holder`, `measures`, `memberOf` and every reified `relations` entry; `--check-refs` reads the slots from the schema instead.
+- **The scheduled librarian checks the relations it writes.** Its validate step covered frontmatter shape only, leaving a fabricated target - an agent's likeliest mistake - for the registrar gate to catch. It passes `--check-refs` now.
+
+### Changed
+
+- **The registrar gate validates once.** `--check-refs` rides on the existing validate step, replacing a second `lokf validate` run through `uvx --from rust-just just`.
+
 ## [1.1.5] - 2026-09-19
 
 ### Security

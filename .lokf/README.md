@@ -33,6 +33,7 @@ You write normal Markdown; you get a validated, queryable graph for free.
 cd .lokf
 just lokf-install    # one-time: install the toolkit (uv sync)
 just lokf-validate   # check every concept against the LOKF schema
+just lokf-check-refs # the same, plus: every typed relation points at a concept that exists
 just lokf-serve      # local SPARQL endpoint + interactive graph explorer
 just lokf-convert    # print the whole bundle as RDF (Turtle)
 ```
@@ -43,6 +44,7 @@ Without `just`:
 cd .lokf
 uv sync
 uv run lokf validate knowledge
+uv run lokf validate --check-refs knowledge
 uv run lokf serve knowledge
 uv run lokf convert knowledge --format ttl
 ```
