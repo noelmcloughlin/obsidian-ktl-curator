@@ -40,6 +40,6 @@ If every inherited guard failed, the worst case is a pull request confined to th
 
 ## Not covered
 
-- The librarian template's design, which is `knowledge-trust-ladder`'s and reaches here on the next `LOKF_SKILLS_REF` bump. `diff` the two files against `skills/lokf-sidecar/templates/` there to confirm the copy.
+- The librarian template's design, which is `knowledge-trust-ladder`'s and reaches here on the next `TRUST_LADDER_SKILLS_REF` bump. `diff` the two files against `skills/lokf-sidecar/templates/` there to confirm the copy.
 - A compromised runner, upstream action or agent harness: this is a baseline, not a sandbox. Report a finding in one anyway, with scope and reproduction.
 - Whether a bundle is *true*. [AI_COVENANT.md](AI_COVENANT.md) sets the human-accountability rules this automation runs under.
