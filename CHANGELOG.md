@@ -6,6 +6,8 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+## [1.1.7] - 2026-09-19
+
 ### Fixed
 
 - **The scheduled librarian installs `v0.21.0`**, up from `v0.19.7`, so it runs the current skill rather than two releases behind.
