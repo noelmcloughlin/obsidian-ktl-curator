@@ -29,7 +29,9 @@
   Every deep link and the scheduled librarian's `LOKF_SKILLS_REPO` follow it,
   in one mechanical pass; no `verified` event changed. This plugin's own name,
   id and `base_iri` are untouched - only references to the skills repository
-  moved. Concepts naming it in prose were rewritten by the same pass.
+  moved. Concepts naming it in prose were rewritten by the same pass; entries
+  below this day keep the name the skills repository had when they were
+  written, as `CHANGELOG.md` does.
 
 ## 2026-09-18
 
@@ -95,7 +97,7 @@
 * **Re-verified against the actual pinned resource, not the skill
   repository's live checkout:** the prior pass's log entry called
   `references/trust-fields.md`'s open question closed by pointing at the
-  `knowledge-trust-ladder` working tree; the concept's own `resource` is the
+  `lokf-agent-skills` working tree; the concept's own `resource` is the
   locally installed copy, still pinned to `v0.9.0`
   (`knowledge-librarian.yaml`'s `LOKF_SKILLS_REF`, unchanged this run) and
   still reading "built-in vocabulary" with no domain-schema mention, while
@@ -166,7 +168,7 @@
 * **Steady-state refresh** (librarian pass, no feedback pending), against the
   commits since `248f9e6` (`knowledge-registrar.yaml` gaining the template's
   `provenance`/`attestation` jobs, `SECURITY.md` restructured to inherit the
-  guard design from `knowledge-trust-ladder`, two README images) and this
+  guard design from `lokf-agent-skills`, two README images) and this
   session's uncommitted README rewrite around usage. Added
   `playbooks/knowledge-registrar-gate.md` (a gap: no source-map row, no
   concept) and two workflow rows to the source map. **Audit fixes:**
@@ -270,7 +272,7 @@
 * **README restructured** around how an Obsidian user meets a knowledge
   bundle - a new "How this fits into an Obsidian vault" section (the bundle
   is the vault; a folder inside the vault; derived from a repository and
-  opened through `knowledge_bundle`), where the `knowledge-trust-ladder` come in,
+  opened through `knowledge_bundle`), where the `lokf-agent-skills` come in,
   and why a vault is never migrated into a bundle. Corrected the previous
   README's claim that a repository root opened as a vault reaches the bundle
   through the `knowledge_bundle` link: per Obsidian's own help on symbolic
