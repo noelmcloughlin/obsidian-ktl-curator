@@ -6,6 +6,10 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Changed
+
+- **The ribbon and tab carry the trust ladder**, not Lucide's `gem`: two rungs - a draft, then checked by automation - under the check mark a person puts on top. Line art at Lucide's weight, in `currentColor`, so it sits with Obsidian's own icons and follows any theme. LOKF Registrar's is the same ladder without the check, since it never vouches for a record.
+
 ## [1.1.7] - 2026-09-19
 
 ### Fixed

@@ -7,6 +7,21 @@ import { handoffLabel } from "./trust-label";
 
 export const LOKF_CURATOR_VIEW_TYPE = "lokf-curator-view";
 
+export const LOKF_CURATOR_ICON = "lokf-trust-ladder-check";
+
+// The trust ladder, drawn for a 16px ribbon: two rungs - a draft, then checked
+// by automation - under the check mark a person puts on top. `addIcon` wants
+// the content of a `0 0 100 100` SVG, so the 64-unit mark is scaled to fit, and
+// `currentColor` lets the theme colour it. The full-colour mark is in .assets/.
+export const LOKF_CURATOR_ICON_SVG = `
+<g transform="scale(1.5625)" fill="none" stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M19.75 27 V56"/>
+  <path d="M44.25 27 V56"/>
+  <path d="M19.75 36 H44.25"/>
+  <path d="M19.75 47 H44.25"/>
+  <path d="M20 16 L29.5 23.5 L49.5 6.5"/>
+</g>`;
+
 function labelFor(record: TrustRecord): string {
   const bits: string[] = [];
   if (record.status === "deprecated") bits.push("retired");
@@ -55,7 +70,7 @@ export class LokfCuratorView extends ItemView {
     return "Curate";
   }
   getIcon() {
-    return "gem";
+    return LOKF_CURATOR_ICON;
   }
 
   async onOpen() {
