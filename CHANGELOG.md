@@ -6,6 +6,8 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-09-19
+
 ### Security
 
 - **The provenance gate reads a concept whatever its name.** Synced from the skills repository's v0.19.5 templates: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
