@@ -4,7 +4,7 @@ id: https://lokf-curator.example/knowledge/references/trust-fields
 title: Trust fields (lokf-curator skill)
 description: The exact rule for each plain-language trust label - the spec of record trust-engine.md implements, and the source the README's health-line chips and docs/for-the-curious.md's label table summarize.
 genre: reference
-resource: https://github.com/noelmcloughlin/lokf-agent-skills/blob/v0.19.2/skills/lokf-curator/references/trust-fields.md
+resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/v0.19.2/skills/lokf-curator/references/trust-fields.md
 about:
   - https://lokf-curator.example/knowledge/references/lokf-specification
 generated:

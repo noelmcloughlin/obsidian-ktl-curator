@@ -8,18 +8,43 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ### Fixed
 
-- **The bundle's reference audit no longer fails on an external source.** `just lokf-check-refs` matched ten relation predicates and flagged any IRI target with no type in the graph, so a `source:` or `definedBy:` holding an off-site URL - the usage both slots are documented for - was reported as a dangling target. Every one in this bundle happens to point at a concept, which is why it never fired.
-- **The audit covers the whole relation vocabulary.** Its predicate list had gone stale against the schema, missing `holder`, `measures`, `memberOf` and every reified `relations` entry. The recipe now calls `lokf validate --check-refs`, which reads the slots from the schema, so the list cannot drift again.
-- **The scheduled librarian checks the relations it writes.** Its own validate step, and the line it reports in the pull request, covered frontmatter shape only - so a fabricated target, the mistake an agent writing relations is likeliest to make, was left for the registrar gate to catch. It passes `--check-refs` now.
+- **An external `source` or `definedBy` is no longer flagged as dangling.** Both slots are documented as taking an off-site URL, but the audit reported any untyped IRI target as missing. Nothing in this bundle tripped it - every target happens to point at a concept.
+- **The predicate list cannot go stale again.** It had drifted against the schema, missing `holder`, `measures`, `memberOf` and every reified `relations` entry; `--check-refs` reads the slots from the schema instead.
+- **The scheduled librarian checks the relations it writes.** Its validate step covered frontmatter shape only, leaving a fabricated target - an agent's likeliest mistake - for the registrar gate to catch. It passes `--check-refs` now.
 
 ### Changed
 
-- **The registrar gate validates once.** Relation targets were a second step running `lokf validate` again through `uvx --from rust-just just`; `--check-refs` rides on the existing step instead, so the gate does the same work in one pass and downloads one package less. Copied from lokf-agent-skills' template ahead of the release the skills pin names, so the preflight reports this file as drifted until the pin moves.
+- **The registrar gate validates once.** `--check-refs` rides on the existing validate step, replacing a second `lokf validate` run through `uvx --from rust-just just`.
+
+## [1.1.5] - 2026-09-19
 
 ### Security
 
-- **The provenance gate reads a concept whatever its name.** Synced from lokf-agent-skills v0.19.5: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
-- **The scheduled librarian installs the v0.19.5 skill**, up from v0.19.2.
+- **The provenance gate reads a concept whatever its name.** Synced from the skills repository's v0.19.5 templates: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
+
+## [1.1.4] - 2026-09-19
+
+### Changed
+
+- **The scheduled librarian installs `v0.19.7`**, up from `v0.19.2`, so it runs the current skill rather than one five releases behind.
+- **`LOKF_SKILLS_REPO`/`LOKF_SKILLS_REF` are now `TRUST_LADDER_SKILLS_REPO`/`TRUST_LADDER_SKILLS_REF`**, following the skills repository's own rename: the names said "LOKF" for a repository now called `knowledge-trust-ladder`. The skills keep their `lokf-*` names.
+
+## [1.1.3] - 2026-09-19
+
+### Added
+
+- **The family logo**, `.assets/knowledge-trust-ladder-logo.svg`: a ladder rising out of an open book, its top rung the check mark, the rungs grey then amber then the curator's blue. Shared byte-for-byte with the other two repositories; beside the README title, and the mark to use as the repository avatar.
+- **Both diagrams carry the mark and the wordmark**, from the same shared definition.
+
+### Changed
+
+- **The diagrams no longer glare.** A pure-white canvas was the brightest thing on the page, with the tinted cards sitting below it; it is now the warm `#E4E1D7`, so the cards read as raised.
+- **Small grey labels are legible again**: the faint ink moved from `#888780` to `#6E6D66`, clearing 4.5:1 where it had been 3.6:1.
+- **The skills repository is now `knowledge-trust-ladder`**, formerly `lokf-agent-skills`: upstream LOKF ships its own bundled skills, and a third-party repository named after the format read as their official home.
+- **Every link here follows it**, and `LOKF_SKILLS_REPO` in the scheduled librarian names the new repository. The skill names, the pinned `LOKF_SKILLS_REF` and this plugin's own name are unchanged; GitHub redirects the old paths either way.
+- **A label hidden behind its own card.** The curator card's "a few at a time" was painted before the card that contains it; two labels in the plugins card came within 3px of their edges.
+- **Both diagrams match the skills repository's copies byte for byte.**
+- **The bundle's log keeps the name the skills repository had on each day.** The rename pass had rewritten entries written weeks before it; `CHANGELOG.md` was left alone, and the log is the bundle's own record.
 
 ## [1.1.2] - 2026-09-18
 

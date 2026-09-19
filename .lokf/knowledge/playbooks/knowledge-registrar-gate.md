@@ -29,12 +29,12 @@ verified:
 `.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI -
 keeping records well-formed and their provenance paperwork straight, never
 judging whether a claim is true. It is a copy of the `lokf-sidecar` template
-in `lokf-agent-skills`, byte-identical to it since the deviations this copy
-once carried - `persist-credentials: false` on its checkout, a top-level
-`permissions: {}`, its own wording of two comments - were taken into the
-template itself. It is currently copied from that template ahead of the
-release the `LOKF_SKILLS_REF` pin names, so the preflight's `copies` line
-reports it as drifted until the pin moves;
+in `knowledge-trust-ladder`. The deviations this copy once carried -
+`persist-credentials: false` on its checkout, a top-level `permissions: {}`,
+its own wording of two comments - were taken into the template itself. It is
+now *ahead* of that template instead: its validate step runs
+`lokf validate --check-refs`, which the template has yet to adopt, so the
+preflight's `copies` line reports it as drifted until that change lands there;
 the design with its stated limits is documented once, in the skills
 repository's shared threat model (`docs/threat-model.md`, since 2026-09-14 -
 this repository's own `SECURITY.md` links there rather than restating it).
