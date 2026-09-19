@@ -21,6 +21,12 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 - **Both diagrams match the skills repository's copies byte for byte.**
 - **The bundle's log keeps the name the skills repository had on each day.** The rename pass had rewritten entries written weeks before it; `CHANGELOG.md` was left alone, and the log is the bundle's own record.
 
+## [1.1.2] - 2026-09-18
+
+### Fixed
+
+- **Retitling a pull request re-runs the release checks.** The title check told the author to retitle, but the workflow listened only for the default pull-request types, so a title change fired nothing and the check stayed red whatever the author did. The trigger now names `edited`.
+
 ## [1.1.1] - 2026-09-17
 
 ### Security
