@@ -2,6 +2,21 @@
 
 ## 2026-09-19
 
+* **The logo now carries knowledge and trust.** The first mark was three rungs
+  alone: it drew *ladder* and left the other two words to the filename. The
+  ladder now rises out of an open book, and its top rung is the check mark in
+  the curator's blue, so the mark reads draft, checked, vouched-for from bottom
+  to top. Still byte-identical in all three repositories.
+
+* **Both diagrams carry the mark and the wordmark** in the top-left corner,
+  from the same shared definition.
+
+* **Text that collided with its own box.** A headless-Chrome pass measured
+  every label against its enclosing card: the curator card's "a few at a time"
+  was painted before the card and hidden behind it, and two labels in the
+  plugins card came within 3px of their edges. Both diagrams now match the
+  skills repository's copy byte for byte.
+
 * **Assets restacked, and the family logo added.** The diagrams' canvas was
   pure white while their cards were tinted, so the biggest area was the
   brightest and the cards read as sunken. The canvas is now `#E4E1D7` and the
