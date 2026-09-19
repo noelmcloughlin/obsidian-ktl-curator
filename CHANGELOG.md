@@ -8,8 +8,31 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ### Security
 
-- **The provenance gate reads a concept whatever its name.** Synced from lokf-agent-skills v0.19.5: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
-- **The scheduled librarian installs the v0.19.5 skill**, up from v0.19.2.
+- **The provenance gate reads a concept whatever its name.** Synced from the skills repository's v0.19.5 templates: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
+
+## [1.1.4] - 2026-09-19
+
+### Changed
+
+- **The scheduled librarian installs `v0.19.7`**, up from `v0.19.2`, so it runs the current skill rather than one five releases behind.
+- **`LOKF_SKILLS_REPO`/`LOKF_SKILLS_REF` are now `TRUST_LADDER_SKILLS_REPO`/`TRUST_LADDER_SKILLS_REF`**, following the skills repository's own rename: the names said "LOKF" for a repository now called `knowledge-trust-ladder`. The skills keep their `lokf-*` names.
+
+## [1.1.3] - 2026-09-19
+
+### Added
+
+- **The family logo**, `.assets/knowledge-trust-ladder-logo.svg`: a ladder rising out of an open book, its top rung the check mark, the rungs grey then amber then the curator's blue. Shared byte-for-byte with the other two repositories; beside the README title, and the mark to use as the repository avatar.
+- **Both diagrams carry the mark and the wordmark**, from the same shared definition.
+
+### Changed
+
+- **The diagrams no longer glare.** A pure-white canvas was the brightest thing on the page, with the tinted cards sitting below it; it is now the warm `#E4E1D7`, so the cards read as raised.
+- **Small grey labels are legible again**: the faint ink moved from `#888780` to `#6E6D66`, clearing 4.5:1 where it had been 3.6:1.
+- **The skills repository is now `knowledge-trust-ladder`**, formerly `lokf-agent-skills`: upstream LOKF ships its own bundled skills, and a third-party repository named after the format read as their official home.
+- **Every link here follows it**, and `LOKF_SKILLS_REPO` in the scheduled librarian names the new repository. The skill names, the pinned `LOKF_SKILLS_REF` and this plugin's own name are unchanged; GitHub redirects the old paths either way.
+- **A label hidden behind its own card.** The curator card's "a few at a time" was painted before the card that contains it; two labels in the plugins card came within 3px of their edges.
+- **Both diagrams match the skills repository's copies byte for byte.**
+- **The bundle's log keeps the name the skills repository had on each day.** The rename pass had rewritten entries written weeks before it; `CHANGELOG.md` was left alone, and the log is the bundle's own record.
 
 ## [1.1.2] - 2026-09-18
 
