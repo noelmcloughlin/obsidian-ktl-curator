@@ -1,5 +1,38 @@
 # Change Log
 
+## 2026-09-19
+
+* **The logo now carries knowledge and trust.** The first mark was three rungs
+  alone: it drew *ladder* and left the other two words to the filename. The
+  ladder now rises out of an open book, and its top rung is the check mark in
+  the curator's blue, so the mark reads draft, checked, vouched-for from bottom
+  to top. Still byte-identical in all three repositories.
+
+* **Both diagrams carry the mark and the wordmark** in the top-left corner,
+  from the same shared definition.
+
+* **Text that collided with its own box.** A headless-Chrome pass measured
+  every label against its enclosing card: the curator card's "a few at a time"
+  was painted before the card and hidden behind it, and two labels in the
+  plugins card came within 3px of their edges. Both diagrams now match the
+  skills repository's copy byte for byte.
+
+* **Assets restacked, and the family logo added.** The diagrams' canvas was
+  pure white while their cards were tinted, so the biggest area was the
+  brightest and the cards read as sunken. The canvas is now `#E4E1D7` and the
+  faint ink `#6E6D66`, which also lifts 10px grey labels past 4.5:1. New
+  `.assets/knowledge-trust-ladder-logo.svg`, identical in all three
+  repositories. The `.assets/*.svg` source-map row covers it.
+
+* **Skills repository renamed to `knowledge-trust-ladder`**, from
+  `lokf-agent-skills`, because upstream LOKF now ships its own bundled skills.
+  Every deep link and the scheduled librarian's `LOKF_SKILLS_REPO` follow it,
+  in one mechanical pass; no `verified` event changed. This plugin's own name,
+  id and `base_iri` are untouched - only references to the skills repository
+  moved. Concepts naming it in prose were rewritten by the same pass; entries
+  below this day keep the name the skills repository had when they were
+  written, as `CHANGELOG.md` does.
+
 ## 2026-09-18
 
 * **Resources repinned off runtime state**: `references/trust-fields.md`

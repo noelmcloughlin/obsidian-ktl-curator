@@ -3,7 +3,7 @@ name: Lint & docs
 # Static checks for the shell, workflows, and prose this repo ships. These
 # never touch the Node build (see build.yml) or the LOKF bundle's own
 # semantics (see knowledge-registrar.yaml) - this is the CI-hardening pass
-# backported from lokf-agent-skills's validate.yml (FIXES.md F1-F3).
+# backported from knowledge-trust-ladder's validate.yml (FIXES.md F1-F3).
 on:
   # push and pull_request both firing on every branch used to run this
   # workflow twice for the same commit - once on landing, again when the PR

@@ -37,7 +37,7 @@ it fed and log the removal.
 | `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml` | the release pipeline - version computed from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading both workflow files; `CONTRIBUTING.md`'s own "Releasing" section is now only a pointer to the skills repository's `docs/releasing.md`, so it is no longer this row's resource |
 | `.github/pull_request_template.md` | the PR checklist - `CONTRIBUTING.md`'s own text calls it "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` doesn't already cover |
 | `docs/for-the-curious.md` (moved out of `README.md`'s former "For the curious" section) | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `lokf-registrar` |
-| `.assets/*.svg` | the README's card and two-vaults pictures | - | decorative, consciously excluded as concepts; re-check only that the row still applies if an image starts carrying a claim the README does not |
+| `.assets/*.svg` | the README's card and two-vaults pictures, and the shared logo mark | - | decorative, consciously excluded as concepts; re-check only that the row still applies if an image starts carrying a claim the README does not |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
 | <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
 | <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uv pip index versions lokf` |
@@ -59,7 +59,7 @@ repository's `SECURITY.md`" and "`SECURITY.md` links to the skills repository
 for that design" - both now point at the skills repository's threat model by
 name, since that is where the design actually lives; `SECURITY.md` here only
 links to it. This repository has no `policies/security.md` concept of its
-own (unlike `lokf-agent-skills`, which does) - `SECURITY.md` has always been
+own (unlike `knowledge-trust-ladder`, which does) - `SECURITY.md` has always been
 covered only as a `sources` entry on `no-telemetry.md` and
 `knowledge-registrar-gate.md`, so no new concept was needed. `lokf` on PyPI
 is still `0.7.0`, matching the floor; `.lokf/feedback.md` has no entries.
@@ -141,7 +141,7 @@ PyPI's `lokf` is still `0.7.0`; no floor bump.
 **2026-09-13 (evening)**: swept the commits since the prior pass
 (`knowledge-registrar.yaml` gaining the template's `provenance` and
 `attestation` jobs, `SECURITY.md` restructured to inherit the guard design
-from `lokf-agent-skills`, two README images) and the session's uncommitted
+from `knowledge-trust-ladder`, two README images) and the session's uncommitted
 README rewrite around usage. Added the two workflow rows above and
 `playbooks/knowledge-registrar-gate.md`; removed the `CUR.md` row - that
 file was deleted in the fork parent's 0.2.0 and this repository has never

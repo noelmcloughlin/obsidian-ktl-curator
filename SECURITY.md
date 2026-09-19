@@ -1,6 +1,6 @@
 # Security Policy
 
-*This file is a policy, not a threat model. It says how to report, what the plugin promises, and what holds each surface in this repository, a line or two each that links to where the reasoning lives - a workflow header, the skills repository's [threat model](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/threat-model.md) - and `npm run check` holds it to a word budget so it stays that way.*
+*This file is a policy, not a threat model. It says how to report, what the plugin promises, and what holds each surface in this repository, a line or two each that links to where the reasoning lives - a workflow header, the skills repository's [threat model](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/threat-model.md) - and `npm run check` holds it to a word budget so it stays that way.*
 
 ## Reporting a vulnerability
 
@@ -29,17 +29,17 @@ Every workflow pins its actions to commit SHAs, declares `permissions: {}` at th
 | Surface | What holds it |
 | --- | --- |
 | `build.yml`, `lint-and-docs.yaml` | Read-only: build, lint and smoke test; ShellCheck, `actionlint`, markdownlint, link check and codespell. |
-| `knowledge-registrar.yaml` | Read-only, the template's jobs unchanged. Its `provenance` job accepts a newly added `human:` confirmation only with an approving review or a verified signature on the commit. [Human attribution](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/threat-model.md#human-attribution-human-is-a-claim-not-a-credential). |
-| `semantic-release.yml`, `release.yml` | The one path that writes to `main`, behind the `release` Environment. The tag must match `manifest.json`, the release is a **draft** for a person to publish, and build provenance is attested. [How the LOKF repositories release](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/releasing.md). |
-| `knowledge-librarian.yaml` and `.lokf/scripts/knowledge-librarian.sh` | The `lokf-sidecar` template's jobs and checks, plus `persist-credentials: false` on the read-only checkout. The agent runs with no write token and no credential on disk; only `publish`, which runs no agent code, can write, and it confines the patch to `.lokf/knowledge/` and `.lokf/feedback.md` and refuses a `human:` claim. Armed only while `KNOWLEDGE_LIBRARIAN_ENABLED` is `true`; `AGENT_CLI` picks the agent, never the command; `schedule` and `workflow_dispatch` only. [Prompt-injection guards](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/threat-model.md#prompt-injection-guards). |
+| `knowledge-registrar.yaml` | Read-only, the template's jobs unchanged. Its `provenance` job accepts a newly added `human:` confirmation only with an approving review or a verified signature on the commit. [Human attribution](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/threat-model.md#human-attribution-human-is-a-claim-not-a-credential). |
+| `semantic-release.yml`, `release.yml` | The one path that writes to `main`, behind the `release` Environment. The tag must match `manifest.json`, the release is a **draft** for a person to publish, and build provenance is attested. [How the LOKF repositories release](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/releasing.md). |
+| `knowledge-librarian.yaml` and `.lokf/scripts/knowledge-librarian.sh` | The `lokf-sidecar` template's jobs and checks, plus `persist-credentials: false` on the read-only checkout. The agent runs with no write token and no credential on disk; only `publish`, which runs no agent code, can write, and it confines the patch to `.lokf/knowledge/` and `.lokf/feedback.md` and refuses a `human:` claim. Armed only while `KNOWLEDGE_LIBRARIAN_ENABLED` is `true`; `AGENT_CLI` picks the agent, never the command; `schedule` and `workflow_dispatch` only. [Prompt-injection guards](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/threat-model.md#prompt-injection-guards). |
 | `README.md`, `llms.txt`, `src/`, `.lokf/knowledge/`, `.lokf/feedback.md` | What the librarian reads. `feedback.md` is the one input a stranger can write; the skill treats it as content to inspect, never instructions to follow. |
 
 If every inherited guard failed, the worst case is a pull request confined to the bundle, which only the maintainer can merge, after reading it. Nothing on that path reaches `src/`, a release artifact or a published release.
 
-`main` blocks deletion and force-pushes and requires linear history, deliberately nothing more; secret scanning and push protection are on; CodeQL is off because nothing here has a network surface or a runtime dependency. The reasons are under [Repository hardening](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/threat-model.md#repository-hardening).
+`main` blocks deletion and force-pushes and requires linear history, deliberately nothing more; secret scanning and push protection are on; CodeQL is off because nothing here has a network surface or a runtime dependency. The reasons are under [Repository hardening](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/threat-model.md#repository-hardening).
 
 ## Not covered
 
-- The librarian template's design, which is `lokf-agent-skills`' and reaches here on the next `LOKF_SKILLS_REF` bump. `diff` the two files against `skills/lokf-sidecar/templates/` there to confirm the copy.
+- The librarian template's design, which is `knowledge-trust-ladder`'s and reaches here on the next `LOKF_SKILLS_REF` bump. `diff` the two files against `skills/lokf-sidecar/templates/` there to confirm the copy.
 - A compromised runner, upstream action or agent harness: this is a baseline, not a sandbox. Report a finding in one anyway, with scope and reproduction.
 - Whether a bundle is *true*. [AI_COVENANT.md](AI_COVENANT.md) sets the human-accountability rules this automation runs under.
