@@ -8,6 +8,7 @@ resource: .github/workflows/knowledge-registrar.yaml
 sources:
   - resource: .github/workflows/knowledge-registrar.yaml
   - resource: .lokf/scripts/knowledge-conventions.sh
+  - resource: .lokf/justfile
   - resource: SECURITY.md
 relatedTo:
   - https://lokf-curator.example/knowledge/services/edits-engine
@@ -16,11 +17,11 @@ dependsOn:
   - https://lokf-curator.example/knowledge/references/lokf-toolkit
 generated:
   by: process:lokf-librarian
-  at: "2026-09-14T17:30:00Z"
+  at: "2026-09-19T00:00:00Z"
 status: draft
 verified:
   - by: process:lokf-librarian
-    at: "2026-09-14T17:30:00Z"
+    at: "2026-09-19T00:00:00Z"
 ---
 
 # Overview
@@ -28,9 +29,12 @@ verified:
 `.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI -
 keeping records well-formed and their provenance paperwork straight, never
 judging whether a claim is true. It is a copy of the `lokf-sidecar` template
-in `lokf-agent-skills`; the copy here adds only `persist-credentials: false`
-on its checkout, a top-level `permissions: {}`, and its own wording of two
-comments, the harden-runner note and the `provenance` job's signing setup;
+in `lokf-agent-skills`, byte-identical to it since the deviations this copy
+once carried - `persist-credentials: false` on its checkout, a top-level
+`permissions: {}`, its own wording of two comments - were taken into the
+template itself. It is currently copied from that template ahead of the
+release the `LOKF_SKILLS_REF` pin names, so the preflight's `copies` line
+reports it as drifted until the pin moves;
 the design with its stated limits is documented once, in the skills
 repository's shared threat model (`docs/threat-model.md`, since 2026-09-14 -
 this repository's own `SECURITY.md` links there rather than restating it).
@@ -39,16 +43,21 @@ request that touches `.lokf/**`, `knowledge_bundle/**` or the workflow
 itself, on a Monday 06:00 UTC schedule, and on demand. Three jobs:
 
 **`validate` - "Validate the LOKF bundle".** `uv sync` in `.lokf/`, then
-`uv run lokf validate knowledge` - the same check `just lokf-validate` runs
-locally. Two more steps close what that check cannot see: `bash
-scripts/knowledge-conventions.sh knowledge` (the sidecar's own script - one
-ISO-date `log.md` heading per day, quoted timestamps, `verified` as a list
-carrying at most one `process:lokf-librarian` event, and `## Open questions`
-bullets in the curator's shape - a concept body is opaque to `lokf validate`,
-which never opens `log.md`), then `uvx --from 'rust-just==1.47.0' just
-lokf-check-refs` (the justfile's SPARQL query - every typed-relation target
-resolves to a real concept in the bundle, which a well-formed but fabricated
-or stale IRI would otherwise pass silently).
+`uv run lokf validate --check-refs knowledge` - what `just lokf-validate` and
+`just lokf-check-refs` run locally. Schema validation, plus: every
+typed-relation target in the bundle's own namespace resolves to a real
+concept, which a well-formed but fabricated or stale IRI would otherwise pass
+silently; a target outside `base_iri` is left alone, since `source` and
+`definedBy` are documented as taking an external resource. One more step
+closes what neither can see: `bash scripts/knowledge-conventions.sh knowledge`
+(the sidecar's own script - one ISO-date `log.md` heading per day, quoted
+timestamps, `verified` as a list carrying at most one
+`process:lokf-librarian` event, and `## Open questions` bullets in the
+curator's shape - a concept body is opaque to `lokf validate`, which never
+opens `log.md`). Until 2026-09-19 the reference check was a third step,
+running the justfile's recipe through `uvx --from rust-just just`;
+`--check-refs` is part of `lokf validate`, so it rides on the first step and
+the runner needs no `just`.
 
 **`provenance` - "Check new human confirmations".** Pull requests only;
 `contents: read`, `pull-requests: read`. A `verified` event whose actor is

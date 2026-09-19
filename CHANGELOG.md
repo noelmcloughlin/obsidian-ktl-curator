@@ -6,6 +6,16 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Fixed
+
+- **The bundle's reference audit no longer fails on an external source.** `just lokf-check-refs` matched ten relation predicates and flagged any IRI target with no type in the graph, so a `source:` or `definedBy:` holding an off-site URL - the usage both slots are documented for - was reported as a dangling target. Every one in this bundle happens to point at a concept, which is why it never fired.
+- **The audit covers the whole relation vocabulary.** Its predicate list had gone stale against the schema, missing `holder`, `measures`, `memberOf` and every reified `relations` entry. The recipe now calls `lokf validate --check-refs`, which reads the slots from the schema, so the list cannot drift again.
+- **The scheduled librarian checks the relations it writes.** Its own validate step, and the line it reports in the pull request, covered frontmatter shape only - so a fabricated target, the mistake an agent writing relations is likeliest to make, was left for the registrar gate to catch. It passes `--check-refs` now.
+
+### Changed
+
+- **The registrar gate validates once.** Relation targets were a second step running `lokf validate` again through `uvx --from rust-just just`; `--check-refs` rides on the existing step instead, so the gate does the same work in one pass and downloads one package less. Copied from lokf-agent-skills' template ahead of the release the skills pin names, so the preflight reports this file as drifted until the pin moves.
+
 ### Security
 
 - **The provenance gate reads a concept whatever its name.** Synced from lokf-agent-skills v0.19.5: both gates list paths with `core.quotePath` off and refuse a path git still has to quote, so a `human:` confirmation in a non-ASCII-named concept no longer passes unread.
