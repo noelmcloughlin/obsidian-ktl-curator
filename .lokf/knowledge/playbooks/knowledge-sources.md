@@ -59,7 +59,7 @@ repository's `SECURITY.md`" and "`SECURITY.md` links to the skills repository
 for that design" - both now point at the skills repository's threat model by
 name, since that is where the design actually lives; `SECURITY.md` here only
 links to it. This repository has no `policies/security.md` concept of its
-own (unlike `lokf-agent-skills`, which does) - `SECURITY.md` has always been
+own (unlike `knowledge-trust-ladder`, which does) - `SECURITY.md` has always been
 covered only as a `sources` entry on `no-telemetry.md` and
 `knowledge-registrar-gate.md`, so no new concept was needed. `lokf` on PyPI
 is still `0.7.0`, matching the floor; `.lokf/feedback.md` has no entries.
@@ -141,7 +141,7 @@ PyPI's `lokf` is still `0.7.0`; no floor bump.
 **2026-09-13 (evening)**: swept the commits since the prior pass
 (`knowledge-registrar.yaml` gaining the template's `provenance` and
 `attestation` jobs, `SECURITY.md` restructured to inherit the guard design
-from `lokf-agent-skills`, two README images) and the session's uncommitted
+from `knowledge-trust-ladder`, two README images) and the session's uncommitted
 README rewrite around usage. Added the two workflow rows above and
 `playbooks/knowledge-registrar-gate.md`; removed the `CUR.md` row - that
 file was deleted in the fork parent's 0.2.0 and this repository has never

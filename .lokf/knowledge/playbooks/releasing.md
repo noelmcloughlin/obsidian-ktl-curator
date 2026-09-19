@@ -54,6 +54,6 @@ so a malformed commit message or a broken exec script surfaces in review.
 
 `CONTRIBUTING.md` no longer carries this detail itself: its own "Releasing"
 section is now a short pointer to
-[how the LOKF repositories release](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/releasing.md)
+[how the LOKF repositories release](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/releasing.md)
 in the skills repository, which is why this concept's `resource` is the
 workflow files rather than `CONTRIBUTING.md`.

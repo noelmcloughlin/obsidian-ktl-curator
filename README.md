@@ -11,9 +11,9 @@ An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** m
   <img src=".assets/lokf-obsidian-plugins-card.svg" alt="The five LOKF roles, and which two are Obsidian plugins" width="720" />
 </p>
 
-A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](https://lokf.nolan-nichols.com/) (LOKF): one concept per note, a few properties on each, and an `index.md` at the root that names the bundle. The [`lokf-agent-skills`](https://github.com/noelmcloughlin/lokf-agent-skills) build one beside whatever they are run on, with every record marked a draft until a person has read it against its source. That person is the **curator**, always a human, and often not the person who runs agents or terminals; this plugin is the curator's assistant, the `lokf-curator` skill's review session done at a desk in Obsidian instead of in a terminal - the same five verbs, the same fields written. Its sibling [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The whole cast is in the skills' README under [the fifth role](https://github.com/noelmcloughlin/lokf-agent-skills#the-fifth-role-which-is-not-a-skill); for anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/docs/three-lines.md) says where the rest sit. Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
+A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](https://lokf.nolan-nichols.com/) (LOKF): one concept per note, a few properties on each, and an `index.md` at the root that names the bundle. The [`knowledge-trust-ladder`](https://github.com/noelmcloughlin/knowledge-trust-ladder) build one beside whatever they are run on, with every record marked a draft until a person has read it against its source. That person is the **curator**, always a human, and often not the person who runs agents or terminals; this plugin is the curator's assistant, the `lokf-curator` skill's review session done at a desk in Obsidian instead of in a terminal - the same five verbs, the same fields written. Its sibling [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The whole cast is in the skills' README under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder#the-fifth-role-which-is-not-a-skill); for anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit. Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
 
-> **Prefer to ask?** Install the docent skill into any agent you already use - `npx skills add noelmcloughlin/lokf-agent-skills --skill lokf-docent --yes` - and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
+> **Prefer to ask?** Install the docent skill into any agent you already use - `npx skills add noelmcloughlin/knowledge-trust-ladder --skill lokf-docent --yes` - and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
 
 ## Two vaults
 
@@ -23,7 +23,7 @@ Your everyday vault is the **workshop**. The bundle is the **exhibition**: a sec
   <img src=".assets/lokf-two-vaults.svg" alt="Workshop vault and exhibition vault, one folder, no shared index" width="720" />
 </p>
 
-How the link behaves on each host - Windows junctions, synced drives that drop links, what Obsidian's file reconciler does with it - is the skills' business, and recorded once in their playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md). If the link is missing, `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows) makes it, or open `.lokf/knowledge` by path.
+How the link behaves on each host - Windows junctions, synced drives that drop links, what Obsidian's file reconciler does with it - is the skills' business, and recorded once in their playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md). If the link is missing, `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows) makes it, or open `.lokf/knowledge` by path.
 
 ## Quick start
 
@@ -36,7 +36,7 @@ How the link behaves on each host - Windows junctions, synced drives that drop l
 
 **The panel** opens from the status bar, the ribbon, or **Open curator panel**:
 
-- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These overlap by design; only the total is a total. What each label rests on is in the skills' README under [Trust stays visible](https://github.com/noelmcloughlin/lokf-agent-skills#trust-stays-visible), and the exact rule per label in [docs/for-the-curious.md](docs/for-the-curious.md#the-trust-labels-and-the-fields-they-come-from).
+- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These overlap by design; only the total is a total. What each label rests on is in the skills' README under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder#trust-stays-visible), and the exact rule per label in [docs/for-the-curious.md](docs/for-the-curious.md#the-trust-labels-and-the-fields-they-come-from).
 - **Worth ten minutes today**: up to five concepts, ranked by what most needs a person - past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each, most-relied-upon first.
 - **Open questions the librarian left**: what a previous pass flagged and could not settle alone.
 - The **active note**, pinned, with its labels and a *Review this note* button.
@@ -80,7 +80,7 @@ Inside a bundle, a note without trust fields is simply *nobody has checked this 
 
 Two settings widen that under *Settings → Scope*:
 
-- **Bundle root folders** - for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue; *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions - which is why the skills lay the bundle down as a separate vault instead (the playbook's [last section](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why).
+- **Bundle root folders** - for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue; *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions - which is why the skills lay the bundle down as a separate vault instead (the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why).
 - **Treat the vault root as the bundle** - a break-glass switch for a vault that really is a bundle but whose root `index.md` has no header yet.
 
 A folder inside a dot-folder is accepted but only read if something has put it in Obsidian's index (the community plugin *Hidden Folders Access* does that); otherwise the report says so rather than showing an empty bundle.
@@ -102,7 +102,7 @@ Under **Settings → LOKF Curator**; every setting is also reachable through Obs
 - **Who is curating** - the curator id.
 - **In-editor** - the tier badge and the autocomplete, both on by default.
 - **Scope** - the bundle-root settings above, and excluded folders.
-- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/lokf-agent-skills/blob/main/skills/lokf-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as LOKF Registrar's *Known LOKF types*.
+- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/lokf-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as LOKF Registrar's *Known LOKF types*.
 - **Review intervals** - months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
 - **Queue** - how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
 - **Feedback** - an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](docs/for-the-curious.md#on-the-feedback-file)).
@@ -140,7 +140,7 @@ docs/               the reasoning behind the labels
 
 ## This repository's own bundle
 
-This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained by the `lokf-agent-skills`, which a scheduled [workflow](.github/workflows/knowledge-librarian.yaml) installs at run time. It is what the docent answers from, and none of it is part of the plugin. To contribute to it, [CONTRIBUTING.md](CONTRIBUTING.md#development-setup) says which skills that takes.
+This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained by the `knowledge-trust-ladder`, which a scheduled [workflow](.github/workflows/knowledge-librarian.yaml) installs at run time. It is what the docent answers from, and none of it is part of the plugin. To contribute to it, [CONTRIBUTING.md](CONTRIBUTING.md#development-setup) says which skills that takes.
 
 ## Credits
 
@@ -149,7 +149,7 @@ This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained b
 - [Introducing the Open Knowledge Bundle, Google blog](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing), creator of the Open Knowledge Format specification.
 - [LLM Wiki, Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), a pattern for building personal knowledge bases using LLMs.
 - [obsidian-sample-plugin](https://github.com/obsidianmd/obsidian-sample-plugin), whose build, lint and release layout this repository follows.
-- [lokf-agent-skills](https://github.com/noelmcloughlin/lokf-agent-skills), the `lokf-curator` skill this plugin implements as an in-editor workflow, and whose trust model and plain-language labels it shares.
+- [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), the `lokf-curator` skill this plugin implements as an in-editor workflow, and whose trust model and plain-language labels it shares.
 - [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar), the sibling plugin, this one's fork parent, and the source of the shared bundle-root plumbing in `src/bundle.ts`.
 
 Nothing else records a person's verdict in LOKF's trust fields, as far as we know. Validators for the plain OKF v0.2 layer beneath it, such as [OKF Enforcer](https://github.com/MartinForReal/okf-enforcer), check well-formedness only and are unrelated to curation.

@@ -28,7 +28,7 @@ verified:
 `.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI -
 keeping records well-formed and their provenance paperwork straight, never
 judging whether a claim is true. It is a copy of the `lokf-sidecar` template
-in `lokf-agent-skills`; the copy here adds only `persist-credentials: false`
+in `knowledge-trust-ladder`; the copy here adds only `persist-credentials: false`
 on its checkout, a top-level `permissions: {}`, and its own wording of two
 comments, the harden-runner note and the `provenance` job's signing setup;
 the design with its stated limits is documented once, in the skills

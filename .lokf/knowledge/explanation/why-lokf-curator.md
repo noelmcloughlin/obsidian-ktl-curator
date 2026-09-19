@@ -18,7 +18,7 @@ verified:
     at: "2026-09-14T09:30:00Z"
 ---
 
-The companion `lokf-agent-skills` project describes four trust tiers a claim
+The companion `knowledge-trust-ladder` project describes four trust tiers a claim
 can earn: schema-valid, source-consistent, human-confirmed, proven-in-use.
 `lokf-registrar` (a separate plugin) checks the first tier as you write. This
 plugin is the in-editor counterpart of the **human-confirmed** tier - the

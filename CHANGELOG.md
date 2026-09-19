@@ -6,6 +6,10 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Changed
+
+- **The skills repository is now `knowledge-trust-ladder`**, formerly `lokf-agent-skills`: upstream LOKF ships its own bundled skills, and a third-party repository named after the format read as their official home. Every link here follows it, and `LOKF_SKILLS_REPO` in the scheduled librarian points at the new name. The skill names, the pinned `LOKF_SKILLS_REF` tag and this plugin's own name are unchanged; GitHub redirects the old paths either way.
+
 ## [1.1.1] - 2026-09-17
 
 ### Security
