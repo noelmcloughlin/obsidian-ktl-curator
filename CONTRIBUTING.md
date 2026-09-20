@@ -15,6 +15,8 @@ npm install
 npm run dev      # esbuild watch mode, rebuilding src/main.ts -> main.js
 ```
 
+`obsidian` peer-depends on an exact `@codemirror/state` and `@codemirror/view`, which no bump of either can satisfy; `overrides` in `package.json` points both at this project's own spec (`$@codemirror/state`) so a Dependabot bump resolves instead of failing `ERESOLVE`. Keep the reference form - a pinned range there drifts from the dependency it overrides.
+
 `main.js` is generated and git-ignored, so a fresh clone has none and Obsidian reports "Failed to load plugin" until you build. To test in a real vault, clone into `<your-vault>/.obsidian/plugins/lokf-curator/`, or copy `main.js`, `manifest.json` and `styles.css` there, then reload Obsidian; the [Hot Reload](https://github.com/pjeby/hot-reload) plugin speeds up iteration. For a realistic bundle to test against, point a scratch vault at any project's `.lokf/knowledge/` directory - its root `index.md` carries the `base_iri` this plugin mints and checks ids against.
 
 This repository's own `.lokf/` bundle - the documentation *about this repo* - is maintained with [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), which nothing in the plugin depends on. CI installs the librarian at run time, at the release `TRUST_LADDER_SKILLS_REF` in [`knowledge-librarian.yaml`](.github/workflows/knowledge-librarian.yaml) names; to edit the bundle locally, install `lokf-librarian` and `lokf-curator` as the skills' README shows. Skills are never committed: `.agents/`, `.claude/` and `skills-lock.json` are git-ignored.
