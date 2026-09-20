@@ -1,5 +1,5 @@
 // main.ts - LOKF Curator plugin entry point.
-import { App, Modal, Notice, Plugin, Setting, TFile, TFolder, type TAbstractFile, type WorkspaceLeaf, debounce, parseYaml } from "obsidian";
+import { App, Modal, Notice, Plugin, Setting, TFile, TFolder, type TAbstractFile, type WorkspaceLeaf, addIcon, debounce, parseYaml } from "obsidian";
 import {
   bundleLogPath,
   bundleRootIndexPath,
@@ -48,7 +48,12 @@ import {
   upsertCurationLine,
   type CurationTally,
 } from "./edits";
-import { LokfCuratorView, LOKF_CURATOR_VIEW_TYPE } from "./curator-view";
+import {
+  LokfCuratorView,
+  LOKF_CURATOR_ICON,
+  LOKF_CURATOR_ICON_SVG,
+  LOKF_CURATOR_VIEW_TYPE,
+} from "./curator-view";
 import { trustLabel, handoffLabel, type TrustLabel } from "./trust-label";
 import { lokfTrustMarkerExtension } from "./inline";
 import { LokfCuratorSuggest, type SuggestVocabulary } from "./suggest";
@@ -254,6 +259,8 @@ export default class LokfCuratorPlugin extends Plugin {
   async onload(): Promise<void> {
     await this.loadSettings();
 
+    addIcon(LOKF_CURATOR_ICON, LOKF_CURATOR_ICON_SVG);
+
     this.registerView(LOKF_CURATOR_VIEW_TYPE, (leaf) => new LokfCuratorView(leaf, this));
 
     this.statusEl = this.addStatusBarItem();
@@ -262,7 +269,7 @@ export default class LokfCuratorPlugin extends Plugin {
     this.statusEl.setAttribute("aria-label", "LOKF Curator - click to open");
     this.statusEl.onClickEvent(() => void this.activateView());
 
-    this.addRibbonIcon("gem", "Curate", () => void this.activateView());
+    this.addRibbonIcon(LOKF_CURATOR_ICON, "Curate", () => void this.activateView());
 
     this.addCommand({
       id: "open-curator",

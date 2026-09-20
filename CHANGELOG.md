@@ -6,26 +6,9 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- **A dark counterpart for all three diagrams**, `*-dark.svg` beside each original. Same geometry and wording; only the palette differs, re-toned role for role from the light one. Shared byte-for-byte with the other repositories.
-- **The README picks by theme.** Each diagram is a `<picture>` with a `prefers-color-scheme: dark` source over the existing file, so the light original stays the fallback and its path is unchanged.
-
-### Fixed
-
-- **A dark copy carries no stale content credential.** The originals embed a C2PA manifest that signs their own bytes; recolouring changes those, so the copies ship without one rather than with a signature that cannot verify.
-
-## [1.1.9] - 2026-09-20
-
-### Fixed
-
-- **The description fits Obsidian's 250 characters and names LOKF.** It was 260 and never said LOKF or OKF; it now calls the plugin the curator's assistant. The manifest, the package and the community listing entry carry the same sentence.
-
-## [1.1.8] - 2026-09-20
-
-### Fixed
-
-- **The type-check survives a TypeScript 7 / `@types/node` 26 bump.** `moduleResolution: "bundler"` drops the `"node"` package.json export condition by design; a newer `@types/node` gates its `node:fs`/`node:path`/`node:url` subpaths on that condition, so `scripts/smoke-test.ts`'s plain-Node imports stopped resolving. `customConditions: ["node"]` in `tsconfig.json` re-adds it. `lib` moves to `ES2022` for `Array.prototype.at()`, already used in three files; `esbuild.config.mjs`'s own output target is unaffected.
+- **The ribbon and tab carry the trust ladder**, not Lucide's `gem`: two rungs - a draft, then checked by automation - under the check mark a person puts on top. Line art at Lucide's weight, in `currentColor`, so it sits with Obsidian's own icons and follows any theme. LOKF Registrar's is the same ladder without the check, since it never vouches for a record.
 
 ## [1.1.7] - 2026-09-19
 
