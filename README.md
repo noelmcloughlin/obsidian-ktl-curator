@@ -1,5 +1,5 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".assets/knowledge-trust-ladder-logo-dark.svg">
+  <source media="(prefers-color-scheme: dark)" srcset=".assets/knowledge-trust-ladder-logo-dimmed.svg">
   <img src=".assets/knowledge-trust-ladder-logo.svg" alt="" width="56" align="right" />
 </picture>
 
@@ -14,7 +14,7 @@ An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** m
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-obsidian-plugins-card-dark.svg">
+    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-obsidian-plugins-card-dimmed.svg">
     <img src=".assets/lokf-obsidian-plugins-card.svg" alt="The five LOKF roles, and which two are Obsidian plugins" width="720" />
   </picture>
 </p>
@@ -29,7 +29,7 @@ Your everyday vault is the **workshop**. The bundle is the **exhibition**: a sec
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-two-vaults-dark.svg">
+    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-two-vaults-dimmed.svg">
     <img src=".assets/lokf-two-vaults.svg" alt="Workshop vault and exhibition vault, one folder, no shared index" width="720" />
   </picture>
 </p>

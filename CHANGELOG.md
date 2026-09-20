@@ -6,6 +6,19 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 ## [Unreleased]
 
+### Added
+
+- **A dimmed counterpart for all three diagrams**, `*-dimmed.svg` beside each original: the same geometry on warm grey paper rather than a dark one. Shared byte-for-byte with the other repositories.
+
+### Changed
+
+- **The dark-mode source is the dimmed set.** Each `prefers-color-scheme: dark` source now points at `*-dimmed.svg`; the `*-dark.svg` files from 1.2.0 stay in `.assets/` but nothing references them.
+
+### Fixed
+
+- **The dimmed ink follows the dimmed paper.** The light diagrams sit right on 4.5:1, so darkening only the backgrounds would have dropped every faint label under it.
+- **Three labels that never met 4.5:1 now do**, on the greyed-out roles in the plugin card - the darker ink reaches them as well.
+
 ## [1.2.0] - 2026-09-20
 
 ### Added
