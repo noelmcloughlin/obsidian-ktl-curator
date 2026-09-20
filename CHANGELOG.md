@@ -9,6 +9,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 ### Fixed
 
 - **The description fits Obsidian's 250 characters and names LOKF.** It was 260 and never said LOKF or OKF; it now calls the plugin the curator's assistant. The manifest, the package and the community listing entry carry the same sentence.
+
 ## [1.1.8] - 2026-09-20
 
 ### Fixed
