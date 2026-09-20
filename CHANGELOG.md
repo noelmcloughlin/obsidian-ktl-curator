@@ -14,6 +14,7 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 ### Fixed
 
 - **A dark copy carries no stale content credential.** The originals embed a C2PA manifest that signs their own bytes; recolouring changes those, so the copies ship without one rather than with a signature that cannot verify.
+
 ## [1.1.9] - 2026-09-20
 
 ### Fixed
