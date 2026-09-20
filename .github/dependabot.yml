@@ -26,6 +26,15 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: "development"
+    # Majors held back: eslint-plugin-obsidianmd needs @eslint/js ^9 and
+    # crashes under TypeScript 7, which drops the JS compiler API it reads.
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
 
   # The .lokf/ sidecar's Python toolchain (the `lokf` package). Kept separate
   # from the npm tree above: it maintains this repo's knowledge bundle and has

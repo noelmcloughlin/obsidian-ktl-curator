@@ -39,6 +39,7 @@ This repository's own `.lokf/` bundle - the documentation *about this repo* - is
 - When moving `TRUST_LADDER_SKILLS_REF`, copy `knowledge-registrar.yaml` and the scripts under `.lokf/scripts/` from that release's `skills/lokf-sidecar/templates/` in the same pull request: the pin alone changes only the skill the scheduled run installs. `knowledge-librarian.yaml` carries local changes, so compare it by hand.
 - When the commits would release, the pull request title carries the releasing type too (`feat:`, `fix:`, `security:`): a squash merge takes its subject from the title, and the `plan` job refuses a mismatch.
 - Pinned action SHAs and npm devDependencies are bumped by Dependabot, and CI fails an action that is not pinned to a commit.
+- Dependabot skips major bumps of `typescript`, `eslint` and `@eslint/js` until `eslint-plugin-obsidianmd` supports them; `.github/dependabot.yml` says why.
 - Keep changes focused, and say what and why in the PR. The template's checklist is the short form of this list.
 
 ## Code of conduct
