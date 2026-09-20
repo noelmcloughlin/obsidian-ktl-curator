@@ -13,12 +13,23 @@
 		// esbuild-bundled plugin and resolves relative paths and the bare
 		// "obsidian" specifier identically.
 		"moduleResolution": "bundler",
+		// "bundler" resolves package.json "exports" under the "import"/"types"
+		// conditions only, never "node" (TypeScript's own moduleNameResolver
+		// excludes it for this resolution kind). @types/node's node:fs/node:path/
+		// node:url subpaths sit behind that condition, so scripts/smoke-test.ts's
+		// plain-Node imports stop resolving the moment @types/node gates them on
+		// it - which is exactly what a TypeScript 7 / @types/node 26 bump does.
+		// Re-adding the condition here is the documented fix, not a workaround.
+		"customConditions": ["node"],
 		"isolatedModules": true,
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
 		"allowSyntheticDefaultImports": true,
-		"lib": ["ES2021", "DOM"]
+		// ES2022 for Array.prototype.at(), which src/edits.ts, src/main.ts and
+		// src/trust.ts all use; esbuild.config.mjs's own target is unaffected -
+		// this only widens what tsc type-checks against.
+		"lib": ["ES2022", "DOM"]
 	},
 	"include": ["src/**/*.ts", "scripts/**/*.ts"]
 }
