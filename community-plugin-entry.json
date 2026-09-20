@@ -2,6 +2,6 @@
   "id": "lokf-curator",
   "name": "LOKF Curator",
   "author": "Noel McLoughlin",
-  "description": "See how far your notes have actually been checked, and record what you decide: a trust report computed from frontmatter, and a review session that puts each source beside its claim and writes your confirm / send back / retire verdict into the notes themselves.",
+  "description": "See how far each note has been checked, and record what you decide: a trust report, and a review session that puts each source beside its claim. The curator's assistant for Linked Open Knowledge Format (LOKF), a semantic profile of OKF.",
   "repo": "noelmcloughlin/obsidian-lokf-curator"
 }
