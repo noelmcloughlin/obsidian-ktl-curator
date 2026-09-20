@@ -10,6 +10,13 @@ This is a fresh identity forked from [obsidian-lokf-enforcer](https://github.com
 
 - **The type-check survives a TypeScript 7 / `@types/node` 26 bump.** `moduleResolution: "bundler"` drops the `"node"` package.json export condition by design; a newer `@types/node` gates its `node:fs`/`node:path`/`node:url` subpaths on that condition, so `scripts/smoke-test.ts`'s plain-Node imports stopped resolving. `customConditions: ["node"]` in `tsconfig.json` re-adds it. `lib` moves to `ES2022` for `Array.prototype.at()`, already used in three files; `esbuild.config.mjs`'s own output target is unaffected.
 
+## [1.1.7] - 2026-09-19
+
+### Fixed
+
+- **The scheduled librarian installs `v0.21.0`**, up from `v0.19.7`, so it runs the current skill rather than two releases behind.
+- **The publish job's path check reads a concept named outside ASCII.** It listed the patch's paths with git's default quoting, so such a path arrived C-quoted and was refused as outside the bundle. Synced from the skills repository's template: it now lists with `core.quotePath` off.
+
 ## [1.1.6] - 2026-09-19
 
 ### Fixed
