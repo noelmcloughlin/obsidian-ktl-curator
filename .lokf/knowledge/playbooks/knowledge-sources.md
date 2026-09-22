@@ -1,42 +1,42 @@
 ---
 type: Playbook
-id: https://lokf-curator.example/knowledge/playbooks/knowledge-sources
+id: https://ktl-curator.example/knowledge/playbooks/knowledge-sources
 title: Knowledge sources
 description: Where this bundle's concepts are derived from, and how to re-check each source on a later librarian run.
 genre: how-to
 resource: .
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-14T15:30:00Z"
 status: draft
 ---
 
 # Knowledge sources
 
-Bootstrap discovery pass (first real run of `lokf-librarian` against this
+Bootstrap discovery pass (first real run of `ktl-librarian` against this
 repository - the two `services/example-*.md` placeholders from
-`lokf-sidecar` are removed as part of this run). Re-check each row by
+`ktl-sidecar` are removed as part of this run). Re-check each row by
 re-reading the paths listed; if a path no longer exists, remove the concepts
 it fed and log the removal.
 
 | Source | Yields | Class(es) | Re-check by |
 | --- | --- | --- | --- |
 | `package.json`, `manifest.json` | plugin identity, id, version, dependencies | `Service` | reading `name`/`version`/`description`/`devDependencies` |
-| `src/main.ts` | plugin lifecycle, commands, the review session, the five verbs' write paths | `Service` | reading exported class `LokfCuratorPlugin` and its public methods |
+| `src/main.ts` | plugin lifecycle, commands, the review session, the five verbs' write paths | `Service` | reading exported class `KtlCuratorPlugin` and its public methods |
 | `src/bundle.ts`, `src/trust.ts`, `src/settings-model.ts` | bundle-root resolution, the trust-record model, health counts, the ranked queue, and the settings shape/defaults/merge rule | `Service` | reading the exported functions and their doc comments |
 | `src/edits.ts` | the five verbs' exact frontmatter/body transforms, the `log.md` upsert | `Service` | reading the exported `apply*`/`upsert*` functions |
-| `src/curator-view.ts` | the "Curate" side panel: report + review card, and the "no bundle" message | `Service` | reading the `LokfCuratorView` class |
-| `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle and, since 2026-09-14, the Type vocabulary group (*Known LOKF types*) | `Service` | reading `LokfCuratorSettingTab.getSettingDefinitions()`; the known-types list must stay the same shape and rule as `lokf-registrar`'s |
+| `src/curator-view.ts` | the "Curate" side panel: report + review card, and the "no bundle" message | `Service` | reading the `KtlCuratorView` class |
+| `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle and, since 2026-09-14, the Type vocabulary group (*Known LOKF types*) | `Service` | reading `KtlCuratorSettingTab.getSettingDefinitions()`; the known-types list must stay the same shape and rule as `ktl-registrar`'s |
 | `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`, `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` | the in-editor aids: field lookup, the inline trust badge, and frontmatter autocomplete | `Service` | reading the exported classes/functions in each file against `services/in-editor-aids.md` |
-| `.agents/skills/lokf-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
+| `.agents/skills/ktl-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
 | `SECURITY.md` | the plugin's privacy/write-surface guarantees, reporting, supported versions, and a surface table (slimmed 2026-09-14; the hardening/attribution/prompt-injection design moved to the skills repository's `docs/threat-model.md`, linked rather than restated) | `Policy` | re-reading for a changed write surface, and diffing the surface table's links |
-| `.github/workflows/knowledge-registrar.yaml` | the gate a new `human:` confirmation must pass before it merges | `Playbook` | diff the three jobs (`validate`, `provenance`, `attestation`) against the `lokf-sidecar` template; the copy is meant to differ only by `persist-credentials: false` and a top-level `permissions: {}`, and any other difference is drift to report, not fix |
-| `.github/workflows/knowledge-librarian.yaml`, `.lokf/scripts/knowledge-librarian.sh` | the scheduled librarian automation - no concept of its own here, since the design is the `lokf-sidecar` template's and `SECURITY.md` links to it | - | diff both against their templates the same way |
+| `.github/workflows/knowledge-registrar.yaml` | the gate a new `human:` confirmation must pass before it merges | `Playbook` | diff the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; the copy is meant to differ only by `persist-credentials: false` and a top-level `permissions: {}`, and any other difference is drift to report, not fix |
+| `.github/workflows/knowledge-librarian.yaml`, `.lokf/scripts/knowledge-librarian.sh` | the scheduled librarian automation - no concept of its own here, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | - | diff both against their templates the same way |
 | `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`), and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module list against `scripts/smoke-test.ts`'s own imports and its drift-guard section |
 | `.github/workflows/build.yml`, `.github/workflows/lint-and-docs.yaml` | CI's mirror of `npm run check`, plus shell/workflow lint, the pinned-action-SHA check, and Markdown/link lint | `Playbook` (`contributing.md`) | diffing each job's steps against `playbooks/contributing.md`'s description |
 | `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml` | the release pipeline - version computed from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading both workflow files; `CONTRIBUTING.md`'s own "Releasing" section is now only a pointer to the skills repository's `docs/releasing.md`, so it is no longer this row's resource |
 | `.github/pull_request_template.md` | the PR checklist - `CONTRIBUTING.md`'s own text calls it "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` doesn't already cover |
-| `docs/for-the-curious.md` (moved out of `README.md`'s former "For the curious" section) | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `lokf-registrar` |
+| `docs/for-the-curious.md` (moved out of `README.md`'s former "For the curious" section) | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `ktl-registrar` |
 | `.assets/*.svg` | the README's card and two-vaults pictures, and the shared logo mark | - | decorative, consciously excluded as concepts; re-check only that the row still applies if an image starts carrying a claim the README does not |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
 | <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
@@ -111,21 +111,21 @@ ahead of its source hides the drift instead of showing it.
 `README.md`, `docs/for-the-curious.md`, `CHANGELOG.md`. Corrected
 `services/trust-engine.md` (the class check was still described as
 "14-class"; it is the manifest's fifteen, or the list handed in) and
-extended it, `services/lokf-curator-plugin.md`, `services/settings-tab.md`
+extended it, `services/ktl-curator-plugin.md`, `services/settings-tab.md`
 and `services/curator-view.md` (with an open question on the vocabulary
 line's wording versus the skill's `trust-fields.md`). Re-verified, no
-change: `explanation/why-lokf-curator.md`. PyPI's `lokf` is still `0.7.0`.
+change: `explanation/why-ktl-curator.md`. PyPI's `lokf` is still `0.7.0`.
 
 Later the same day, a coverage pass on the same branch added
 `src/settings-model.ts` and took the suite from 165 to 245 expectations,
 surfacing the two defects `log.md` records. Updated this map's `src/` row,
 `playbooks/contributing.md` (the import-free rule now names
 `settings-model.ts`), `services/trust-engine.md` and
-`services/lokf-curator-plugin.md`. The import-free modules are at 98.7% of
+`services/ktl-curator-plugin.md`. The import-free modules are at 98.7% of
 statements, 85.5% of branches; the Obsidian-bound half still has no
 automated test, as `playbooks/contributing.md` says.
 
-**2026-09-13 (night)**, after a `lokf-sidecar` repair pass on this
+**2026-09-13 (night)**, after a `ktl-sidecar` repair pass on this
 repository: `.lokf/.gitignore` regained the template's `.obsidian/` rule, so
 opening the bundle as a vault no longer leaves workspace state for git to
 see; the `knowledge_bundle` doorway link was laid at the root and excluded
@@ -145,7 +145,7 @@ from `knowledge-trust-ladder`, two README images) and the session's uncommitted
 README rewrite around usage. Added the two workflow rows above and
 `playbooks/knowledge-registrar-gate.md`; removed the `CUR.md` row - that
 file was deleted in the fork parent's 0.2.0 and this repository has never
-had it. The installed `.agents/skills/lokf-curator/references/` copies were
+had it. The installed `.agents/skills/ktl-curator/references/` copies were
 byte-identical to the source skill this run. Audit fixes and the drift
 findings are in `log.md`. PyPI's `lokf` is still `0.7.0`; no floor bump.
 

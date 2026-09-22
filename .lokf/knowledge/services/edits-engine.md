@@ -1,19 +1,19 @@
 ---
 type: Service
-id: https://lokf-curator.example/knowledge/services/edits-engine
+id: https://ktl-curator.example/knowledge/services/edits-engine
 title: Edits engine
 description: Pure string/object transforms for every write the review session makes - the five verbs' frontmatter and body edits, the log.md upsert, and the two Step-3 templates.
 resource: src/edits.ts
 isPartOf:
-  - https://lokf-curator.example/knowledge/services/lokf-curator-plugin
+  - https://ktl-curator.example/knowledge/services/ktl-curator-plugin
 dependsOn:
-  - https://lokf-curator.example/knowledge/references/review-session
+  - https://ktl-curator.example/knowledge/references/review-session
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-12T22:00:00Z"
 ---
 
@@ -33,4 +33,4 @@ writes the result back via `processFrontMatter`/`vault.modify`.
 
 ## Open questions
 
-- 2026-09-10, process:lokf-librarian: no real review session has been run against this bundle yet with these functions - the smoke-test fixtures exercise them, but a live Obsidian vault has not.
+- 2026-09-10, process:ktl-librarian: no real review session has been run against this bundle yet with these functions - the smoke-test fixtures exercise them, but a live Obsidian vault has not.

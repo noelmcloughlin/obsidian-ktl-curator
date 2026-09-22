@@ -1,4 +1,4 @@
-# LOKF knowledge-bundle recipes for LOKF Curator.
+# LOKF knowledge-bundle recipes for KTL Curator.
 #
 # The `lokf` toolkit is a Python sidecar (see pyproject.toml); these recipes
 # drive it against the knowledge/ bundle. Run `just --list` to see them.

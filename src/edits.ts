@@ -328,7 +328,7 @@ verified:
 | Policies, playbooks, tutorials, references, documents, people, organizations | 12 months |
 | Glossary terms, explanations | 24 months |
 
-The lokf-curator skill proposes \`stale_after\` from this table when a person confirms a concept. Change the table, not the skill.
+The ktl-curator skill proposes \`stale_after\` from this table when a person confirms a concept. Change the table, not the skill.
 
 # What "confirmed" means here
 

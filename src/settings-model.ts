@@ -33,7 +33,7 @@ export interface CuratorSettings {
    *  set an interval for. Defaults to the pinned schema's classes; a bundle
    *  validated against a domain schema (`lokf validate --schema`) lists that
    *  schema's classes here too, since the schema itself sits outside the
-   *  vault and cannot be read. The same list as LOKF Registrar's *Known LOKF
+   *  vault and cannot be read. The same list as KTL Registrar's *Known LOKF
    *  types*. */
   knownTypes: string[];
 }
@@ -68,7 +68,7 @@ function arraysEqual(a: string[], b: readonly string[]): boolean {
  * exactly as they left it (and so never gains a later core class on its own -
  * the README and the setting's own description say so).
  *
- * The same rule, in the same shape, as LOKF Registrar's `mergeSavedSettings`.
+ * The same rule, in the same shape, as KTL Registrar's `mergeSavedSettings`.
  */
 export function mergeSavedSettings(saved: Record<string, unknown> | null | undefined): CuratorSettings {
   const settings: CuratorSettings = { ...DEFAULT_SETTINGS };

@@ -1,18 +1,18 @@
 ---
 type: Reference
-id: https://lokf-curator.example/knowledge/references/review-session
-title: Review session (lokf-curator skill)
+id: https://ktl-curator.example/knowledge/references/review-session
+title: Review session (ktl-curator skill)
 description: The exact frontmatter/body edit for each of the five verbs, the log.md line format, and the curation-policy and missing-placeholder templates - the spec of record edits-engine.md implements.
 genre: reference
-resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/v0.19.2/skills/lokf-curator/references/review-session.md
+resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-curator/references/review-session.md
 about:
-  - https://lokf-curator.example/knowledge/references/lokf-specification
+  - https://ktl-curator.example/knowledge/references/lokf-specification
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-18T11:00:00Z"
 status: draft
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-18T11:00:00Z"
 ---
 

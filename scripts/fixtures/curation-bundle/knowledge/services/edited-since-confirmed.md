@@ -4,7 +4,7 @@ id: https://example.test/knowledge/services/edited-since-confirmed
 title: Payments API
 dependsOn: glossary/orders-term.md
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-02-01T05:00:00Z"
 verified:
   - by: human:ada

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with LOKF Curator
+about: Report a problem with KTL Curator
 title: "[Bug] "
 labels: bug
 ---
@@ -18,11 +18,11 @@ What you expected to happen.
 
 - Obsidian version:
 - OS:
-- LOKF Curator version:
+- KTL Curator version:
 
 **Additional context**
 Screenshots, console errors (Ctrl/Cmd+Shift+I), or notes.
 
 ## AI Assistance
 
-If you used AI tools while preparing this issue, you are still the author and responsible for understanding, verifying, and defending your submission. Don't dump LLM output into this issue without curation. See the [AI Covenant](https://github.com/noelmcloughlin/obsidian-lokf-curator/blob/main/AI_COVENANT.md) for details.
+If you used AI tools while preparing this issue, you are still the author and responsible for understanding, verifying, and defending your submission. Don't dump LLM output into this issue without curation. See the [AI Covenant](https://github.com/noelmcloughlin/obsidian-ktl-curator/blob/main/AI_COVENANT.md) for details.

@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://lokf-curator.example/knowledge/playbooks/releasing
+id: https://ktl-curator.example/knowledge/playbooks/releasing
 title: Releasing a new version
 description: Semantic-release computes the version and promotes CHANGELOG.md on merge to main, behind a required-reviewer Environment; the resulting tag invokes the same hardened build-and-attest workflow a hand-pushed tag always has.
 genre: how-to
@@ -9,12 +9,12 @@ sources:
   - resource: .github/workflows/semantic-release.yml
   - resource: .github/workflows/release.yml
 isPartOf:
-  - https://lokf-curator.example/knowledge/playbooks/knowledge-sources
+  - https://ktl-curator.example/knowledge/playbooks/knowledge-sources
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-14T15:30:00Z"
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-14T15:30:00Z"
 ---
 

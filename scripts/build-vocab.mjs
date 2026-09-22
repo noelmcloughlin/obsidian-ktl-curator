@@ -7,7 +7,7 @@
 // drift from what `just lokf-validate` checks a bundle against. The curator
 // consumes the `slots` (each field's schema description) for its "Look up a
 // LOKF field" reference (src/fields.ts); the rest of the manifest is kept in
-// step with LOKF Registrar. Re-run it, and commit the result, when bumping
+// step with KTL Registrar. Re-run it, and commit the result, when bumping
 // the pin.
 //
 //   node scripts/build-vocab.mjs                        # the pinned toolkit's schema

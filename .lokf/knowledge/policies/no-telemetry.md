@@ -1,17 +1,17 @@
 ---
 type: Policy
-id: https://lokf-curator.example/knowledge/policies/no-telemetry
+id: https://ktl-curator.example/knowledge/policies/no-telemetry
 title: No network access, no telemetry
 description: The plugin makes no network requests and has no telemetry, analytics, or external services of any kind - reads Markdown in the open vault, writes only through the five review verbs and the two Step-3 commands.
 resource: SECURITY.md
 about:
-  - https://lokf-curator.example/knowledge/services/lokf-curator-plugin
+  - https://ktl-curator.example/knowledge/services/ktl-curator-plugin
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-10T00:00:00Z"
 status: draft
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-14T17:30:00Z"
 ---
 

@@ -1,24 +1,24 @@
 ---
 lokf_version: "0.2"
 okf_version: "0.2"
-base_iri: https://lokf-curator.example/knowledge/
+base_iri: https://ktl-curator.example/knowledge/
 context: https://w3id.org/lokf/context.jsonld
-title: LOKF Curator Knowledge Bundle
+title: KTL Curator Knowledge Bundle
 description: "Help a person judge what a LOKF knowledge bundle claims: a trust report computed from frontmatter, and a review session that records confirm, send back, and retire verdicts in the bundle itself"
 license: https://creativecommons.org/licenses/by/4.0/
 publisher:
   type: Person
-  id: https://lokf-curator.example/knowledge/person/noel-mcloughlin
+  id: https://ktl-curator.example/knowledge/person/noel-mcloughlin
   name: Noel McLoughlin
 ---
 
-# LOKF Curator Knowledge Bundle
+# KTL Curator Knowledge Bundle
 
-A [LOKF](https://lokf.nolan-nichols.com) knowledge base for LOKF Curator. Every Markdown file under `knowledge/` is one concept; together they form a queryable knowledge graph, derived from this repository's code and docs.
+A [LOKF](https://lokf.nolan-nichols.com) knowledge base for KTL Curator. Every Markdown file under `knowledge/` is one concept; together they form a queryable knowledge graph, derived from this repository's code and docs.
 
 # Services
 
-* [LOKF Curator plugin](services/lokf-curator-plugin.md)
+* [KTL Curator plugin](services/ktl-curator-plugin.md)
 * [Trust engine](services/trust-engine.md)
 * [Edits engine](services/edits-engine.md)
 * [Curator side panel](services/curator-view.md)
@@ -31,8 +31,8 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for LOKF Curator. Every 
 * [OKF v0.2 specification](references/okf-specification.md)
 * [lokf toolkit (PyPI)](references/lokf-toolkit.md)
 * [Obsidian plugin developer guidelines](references/obsidian-plugin-guidelines.md)
-* [Trust fields (lokf-curator skill)](references/trust-fields.md)
-* [Review session (lokf-curator skill)](references/review-session.md)
+* [Trust fields (ktl-curator skill)](references/trust-fields.md)
+* [Review session (ktl-curator skill)](references/review-session.md)
 
 # Glossary
 
@@ -46,7 +46,7 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for LOKF Curator. Every 
 
 # Explanation
 
-* [Why LOKF Curator exists](explanation/why-lokf-curator.md)
+* [Why KTL Curator exists](explanation/why-ktl-curator.md)
 
 # Playbooks
 

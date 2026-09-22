@@ -35,7 +35,7 @@ export interface CuratorSuggestion {
   detail?: string;
 }
 
-export class LokfCuratorSuggest extends EditorSuggest<CuratorSuggestion> {
+export class KtlCuratorSuggest extends EditorSuggest<CuratorSuggestion> {
   private host: SuggestHost;
   private kind: SuggestKind = "status";
 
@@ -78,7 +78,7 @@ export class LokfCuratorSuggest extends EditorSuggest<CuratorSuggestion> {
 
   renderSuggestion(item: CuratorSuggestion, el: HTMLElement): void {
     el.createDiv({ text: item.value });
-    if (item.detail) el.createEl("small", { cls: "lokf-suggest-meta", text: item.detail });
+    if (item.detail) el.createEl("small", { cls: "ktl-suggest-meta", text: item.detail });
   }
 
   selectSuggestion(item: CuratorSuggestion): void {

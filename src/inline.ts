@@ -33,7 +33,7 @@ class TrustMarkerWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    const el = createSpan({ cls: `lokf-trust-marker lokf-trust-${this.label.tone}`, text: this.label.short });
+    const el = createSpan({ cls: `ktl-trust-marker ktl-trust-${this.label.tone}`, text: this.label.short });
     const tip = this.handoff ? `${this.label.long} · ${this.handoff}` : this.label.long;
     el.setAttribute("aria-label", tip);
     el.setAttribute("title", tip);

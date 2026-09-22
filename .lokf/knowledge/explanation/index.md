@@ -1,3 +1,3 @@
 # Explanation
 
-* [Why LOKF Curator exists](why-lokf-curator.md)
+* [Why KTL Curator exists](why-ktl-curator.md)

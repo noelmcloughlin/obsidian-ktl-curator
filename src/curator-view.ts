@@ -1,19 +1,19 @@
 // curator-view.ts - the "Curate" side panel: the read-only trust report
 // (§5.3) and the one-concept-at-a-time review card (§6).
 import { ItemView, TFile, type WorkspaceLeaf } from "obsidian";
-import type LokfCuratorPlugin from "./main";
+import type KtlCuratorPlugin from "./main";
 import type { TrustRecord } from "./trust";
 import { handoffLabel } from "./trust-label";
 
-export const LOKF_CURATOR_VIEW_TYPE = "lokf-curator-view";
+export const KTL_CURATOR_VIEW_TYPE = "ktl-curator-view";
 
-export const LOKF_CURATOR_ICON = "lokf-trust-ladder-check";
+export const KTL_CURATOR_ICON = "ktl-trust-ladder-check";
 
 // The trust ladder, drawn for a 16px ribbon: two rungs - a draft, then checked
 // by automation - under the check mark a person puts on top. `addIcon` wants
 // the content of a `0 0 100 100` SVG, so the 64-unit mark is scaled to fit, and
 // `currentColor` lets the theme colour it. The full-colour mark is in .assets/.
-export const LOKF_CURATOR_ICON_SVG = `
+export const KTL_CURATOR_ICON_SVG = `
 <g transform="scale(1.5625)" fill="none" stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M19.75 27 V56"/>
   <path d="M44.25 27 V56"/>
@@ -52,25 +52,25 @@ interface ReviewState {
   root: string;
 }
 
-export class LokfCuratorView extends ItemView {
-  plugin: LokfCuratorPlugin;
+export class KtlCuratorView extends ItemView {
+  plugin: KtlCuratorPlugin;
   private reviewing: ReviewState | null = null;
   private bundleSelectorRoot: string | null = null;
   private openQuestionsCollapsed = false;
 
-  constructor(leaf: WorkspaceLeaf, plugin: LokfCuratorPlugin) {
+  constructor(leaf: WorkspaceLeaf, plugin: KtlCuratorPlugin) {
     super(leaf);
     this.plugin = plugin;
   }
 
   getViewType() {
-    return LOKF_CURATOR_VIEW_TYPE;
+    return KTL_CURATOR_VIEW_TYPE;
   }
   getDisplayText() {
     return "Curate";
   }
   getIcon() {
-    return LOKF_CURATOR_ICON;
+    return KTL_CURATOR_ICON;
   }
 
   async onOpen() {
@@ -89,7 +89,7 @@ export class LokfCuratorView extends ItemView {
   private render() {
     const c = this.contentEl;
     c.empty();
-    c.addClass("lokf-curator");
+    c.addClass("ktl-curator");
     if (this.reviewing) this.renderReviewCard(c, this.reviewing);
     else this.renderReport(c);
   }
@@ -100,9 +100,9 @@ export class LokfCuratorView extends ItemView {
     const reports = this.plugin.getReports();
     if (reports.length === 0) {
       c.createDiv({
-        cls: "lokf-empty",
+        cls: "ktl-empty",
         text: this.plugin.hasNoBundle()
-          ? "This vault has no knowledge bundle: no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md. Your notes are left alone. LOKF Registrar's Insert the bundle's semantic header command, or the lokf-sidecar skill, creates a bundle; if the whole vault really is one, turn on Settings → Scope → Treat the vault root as the bundle."
+          ? "This vault has no knowledge bundle: no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md. Your notes are left alone. KTL Registrar's Insert the bundle's semantic header command, or the ktl-sidecar skill, creates a bundle; if the whole vault really is one, turn on Settings → Scope → Treat the vault root as the bundle."
           : "Nothing has been scanned yet.",
       });
       return;
@@ -110,7 +110,7 @@ export class LokfCuratorView extends ItemView {
 
     let report = reports.find((r) => r.root === this.bundleSelectorRoot) ?? reports[0]!;
     if (reports.length > 1) {
-      const selector = c.createDiv({ cls: "lokf-bundle-selector" });
+      const selector = c.createDiv({ cls: "ktl-bundle-selector" });
       selector.createEl("label", { text: "Bundle: " });
       const select = selector.createEl("select");
       for (const r of reports) {
@@ -126,28 +126,28 @@ export class LokfCuratorView extends ItemView {
     c.createEl("h3", { text: report.title });
 
     if (report.ioIssues.length) {
-      const box = c.createDiv({ cls: "lokf-io-issues" });
-      for (const issue of report.ioIssues) box.createDiv({ cls: "lokf-io-issue", text: issue });
+      const box = c.createDiv({ cls: "ktl-io-issues" });
+      for (const issue of report.ioIssues) box.createDiv({ cls: "ktl-io-issue", text: issue });
     }
 
     // Health chips - "a of N" visually dominant, the one number meant to rise.
-    const health = c.createDiv({ cls: "lokf-health" });
+    const health = c.createDiv({ cls: "ktl-health" });
     health.createDiv({
-      cls: "lokf-chip lokf-chip-primary",
+      cls: "ktl-chip ktl-chip-primary",
       text: `Confirmed by a person: ${report.health.humanConfirmed} of ${report.health.total}`,
     });
-    const rest = health.createDiv({ cls: "lokf-health-rest" });
-    rest.createSpan({ cls: "lokf-chip", text: `Automation only: ${report.health.automationOnly}` });
-    rest.createSpan({ cls: "lokf-chip", text: `Nobody checked: ${report.health.unchecked}` });
-    rest.createSpan({ cls: "lokf-chip", text: `Drafts: ${report.health.drafts}` });
-    rest.createSpan({ cls: "lokf-chip", text: `Past review: ${report.health.pastReview}` });
-    rest.createSpan({ cls: "lokf-chip", text: `Edited since confirmed: ${report.health.editedSinceConfirmed}` });
-    rest.createSpan({ cls: "lokf-chip", text: `Retired: ${report.health.retired}` });
+    const rest = health.createDiv({ cls: "ktl-health-rest" });
+    rest.createSpan({ cls: "ktl-chip", text: `Automation only: ${report.health.automationOnly}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Nobody checked: ${report.health.unchecked}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Drafts: ${report.health.drafts}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Past review: ${report.health.pastReview}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Edited since confirmed: ${report.health.editedSinceConfirmed}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Retired: ${report.health.retired}` });
 
     // Active note, pinned.
     const activeInfo = this.plugin.getReportForActiveNote();
     if (activeInfo && activeInfo.report.root === report.root && activeInfo.record) {
-      const box = c.createDiv({ cls: "lokf-active-note" });
+      const box = c.createDiv({ cls: "ktl-active-note" });
       box.createEl("h4", { text: "Active note" });
       box.createDiv({ text: `${activeInfo.record.title} - ${labelFor(activeInfo.record)}` });
       const btn = box.createEl("button", { text: "Review this note" });
@@ -157,20 +157,20 @@ export class LokfCuratorView extends ItemView {
     // Queue.
     c.createEl("h4", { text: "Worth ten minutes today" });
     if (report.queue.length === 0) {
-      c.createDiv({ cls: "lokf-empty", text: "Nothing queued right now." });
+      c.createDiv({ cls: "ktl-empty", text: "Nothing queued right now." });
     } else {
-      const list = c.createDiv({ cls: "lokf-queue" });
+      const list = c.createDiv({ cls: "ktl-queue" });
       for (const record of report.queue) {
-        const card = list.createDiv({ cls: "lokf-queue-card" });
-        const titleEl = card.createDiv({ cls: "lokf-queue-title" });
+        const card = list.createDiv({ cls: "ktl-queue-card" });
+        const titleEl = card.createDiv({ cls: "ktl-queue-title" });
         titleEl.createSpan({ text: `${record.title} ` });
-        titleEl.createSpan({ cls: "lokf-queue-class", text: `(${record.type ?? "unknown"})` });
+        titleEl.createSpan({ cls: "ktl-queue-class", text: `(${record.type ?? "unknown"})` });
         titleEl.addEventListener("click", (evt) => {
           evt.stopPropagation();
           this.openFile(record.path);
         });
-        card.createDiv({ cls: "lokf-queue-why", text: handoffLabel(record)?.text ?? whyInQueue(record) });
-        card.createDiv({ cls: "lokf-queue-source", text: record.source ? record.source : "no source recorded" });
+        card.createDiv({ cls: "ktl-queue-why", text: handoffLabel(record)?.text ?? whyInQueue(record) });
+        card.createDiv({ cls: "ktl-queue-source", text: record.source ? record.source : "no source recorded" });
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-label", `Review ${record.title}`);
@@ -182,14 +182,14 @@ export class LokfCuratorView extends ItemView {
           }
         });
       }
-      const goBtn = c.createEl("button", { cls: "lokf-go-button", text: "Go through these now" });
+      const goBtn = c.createEl("button", { cls: "ktl-go-button", text: "Go through these now" });
       goBtn.addEventListener("click", () => this.startReview(report.queue[0]!.path, report.root));
     }
 
     // Open questions the librarian left - collapsible, since a bundle
     // mid-refresh can have a lot of them and the queue above matters more.
-    const oqHeader = c.createEl("h4", { cls: "lokf-collapsible", text: "" });
-    const caret = oqHeader.createSpan({ cls: "lokf-caret", text: this.openQuestionsCollapsed ? "▸" : "▾" });
+    const oqHeader = c.createEl("h4", { cls: "ktl-collapsible", text: "" });
+    const caret = oqHeader.createSpan({ cls: "ktl-caret", text: this.openQuestionsCollapsed ? "▸" : "▾" });
     oqHeader.createSpan({ text: ` Open questions the librarian left (${report.openQuestions.length})` });
     oqHeader.addEventListener("click", () => {
       this.openQuestionsCollapsed = !this.openQuestionsCollapsed;
@@ -198,12 +198,12 @@ export class LokfCuratorView extends ItemView {
     void caret;
     if (!this.openQuestionsCollapsed) {
       if (report.openQuestions.length === 0) {
-        c.createDiv({ cls: "lokf-empty", text: "None." });
+        c.createDiv({ cls: "ktl-empty", text: "None." });
       } else {
-        const oqList = c.createDiv({ cls: "lokf-open-questions" });
+        const oqList = c.createDiv({ cls: "ktl-open-questions" });
         for (const oq of report.openQuestions) {
-          const row = oqList.createDiv({ cls: "lokf-oq-row" });
-          row.createSpan({ cls: "lokf-oq-title", text: `${oq.title}: ` });
+          const row = oqList.createDiv({ cls: "ktl-oq-row" });
+          row.createSpan({ cls: "ktl-oq-title", text: `${oq.title}: ` });
           row.createSpan({ text: oq.text });
           row.addEventListener("click", () => this.openFile(oq.path));
         }
@@ -212,7 +212,7 @@ export class LokfCuratorView extends ItemView {
 
     // Feedback - never "none" when the file simply can't be seen (§10).
     c.createDiv({
-      cls: "lokf-feedback",
+      cls: "ktl-feedback",
       text:
         report.feedbackCount === null
           ? "Feedback file not reachable from this vault."
@@ -222,7 +222,7 @@ export class LokfCuratorView extends ItemView {
     });
 
     // Vocabulary fit.
-    const vocab = c.createDiv({ cls: "lokf-vocab" });
+    const vocab = c.createDiv({ cls: "ktl-vocab" });
     if (report.vocabularyIssues.length === 0) {
       vocab.setText("Vocabulary fit: fine.");
     } else {
@@ -234,7 +234,7 @@ export class LokfCuratorView extends ItemView {
 
     // What is still waiting behind the queue - not "every note not shown".
     c.createDiv({
-      cls: "lokf-remaining",
+      cls: "ktl-remaining",
       text: `${report.queueRemaining} more not yet checked. Run again anytime - every confirmation counts.`,
     });
   }
@@ -263,7 +263,7 @@ export class LokfCuratorView extends ItemView {
   private renderReviewCard(c: HTMLElement, state: ReviewState) {
     const file = this.app.vault.getAbstractFileByPath(state.path);
     if (!(file instanceof TFile)) {
-      c.createDiv({ cls: "lokf-empty", text: "This note no longer exists." });
+      c.createDiv({ cls: "ktl-empty", text: "This note no longer exists." });
       const back = c.createEl("button", { text: "Back to report" });
       back.addEventListener("click", () => this.stopReview());
       return;
@@ -271,7 +271,7 @@ export class LokfCuratorView extends ItemView {
     const cache = this.app.metadataCache.getFileCache(file);
     const fm = cache?.frontmatter ?? {};
 
-    const toolbar = c.createDiv({ cls: "lokf-toolbar" });
+    const toolbar = c.createDiv({ cls: "ktl-toolbar" });
     const back = toolbar.createEl("button", { text: "Back to report" });
     back.addEventListener("click", () => this.stopReview());
 
@@ -281,7 +281,7 @@ export class LokfCuratorView extends ItemView {
     const record = this.plugin.getRecord(state.path);
     if (!record) {
       c.createDiv({
-        cls: "lokf-empty",
+        cls: "ktl-empty",
         text: "This note isn't a concept in a configured bundle, so there is nothing to record against it.",
       });
       return;
@@ -292,14 +292,14 @@ export class LokfCuratorView extends ItemView {
     // 1. Source - every recorded one: `resource`, then each `sources[].resource`.
     c.createEl("h4", { text: "Source" });
     if (record.sources.length === 0) {
-      c.createDiv({ cls: "lokf-empty", text: "No source recorded." });
+      c.createDiv({ cls: "ktl-empty", text: "No source recorded." });
     } else {
       for (const source of record.sources) {
         const resolution = this.plugin.resolveSource(source, state.root);
-        const sourceBox = c.createDiv({ cls: "lokf-source" });
-        sourceBox.createDiv({ cls: "lokf-source-path", text: resolution.displayPath });
+        const sourceBox = c.createDiv({ cls: "ktl-source" });
+        sourceBox.createDiv({ cls: "ktl-source-path", text: resolution.displayPath });
         if (resolution.hint) {
-          sourceBox.createDiv({ cls: "lokf-source-hint", text: `Opens the whole file - go to ${resolution.hint} yourself.` });
+          sourceBox.createDiv({ cls: "ktl-source-hint", text: `Opens the whole file - go to ${resolution.hint} yourself.` });
         }
         if (resolution.kind === "vault") {
           const openBtn = sourceBox.createEl("button", { text: "Open source" });
@@ -314,7 +314,7 @@ export class LokfCuratorView extends ItemView {
 
     // 2. Claim - the facts a source would contradict.
     c.createEl("h4", { text: "Claim" });
-    const claim = c.createDiv({ cls: "lokf-claim" });
+    const claim = c.createDiv({ cls: "ktl-claim" });
     const describeScalar = (v: unknown): string | null =>
       typeof v === "string" || typeof v === "number" || typeof v === "boolean" ? String(v) : null;
     const description = describeScalar(fm["description"]);
@@ -335,27 +335,27 @@ export class LokfCuratorView extends ItemView {
 
     // 3. Current trust.
     c.createEl("h4", { text: "Current trust" });
-    const trustBox = c.createDiv({ cls: "lokf-trust" });
+    const trustBox = c.createDiv({ cls: "ktl-trust" });
     trustBox.createDiv({ text: labelFor(record) });
     trustBox.createDiv({ text: `${record.reliedOnBy} other concept(s) rely on this.` });
 
     // 4. The question.
-    c.createEl("h4", { cls: "lokf-question", text: "Does the source still say this?" });
+    c.createEl("h4", { cls: "ktl-question", text: "Does the source still say this?" });
 
     this.renderVerbs(c, file, record, state.root);
   }
 
   private renderVerbs(c: HTMLElement, file: TFile, record: TrustRecord, root: string) {
-    const verbBar = c.createDiv({ cls: "lokf-verbs" });
+    const verbBar = c.createDiv({ cls: "ktl-verbs" });
     // One dialog host, emptied before each use, so pressing two verbs in a row
     // replaces the prompt instead of stacking a second one under it.
-    const dialog = c.createDiv({ cls: "lokf-dialog-host" });
+    const dialog = c.createDiv({ cls: "ktl-dialog-host" });
 
-    const sendBackBtn = verbBar.createEl("button", { text: "Wrong - send back", cls: "lokf-verb lokf-verb-default" });
-    const confirmBtn = verbBar.createEl("button", { text: "Confirm", cls: "lokf-verb" });
-    const correctedBtn = verbBar.createEl("button", { text: "Wrong - I corrected it", cls: "lokf-verb" });
-    const retireBtn = verbBar.createEl("button", { text: "Retire", cls: "lokf-verb" });
-    const laterBtn = verbBar.createEl("button", { text: "Later", cls: "lokf-verb" });
+    const sendBackBtn = verbBar.createEl("button", { text: "Wrong - send back", cls: "ktl-verb ktl-verb-default" });
+    const confirmBtn = verbBar.createEl("button", { text: "Confirm", cls: "ktl-verb" });
+    const correctedBtn = verbBar.createEl("button", { text: "Wrong - I corrected it", cls: "ktl-verb" });
+    const retireBtn = verbBar.createEl("button", { text: "Retire", cls: "ktl-verb" });
+    const laterBtn = verbBar.createEl("button", { text: "Later", cls: "ktl-verb" });
 
     // The skill's default verb, so a person who just presses Enter sends back
     // rather than confirming something they haven't checked.
@@ -376,7 +376,7 @@ export class LokfCuratorView extends ItemView {
   private async promptConfirm(dialog: HTMLElement, file: TFile, record: TrustRecord, root: string) {
     const staleAfter = await this.plugin.proposeStaleAfterFor(record, root, new Date().toISOString().slice(0, 10));
     dialog.empty();
-    const box = dialog.createDiv({ cls: "lokf-confirm-dialog" });
+    const box = dialog.createDiv({ cls: "ktl-confirm-dialog" });
     box.createDiv({ text: `Next review proposed for ${staleAfter} - edit it if that's wrong.` });
     const input = box.createEl("input", { type: "date", value: staleAfter });
 
@@ -385,13 +385,13 @@ export class LokfCuratorView extends ItemView {
     let openQuestionsAnswered = false;
     if (record.hasOpenQuestions) {
       box.createDiv({ text: "This concept has open questions. Are they answered?" });
-      const choices = box.createDiv({ cls: "lokf-choice-row" });
+      const choices = box.createDiv({ cls: "ktl-choice-row" });
       const yes = choices.createEl("button", { text: "Yes - remove them" });
-      const no = choices.createEl("button", { text: "No - leave them", cls: "lokf-choice-selected" });
+      const no = choices.createEl("button", { text: "No - leave them", cls: "ktl-choice-selected" });
       const select = (answered: boolean) => {
         openQuestionsAnswered = answered;
-        yes.toggleClass("lokf-choice-selected", answered);
-        no.toggleClass("lokf-choice-selected", !answered);
+        yes.toggleClass("ktl-choice-selected", answered);
+        no.toggleClass("ktl-choice-selected", !answered);
       };
       yes.addEventListener("click", () => select(true));
       no.addEventListener("click", () => select(false));
@@ -406,11 +406,11 @@ export class LokfCuratorView extends ItemView {
 
   private promptSendBack(dialog: HTMLElement, file: TFile, record: TrustRecord, root: string) {
     dialog.empty();
-    const box = dialog.createDiv({ cls: "lokf-note-dialog" });
+    const box = dialog.createDiv({ cls: "ktl-note-dialog" });
     box.createDiv({ text: "What did the source actually say? (plain prose, required)" });
     const textarea = box.createEl("textarea");
     const go = box.createEl("button", { text: "Send back", cls: "mod-cta" });
-    const error = box.createDiv({ cls: "lokf-dialog-error" });
+    const error = box.createDiv({ cls: "ktl-dialog-error" });
     error.hide();
     textarea.focus();
     go.addEventListener("click", () => {
@@ -435,9 +435,9 @@ export class LokfCuratorView extends ItemView {
       return;
     }
     dialog.empty();
-    const box = dialog.createDiv({ cls: "lokf-note-dialog" });
+    const box = dialog.createDiv({ cls: "ktl-note-dialog" });
     box.createDiv({ text: "The note hasn't changed - did you mean Confirm?" });
-    const row = box.createDiv({ cls: "lokf-choice-row" });
+    const row = box.createDiv({ cls: "ktl-choice-row" });
     const confirmInstead = row.createEl("button", { text: "Confirm instead", cls: "mod-cta" });
     const anyway = row.createEl("button", { text: "Record the correction anyway" });
     confirmInstead.addEventListener("click", () => void this.promptConfirm(dialog, file, record, root));
@@ -446,11 +446,11 @@ export class LokfCuratorView extends ItemView {
 
   private promptRetire(dialog: HTMLElement, file: TFile, record: TrustRecord, root: string) {
     dialog.empty();
-    const box = dialog.createDiv({ cls: "lokf-note-dialog" });
+    const box = dialog.createDiv({ cls: "ktl-note-dialog" });
     box.createDiv({ text: "Why is it retired? (e.g. “replaced by the Orders API”, required)" });
     const input = box.createEl("input", { type: "text" });
     const go = box.createEl("button", { text: "Retire", cls: "mod-cta" });
-    const error = box.createDiv({ cls: "lokf-dialog-error" });
+    const error = box.createDiv({ cls: "ktl-dialog-error" });
     error.hide();
     input.focus();
     go.addEventListener("click", () => {
@@ -467,7 +467,7 @@ export class LokfCuratorView extends ItemView {
 
   private promptLater(dialog: HTMLElement, file: TFile, root: string) {
     dialog.empty();
-    const box = dialog.createDiv({ cls: "lokf-note-dialog" });
+    const box = dialog.createDiv({ cls: "ktl-note-dialog" });
     box.createDiv({ text: "Come back to it on (optional):" });
     const input = box.createEl("input", { type: "date" });
     const go = box.createEl("button", { text: "Later", cls: "mod-cta" });

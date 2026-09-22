@@ -1,18 +1,18 @@
 ---
 type: Playbook
-id: https://lokf-curator.example/knowledge/playbooks/contributing
+id: https://ktl-curator.example/knowledge/playbooks/contributing
 title: Contributing to the plugin
 description: Development setup, npm run check (build, lint, smoke-test - the same three steps CI's build.yml runs), the seven-module import-free pure-module rule, and the lint-and-docs.yaml checks (action-pin, link, Markdown) it also points at.
 genre: how-to
 resource: CONTRIBUTING.md
 isPartOf:
-  - https://lokf-curator.example/knowledge/playbooks/knowledge-sources
+  - https://ktl-curator.example/knowledge/playbooks/knowledge-sources
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-14T15:30:00Z"
 status: draft
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-14T15:30:00Z"
 ---
 
