@@ -1,25 +1,25 @@
-# Contributing to LOKF Curator
+# Contributing to KTL Curator
 
 *This file is a checklist, not a design log. Each rule is a line or two that links to where its reasoning lives - a code comment, a workflow header, or a page under `docs/` - and `npm run check` holds the file to a word budget so it stays that way.*
 
-Thanks for your interest in improving LOKF Curator!
+Thanks for your interest in improving KTL Curator!
 
 ## Development setup
 
 Node 20+ is required (CI builds on 20, 22 and 24).
 
 ```bash
-git clone https://github.com/noelmcloughlin/obsidian-lokf-curator.git
-cd obsidian-lokf-curator
+git clone https://github.com/noelmcloughlin/obsidian-ktl-curator.git
+cd obsidian-ktl-curator
 npm install
 npm run dev      # esbuild watch mode, rebuilding src/main.ts -> main.js
 ```
 
 `obsidian` peer-depends on an exact `@codemirror/state` and `@codemirror/view`, which no bump of either can satisfy; `overrides` in `package.json` points both at this project's own spec (`$@codemirror/state`) so a Dependabot bump resolves instead of failing `ERESOLVE`. Keep the reference form - a pinned range there drifts from the dependency it overrides.
 
-`main.js` is generated and git-ignored, so a fresh clone has none and Obsidian reports "Failed to load plugin" until you build. To test in a real vault, clone into `<your-vault>/.obsidian/plugins/lokf-curator/`, or copy `main.js`, `manifest.json` and `styles.css` there, then reload Obsidian; the [Hot Reload](https://github.com/pjeby/hot-reload) plugin speeds up iteration. For a realistic bundle to test against, point a scratch vault at any project's `.lokf/knowledge/` directory - its root `index.md` carries the `base_iri` this plugin mints and checks ids against.
+`main.js` is generated and git-ignored, so a fresh clone has none and Obsidian reports "Failed to load plugin" until you build. To test in a real vault, clone into `<your-vault>/.obsidian/plugins/ktl-curator/`, or copy `main.js`, `manifest.json` and `styles.css` there, then reload Obsidian; the [Hot Reload](https://github.com/pjeby/hot-reload) plugin speeds up iteration. For a realistic bundle to test against, point a scratch vault at any project's `.lokf/knowledge/` directory - its root `index.md` carries the `base_iri` this plugin mints and checks ids against.
 
-This repository's own `.lokf/` bundle - the documentation *about this repo* - is maintained with [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), which nothing in the plugin depends on. CI installs the librarian at run time, at the release `TRUST_LADDER_SKILLS_REF` in [`knowledge-librarian.yaml`](.github/workflows/knowledge-librarian.yaml) names; to edit the bundle locally, install `lokf-librarian` and `lokf-curator` as the skills' README shows. Skills are never committed: `.agents/`, `.claude/` and `skills-lock.json` are git-ignored.
+This repository's own `.lokf/` bundle - the documentation *about this repo* - is maintained with [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), which nothing in the plugin depends on. CI installs the librarian at run time, at the release `TRUST_LADDER_SKILLS_REF` in [`knowledge-librarian.yaml`](.github/workflows/knowledge-librarian.yaml) names; to edit the bundle locally, install `ktl-librarian` and `ktl-curator` as the skills' README shows. Skills are never committed: `.agents/`, `.claude/` and `skills-lock.json` are git-ignored.
 
 ## Layout
 
@@ -31,12 +31,12 @@ This repository's own `.lokf/` bundle - the documentation *about this repo* - is
 
 - Run `npm run check` - build (type-check and bundle), lint and smoke test, the same three steps [`build.yml`](.github/workflows/build.yml) runs. Lint is `eslint-plugin-obsidianmd`, Obsidian's own guidelines as rules: treat a finding as upstream review feedback, and fix the code rather than widening the exceptions in `eslint.config.mts`.
 - Anything that needs the Obsidian `App` was checked by hand in a real vault.
-- **Never let a write exceed what `references/review-session.md` in the `lokf-curator` skill specifies for that verb.** These guardrails are the product: one verb, one concept, one person's answer; no proposed corrections; no touching a field the verb's table does not name.
+- **Never let a write exceed what `references/review-session.md` in the `ktl-curator` skill specifies for that verb.** These guardrails are the product: one verb, one concept, one person's answer; no proposed corrections; no touching a field the verb's table does not name.
 - Register events with `registerEvent` so they unload; lint holds the rest of the house style (`createEl` over `innerHTML`, styling in `styles.css`, a declarative settings tab).
 - A link into a sibling repository must already resolve on that repository's `main` - the link check follows it for real. Land upstream content first; `lychee.toml` is only for links permanently outside our control.
 - If the change alters plugin behaviour, add a line or two under `## [Unreleased]` in `CHANGELOG.md`. The release pipeline refuses an empty one.
-- `src/lokf-vocab.json` is generated by `npm run build-vocab` from the schema the sidecar's pinned `lokf` ships (`.lokf/uv.lock`; needs `uv`). Refresh it, and commit the result, only when bumping that pin; it is kept identical to LOKF Registrar's.
-- When moving `TRUST_LADDER_SKILLS_REF`, copy `knowledge-registrar.yaml` and the scripts under `.lokf/scripts/` from that release's `skills/lokf-sidecar/templates/` in the same pull request: the pin alone changes only the skill the scheduled run installs. `knowledge-librarian.yaml` carries local changes, so compare it by hand.
+- `src/lokf-vocab.json` is generated by `npm run build-vocab` from the schema the sidecar's pinned `lokf` ships (`.lokf/uv.lock`; needs `uv`). Refresh it, and commit the result, only when bumping that pin; it is kept identical to KTL Registrar's.
+- When moving `TRUST_LADDER_SKILLS_REF`, copy `knowledge-registrar.yaml` and the scripts under `.lokf/scripts/` from that release's `skills/ktl-sidecar/templates/` in the same pull request: the pin alone changes only the skill the scheduled run installs. `knowledge-librarian.yaml` carries local changes, so compare it by hand.
 - When the commits would release, the pull request title carries the releasing type too (`feat:`, `fix:`, `security:`): a squash merge takes its subject from the title, and the `plan` job refuses a mismatch.
 - Pinned action SHAs and npm devDependencies are bumped by Dependabot, and CI fails an action that is not pinned to a commit.
 - Dependabot skips major bumps of `typescript`, `eslint` and `@eslint/js` until `eslint-plugin-obsidianmd` supports them; `.github/dependabot.yml` says why.

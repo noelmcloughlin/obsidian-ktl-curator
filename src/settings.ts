@@ -1,10 +1,10 @@
-// settings.ts - the LOKF Curator settings tab.
+// settings.ts - the KTL Curator settings tab.
 //
 // Declarative (Obsidian 1.13.0+): the tab returns definitions rather than
 // building DOM, so every setting is indexed by Obsidian's settings search.
 import { App, Notice, PluginSettingTab, TFolder } from "obsidian";
 import type { SettingDefinitionItem } from "obsidian";
-import type LokfCuratorPlugin from "./main";
+import type KtlCuratorPlugin from "./main";
 import type { CuratorSettings } from "./settings-model";
 import { joinCsv, parseCsv, hiddenRootSegment, SCHEMA_VERSION } from "./bundle";
 
@@ -20,10 +20,10 @@ function isCsvKey(key: string): key is SettingKey {
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
-export class LokfCuratorSettingTab extends PluginSettingTab {
-  plugin: LokfCuratorPlugin;
+export class KtlCuratorSettingTab extends PluginSettingTab {
+  plugin: KtlCuratorPlugin;
 
-  constructor(app: App, plugin: LokfCuratorPlugin) {
+  constructor(app: App, plugin: KtlCuratorPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -52,7 +52,7 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
         const segment = hiddenRootSegment(entry);
         if (segment && !(this.plugin.app.vault.getAbstractFileByPath(entry.replace(/^\/+|\/+$/g, "")) instanceof TFolder)) {
           new Notice(
-            `LOKF Curator: "${entry}" sits inside "${segment}", which Obsidian's file index does not currently expose - nothing under it will be read until a plugin exposes it, or you open that folder as its own vault.`,
+            `KTL Curator: "${entry}" sits inside "${segment}", which Obsidian's file index does not currently expose - nothing under it will be read until a plugin exposes it, or you open that folder as its own vault.`,
             10000
           );
         }
@@ -140,7 +140,7 @@ export class LokfCuratorSettingTab extends PluginSettingTab {
               SCHEMA_VERSION
                 ? `Comma-separated classes a concept's type may name. Defaults track the pinned LOKF schema ${SCHEMA_VERSION}; an untouched list is refreshed automatically on upgrade.`
                 : "Comma-separated classes a concept's type may name."
-            } A bundle validated against a domain schema (lokf validate --schema <file>) lists that schema's classes here too - the plugin cannot read the schema, which sits outside the vault - so they stop counting against Vocabulary fit and can carry a review interval. Keep the list the same as LOKF Registrar's.`,
+            } A bundle validated against a domain schema (lokf validate --schema <file>) lists that schema's classes here too - the plugin cannot read the schema, which sits outside the vault - so they stop counting against Vocabulary fit and can carry a review interval. Keep the list the same as KTL Registrar's.`,
             aliases: ["vocabulary", "classes", "domain schema", "custom type", "knownTypes", "vocabulary fit"],
             control: { type: "textarea", key: "knownTypes", rows: 3 },
           },

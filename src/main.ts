@@ -1,4 +1,4 @@
-// main.ts - LOKF Curator plugin entry point.
+// main.ts - KTL Curator plugin entry point.
 import { App, Modal, Notice, Plugin, Setting, TFile, TFolder, type TAbstractFile, type WorkspaceLeaf, addIcon, debounce, parseYaml } from "obsidian";
 import {
   bundleLogPath,
@@ -49,17 +49,17 @@ import {
   type CurationTally,
 } from "./edits";
 import {
-  LokfCuratorView,
-  LOKF_CURATOR_ICON,
-  LOKF_CURATOR_ICON_SVG,
-  LOKF_CURATOR_VIEW_TYPE,
+  KtlCuratorView,
+  KTL_CURATOR_ICON,
+  KTL_CURATOR_ICON_SVG,
+  KTL_CURATOR_VIEW_TYPE,
 } from "./curator-view";
 import { trustLabel, handoffLabel, type TrustLabel } from "./trust-label";
 import { lokfTrustMarkerExtension } from "./inline";
-import { LokfCuratorSuggest, type SuggestVocabulary } from "./suggest";
+import { KtlCuratorSuggest, type SuggestVocabulary } from "./suggest";
 import { FieldReferenceModal } from "./field-modal";
 import { LOKF_FIELD_DOCS } from "./fields";
-import { LokfCuratorSettingTab } from "./settings";
+import { KtlCuratorSettingTab } from "./settings";
 
 // The settings shape, their defaults, and the saved-data merge rule live in
 // the import-free `settings-model.ts` so the rule is testable under plain
@@ -140,12 +140,12 @@ class CuratorIdModal extends Modal {
         .onClick(() => {
           if (this.value.includes("@")) {
             errorEl?.remove();
-            errorEl = contentEl.createEl("p", { text: "Never an email - the bundle may be public.", cls: "lokf-curator-error" });
+            errorEl = contentEl.createEl("p", { text: "Never an email - the bundle may be public.", cls: "ktl-curator-error" });
             return;
           }
           if (!SLUG_RE.test(this.value)) {
             errorEl?.remove();
-            errorEl = contentEl.createEl("p", { text: 'Use lowercase letters, digits, and hyphens, e.g. "ada-lovelace".', cls: "lokf-curator-error" });
+            errorEl = contentEl.createEl("p", { text: 'Use lowercase letters, digits, and hyphens, e.g. "ada-lovelace".', cls: "ktl-curator-error" });
             return;
           }
           this.onSubmit(this.value);
@@ -159,7 +159,7 @@ class CuratorIdModal extends Modal {
   }
 }
 
-export default class LokfCuratorPlugin extends Plugin {
+export default class KtlCuratorPlugin extends Plugin {
   settings: CuratorSettings = { ...DEFAULT_SETTINGS };
   statusEl!: HTMLElement;
 
@@ -207,7 +207,7 @@ export default class LokfCuratorPlugin extends Plugin {
    *  `knowledge_bundle/` with its own index.md is a notes vault keeping a
    *  bundle as a folder among its notes (at the cost the README names);
    *  neither is a workshop with no exhibition, left alone unless the break-glass setting
-   *  says otherwise. Kept identical to LOKF Registrar's; the decision itself
+   *  says otherwise. Kept identical to KTL Registrar's; the decision itself
    *  is bundle.ts's pure `implicitBundleRoots`. */
   private implicitRoots(): string[] {
     const rootIndex = this.app.vault.getAbstractFileByPath("index.md");
@@ -225,7 +225,7 @@ export default class LokfCuratorPlugin extends Plugin {
 
   private noBundleNotice(): void {
     new Notice(
-      "LOKF Curator: this vault has no knowledge bundle - no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md - so there is nothing to curate. LOKF Registrar's Insert the bundle's semantic header command (or the lokf-sidecar skill) creates one; or turn on Settings → Scope → Treat the vault root as the bundle to read the whole vault anyway.",
+      "KTL Curator: this vault has no knowledge bundle - no knowledge_bundle folder with an index.md, and no LOKF header on the root index.md - so there is nothing to curate. KTL Registrar's Insert the bundle's semantic header command (or the ktl-sidecar skill) creates one; or turn on Settings → Scope → Treat the vault root as the bundle to read the whole vault anyway.",
       12000
     );
   }
@@ -251,25 +251,25 @@ export default class LokfCuratorPlugin extends Plugin {
       );
   }
 
-  private getCuratorView(): LokfCuratorView | null {
-    const leaf = this.app.workspace.getLeavesOfType(LOKF_CURATOR_VIEW_TYPE).at(0);
-    return leaf && leaf.view instanceof LokfCuratorView ? leaf.view : null;
+  private getCuratorView(): KtlCuratorView | null {
+    const leaf = this.app.workspace.getLeavesOfType(KTL_CURATOR_VIEW_TYPE).at(0);
+    return leaf && leaf.view instanceof KtlCuratorView ? leaf.view : null;
   }
 
   async onload(): Promise<void> {
     await this.loadSettings();
 
-    addIcon(LOKF_CURATOR_ICON, LOKF_CURATOR_ICON_SVG);
+    addIcon(KTL_CURATOR_ICON, KTL_CURATOR_ICON_SVG);
 
-    this.registerView(LOKF_CURATOR_VIEW_TYPE, (leaf) => new LokfCuratorView(leaf, this));
+    this.registerView(KTL_CURATOR_VIEW_TYPE, (leaf) => new KtlCuratorView(leaf, this));
 
     this.statusEl = this.addStatusBarItem();
     this.statusEl.setText("Curate: —");
     this.statusEl.addClass("mod-clickable");
-    this.statusEl.setAttribute("aria-label", "LOKF Curator - click to open");
+    this.statusEl.setAttribute("aria-label", "KTL Curator - click to open");
     this.statusEl.onClickEvent(() => void this.activateView());
 
-    this.addRibbonIcon(LOKF_CURATOR_ICON, "Curate", () => void this.activateView());
+    this.addRibbonIcon(KTL_CURATOR_ICON, "Curate", () => void this.activateView());
 
     this.addCommand({
       id: "open-curator",
@@ -302,13 +302,13 @@ export default class LokfCuratorPlugin extends Plugin {
       callback: () => new FieldReferenceModal(this.app, LOKF_FIELD_DOCS).open(),
     });
 
-    this.addSettingTab(new LokfCuratorSettingTab(this.app, this));
+    this.addSettingTab(new KtlCuratorSettingTab(this.app, this));
 
     // The trust tier shown inline on a concept's frontmatter while editing.
     this.registerEditorExtension(lokfTrustMarkerExtension(this));
 
     // LOKF-aware value completions inside a concept's frontmatter.
-    this.registerEditorSuggest(new LokfCuratorSuggest(this.app, this));
+    this.registerEditorSuggest(new KtlCuratorSuggest(this.app, this));
 
     const refresh = debounce(() => void this.refreshAllReports(), 300, true);
     this.registerEvent(this.app.metadataCache.on("changed", (file) => {
@@ -743,7 +743,7 @@ export default class LokfCuratorPlugin extends Plugin {
   private async reviewNext(): Promise<void> {
     const top = this.topQueued();
     if (!top) {
-      new Notice("LOKF Curator: nothing in the queue right now.");
+      new Notice("KTL Curator: nothing in the queue right now.");
       return;
     }
     await this.activateView();
@@ -754,7 +754,7 @@ export default class LokfCuratorPlugin extends Plugin {
     const active = this.getReportForActiveNote();
     const file = this.app.workspace.getActiveFile();
     if (!active || !active.record || !file) {
-      new Notice("LOKF Curator: the active note is not a concept in a configured bundle.");
+      new Notice("KTL Curator: the active note is not a concept in a configured bundle.");
       return;
     }
     await this.activateView();
@@ -883,7 +883,7 @@ export default class LokfCuratorPlugin extends Plugin {
     const reserved = isReserved(toBundlePath(file.path, root));
     if (!reserved) return false;
     new Notice(
-      `LOKF Curator: ${reserved}.md is a reserved bundle file, not a concept - nothing was written.`
+      `KTL Curator: ${reserved}.md is a reserved bundle file, not a concept - nothing was written.`
     );
     return true;
   }
@@ -995,7 +995,7 @@ export default class LokfCuratorPlugin extends Plugin {
     }
     const root = this.resolveCommandTarget();
     if (root === null) {
-      new Notice("LOKF Curator: several bundle roots are configured - open a note inside the target bundle first.");
+      new Notice("KTL Curator: several bundle roots are configured - open a note inside the target bundle first.");
       return;
     }
     const curatorId = await this.ensureCuratorId();
@@ -1003,7 +1003,7 @@ export default class LokfCuratorPlugin extends Plugin {
     const baseIri = (await this.findBaseIriFor(root)) ?? "";
     const path = toVaultPath("policies/knowledge-curation.md", root);
     if (this.app.vault.getAbstractFileByPath(path)) {
-      new Notice(`LOKF Curator: ${path} already exists.`);
+      new Notice(`KTL Curator: ${path} already exists.`);
       return;
     }
     const content = renderCurationPolicyTemplate(baseIri, curatorId, nowIso());
@@ -1011,7 +1011,7 @@ export default class LokfCuratorPlugin extends Plugin {
       await this.app.vault.createFolder(toVaultPath("policies", root));
     }
     await this.app.vault.create(path, content);
-    new Notice(`LOKF Curator: created ${path}.`);
+    new Notice(`KTL Curator: created ${path}.`);
   }
 
   async recordSomethingMissing(): Promise<void> {
@@ -1021,7 +1021,7 @@ export default class LokfCuratorPlugin extends Plugin {
     }
     const root = this.resolveCommandTarget();
     if (root === null) {
-      new Notice("LOKF Curator: several bundle roots are configured - open a note inside the target bundle first.");
+      new Notice("KTL Curator: several bundle roots are configured - open a note inside the target bundle first.");
       return;
     }
     const curatorId = await this.ensureCuratorId();
@@ -1031,14 +1031,14 @@ export default class LokfCuratorPlugin extends Plugin {
       const slug = slugHint || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       const path = toVaultPath(`${slug}.md`, root);
       if (this.app.vault.getAbstractFileByPath(path)) {
-        new Notice(`LOKF Curator: ${path} already exists.`);
+        new Notice(`KTL Curator: ${path} already exists.`);
         return;
       }
       const now = nowIso();
       const content = renderMissingPlaceholder(baseIri, type, slug, title, curatorId, now, todayIso(), hint || "Librarian: derive from the repository.");
       await this.app.vault.create(path, content);
       await this.withTally(root, (t) => (t.gapsRecorded = (t.gapsRecorded ?? 0) + 1));
-      new Notice(`LOKF Curator: recorded ${path} for the librarian.`);
+      new Notice(`KTL Curator: recorded ${path} for the librarian.`);
       await this.refreshAllReports();
     }).open();
   }
@@ -1080,17 +1080,17 @@ export default class LokfCuratorPlugin extends Plugin {
     } else {
       this.statusEl.setText("Curate");
     }
-    this.statusEl.setAttribute("aria-label", "LOKF Curator - click to open");
+    this.statusEl.setAttribute("aria-label", "KTL Curator - click to open");
   }
 
   async activateView(): Promise<void> {
-    const existing = this.app.workspace.getLeavesOfType(LOKF_CURATOR_VIEW_TYPE);
+    const existing = this.app.workspace.getLeavesOfType(KTL_CURATOR_VIEW_TYPE);
     let leaf: WorkspaceLeaf | null;
     if (existing.length) {
       leaf = existing[0] ?? null;
     } else {
       leaf = this.app.workspace.getRightLeaf(false);
-      await leaf?.setViewState({ type: LOKF_CURATOR_VIEW_TYPE, active: true });
+      await leaf?.setViewState({ type: KTL_CURATOR_VIEW_TYPE, active: true });
     }
     if (!leaf) return;
     void this.app.workspace.revealLeaf(leaf);

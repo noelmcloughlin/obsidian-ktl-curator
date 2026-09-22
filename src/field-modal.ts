@@ -25,8 +25,8 @@ export class FieldReferenceModal extends SuggestModal<FieldDoc> {
   }
 
   renderSuggestion(f: FieldDoc, el: HTMLElement): void {
-    el.createDiv({ cls: "lokf-suggest-title", text: f.name });
-    el.createEl("small", { cls: "lokf-suggest-meta", text: f.description });
+    el.createDiv({ cls: "ktl-suggest-title", text: f.name });
+    el.createEl("small", { cls: "ktl-suggest-meta", text: f.description });
   }
 
   onChooseSuggestion(): void {

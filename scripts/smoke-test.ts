@@ -531,8 +531,8 @@ const EXAMPLE_FM = {
   title: "Orders API",
   description: "REST API serving order data to the CLI and web UI.",
   resource: "services/orders/openapi.yaml",
-  generated: { by: "process:lokf-librarian", at: "2026-09-01T05:00:00Z" },
-  verified: [{ by: "process:lokf-librarian", at: "2026-09-07T05:00:00Z" }],
+  generated: { by: "process:ktl-librarian", at: "2026-09-01T05:00:00Z" },
+  verified: [{ by: "process:ktl-librarian", at: "2026-09-07T05:00:00Z" }],
   status: "draft",
 };
 
@@ -547,7 +547,7 @@ section("edits.ts - Confirm", () => {
   const fm = structuredClone(EXAMPLE_FM);
   const next = applyConfirm(fm, "ada-lovelace", "2026-09-08T14:00:00Z");
   const events = next["verified"] as { by: string; at: string }[];
-  expect("prior event preserved byte-for-byte in order", events[0]!.by === "process:lokf-librarian" && events[0]!.at === "2026-09-07T05:00:00Z", JSON.stringify(events));
+  expect("prior event preserved byte-for-byte in order", events[0]!.by === "process:ktl-librarian" && events[0]!.at === "2026-09-07T05:00:00Z", JSON.stringify(events));
   expect("appends human event", events[1]!.by === "human:ada-lovelace" && events[1]!.at === "2026-09-08T14:00:00Z", JSON.stringify(events));
   expect("removes status: draft", !("status" in next), JSON.stringify(next));
   expect("never mutates the caller's object", (fm["verified"] as unknown[]).length === 1, "");
@@ -569,7 +569,7 @@ section("edits.ts - Wrong / corrected", () => {
   const gen = next["generated"] as { by: string; at: string };
   expect("generated REPLACED, not appended", gen.by === "human:ada-lovelace" && gen.at === "2026-09-08T14:05:00Z", JSON.stringify(gen));
   const events = next["verified"] as { by: string; at: string }[];
-  expect("verified event appended, prior preserved", events.length === 2 && events[0]!.by === "process:lokf-librarian", JSON.stringify(events));
+  expect("verified event appended, prior preserved", events.length === 2 && events[0]!.by === "process:ktl-librarian", JSON.stringify(events));
   expect("status: draft removed", !("status" in next), "");
 });
 
@@ -732,7 +732,7 @@ section("trust.ts - buildTrustRecord carries the handoff fields", () => {
       frontmatter: {
         type: "Reference",
         verified: [{ by: "human:alice", at: "2026-01-15" }],
-        generated: { by: "process:lokf-librarian", at: "2026-01-01" },
+        generated: { by: "process:ktl-librarian", at: "2026-01-01" },
       },
       headings: [],
       mintId: (p) => p,
@@ -741,7 +741,7 @@ section("trust.ts - buildTrustRecord carries the handoff fields", () => {
   );
   expect("confirmedBy is the human actor", rec.confirmedBy === "human:alice", String(rec.confirmedBy));
   expect("confirmedAt is normalized to a date", rec.confirmedAt === "2026-01-15", String(rec.confirmedAt));
-  expect("generatedBy is the producer", rec.generatedBy === "process:lokf-librarian", String(rec.generatedBy));
+  expect("generatedBy is the producer", rec.generatedBy === "process:ktl-librarian", String(rec.generatedBy));
 });
 
 section("trust-label.ts - the handoff hint (whose turn in the loop)", () => {
@@ -760,7 +760,7 @@ section("trust-label.ts - the handoff hint (whose turn in the loop)", () => {
   expect("open questions take priority - for the curator", handoffLabel({ ...base, hasOpenQuestions: true })?.kind === "open-questions", "");
   expect("edited since a confirmation is flagged", handoffLabel({ ...base, editedSinceConfirmed: true })?.kind === "edited-since", "");
   expect("past its review date is flagged", handoffLabel({ ...base, pastReview: true })?.kind === "past-review", "");
-  expect("a librarian draft awaits a curator", handoffLabel({ ...base, status: "draft", unchecked: false, generatedBy: "process:lokf-librarian" })?.kind === "drafted", "");
+  expect("a librarian draft awaits a curator", handoffLabel({ ...base, status: "draft", unchecked: false, generatedBy: "process:ktl-librarian" })?.kind === "drafted", "");
   const c = handoffLabel({ ...base, unchecked: false, humanConfirmed: true, confirmedBy: "human:alice", confirmedAt: "2026-01-15" });
   expect("a confirmed concept names who and when", c?.kind === "confirmed" && c.text === "Confirmed by alice on 2026-01-15", JSON.stringify(c));
   expect("an unchecked concept is for the curator", handoffLabel(base)?.kind === "unchecked", "");

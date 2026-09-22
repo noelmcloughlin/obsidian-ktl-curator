@@ -4,11 +4,11 @@ exclude = [
   '^https://w3id\.org/lokf/context\.jsonld$',
   # This repo's own placeholder base_iri (RFC 2606 reserved domain) - see
   # FIXES.md F5. Drop once a real namespace is registered.
-  '^https://lokf-curator\.example/',
+  '^https://ktl-curator\.example/',
 ]
 
 # knowledge_bundle is a symlink to .lokf/knowledge (the Obsidian vault entry
-# point, see lokf-sidecar Step 2) - exclude it so lychee doesn't walk the
+# point, see ktl-sidecar Step 2) - exclude it so lychee doesn't walk the
 # same files twice, once at each path.
 exclude_path = [
   "(^|/)knowledge_bundle/",

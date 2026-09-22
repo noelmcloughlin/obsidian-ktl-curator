@@ -68,7 +68,7 @@ export function handoffLabel(
   if (record.hasOpenQuestions) return { kind: "open-questions", text: "Has open questions - for the curator" };
   if (record.editedSinceConfirmed === true) return { kind: "edited-since", text: "Edited since a person last confirmed it" };
   if (record.pastReview) return { kind: "past-review", text: "Past its review date" };
-  if (record.status === "draft" && record.generatedBy === "process:lokf-librarian") {
+  if (record.status === "draft" && record.generatedBy === "process:ktl-librarian") {
     return { kind: "drafted", text: "Drafted by the librarian - awaiting a curator" };
   }
   if (record.humanConfirmed && record.confirmedBy) {

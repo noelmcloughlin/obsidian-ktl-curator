@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://lokf-curator.example/knowledge/playbooks/knowledge-registrar-gate
+id: https://ktl-curator.example/knowledge/playbooks/knowledge-registrar-gate
 title: Knowledge registrar gate
 description: "The knowledge-registrar.yaml workflow - validates the bundle on every pull request that touches it, and ties every newly added human: confirmation (the event this plugin's Confirm verb writes) to evidence GitHub holds - that person's approval of the pull request, or their verified signature on the commit that introduced it - with an environment-reviewer attestation as the escape hatch for a repository that cannot sign."
 genre: how-to
@@ -11,16 +11,16 @@ sources:
   - resource: .lokf/justfile
   - resource: SECURITY.md
 relatedTo:
-  - https://lokf-curator.example/knowledge/services/edits-engine
-  - https://lokf-curator.example/knowledge/references/review-session
+  - https://ktl-curator.example/knowledge/services/edits-engine
+  - https://ktl-curator.example/knowledge/references/review-session
 dependsOn:
-  - https://lokf-curator.example/knowledge/references/lokf-toolkit
+  - https://ktl-curator.example/knowledge/references/lokf-toolkit
 generated:
-  by: process:lokf-librarian
+  by: process:ktl-librarian
   at: "2026-09-19T00:00:00Z"
 status: draft
 verified:
-  - by: process:lokf-librarian
+  - by: process:ktl-librarian
     at: "2026-09-19T00:00:00Z"
 ---
 
@@ -28,7 +28,7 @@ verified:
 
 `.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI -
 keeping records well-formed and their provenance paperwork straight, never
-judging whether a claim is true. It is a copy of the `lokf-sidecar` template
+judging whether a claim is true. It is a copy of the `ktl-sidecar` template
 in `knowledge-trust-ladder`. The deviations this copy once carried -
 `persist-credentials: false` on its checkout, a top-level `permissions: {}`,
 its own wording of two comments - were taken into the template itself. It is
@@ -52,7 +52,7 @@ silently; a target outside `base_iri` is left alone, since `source` and
 closes what neither can see: `bash scripts/knowledge-conventions.sh knowledge`
 (the sidecar's own script - one ISO-date `log.md` heading per day, quoted
 timestamps, `verified` as a list carrying at most one
-`process:lokf-librarian` event, and `## Open questions` bullets in the
+librarian event, and `## Open questions` bullets in the
 curator's shape - a concept body is opaque to `lokf validate`, which never
 opens `log.md`). Until 2026-09-19 the reference check was a third step,
 running the justfile's recipe through `uvx --from rust-just just`;
@@ -101,7 +101,7 @@ GitHub will not let anyone approve their own pull request, so on a
 one-person repository signing is the path: a GPG key, or the SSH key already
 used to push, registered on GitHub as a *signing* key (a separate list from
 authentication keys), `commit.gpgsign true`, and a commit email verified on
-the account. The skills' `lokf-sidecar/references/automation.md` has both
+the account. The skills' `ktl-sidecar/references/automation.md` has both
 setups and the trap between them. Without that, every confirmation this
 plugin records is rejected at this gate - the intended failure: an
 unchecked concept is supposed to read as unchecked.

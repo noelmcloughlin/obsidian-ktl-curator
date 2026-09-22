@@ -3,7 +3,7 @@
   <img src=".assets/knowledge-trust-ladder-logo.svg" alt="" width="56" align="right" />
 </picture>
 
-# LOKF Curator
+# KTL Curator
 
 > "We lasso the world with networks of silver-coloured Italian hemp,\
 > We bind down the world into some sort of order;\
@@ -14,20 +14,20 @@ An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** m
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-obsidian-plugins-card-dimmed.svg">
-    <img src=".assets/lokf-obsidian-plugins-card.svg" alt="The five LOKF roles, and which two are Obsidian plugins" width="720" />
+    <source media="(prefers-color-scheme: dark)" srcset=".assets/ktl-obsidian-plugins-card-dimmed.svg">
+    <img src=".assets/ktl-obsidian-plugins-card.svg" alt="The five LOKF roles, and which two are Obsidian plugins" width="720" />
   </picture>
 </p>
 
 A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](https://lokf.nolan-nichols.com/) (LOKF): one concept per note, a few properties on each, and an `index.md` at the root that names the bundle. The [`knowledge-trust-ladder`](https://github.com/noelmcloughlin/knowledge-trust-ladder) skills build one beside whatever they are run on, with every record marked a draft until a person has read it against its source.
 
-That person is the **curator**, always a human, and often not the person who runs agents or terminals; this plugin is the curator's assistant, the `lokf-curator` skill's review session done at a desk in Obsidian instead of in a terminal - the same five verbs, the same fields written.
+That person is the **curator**, always a human, and often not the person who runs agents or terminals; this plugin is the curator's assistant, the `ktl-curator` skill's review session done at a desk in Obsidian instead of in a terminal - the same five verbs, the same fields written.
 
-Its sibling [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The whole cast is in the skills' README under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder#the-fifth-role-which-is-not-a-skill); for anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
+Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The whole cast is in the skills' README under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder#the-fifth-role-which-is-not-a-skill); for anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
 
 Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
 
-> **Prefer to ask?** Install the docent skill into any agent you already use - `npx skills add noelmcloughlin/knowledge-trust-ladder --skill lokf-docent --yes` - and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
+> **Prefer to ask?** Install the docent skill into any agent you already use - `npx skills add noelmcloughlin/knowledge-trust-ladder --skill ktl-docent --yes` - and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
 
 ## Two vaults
 
@@ -35,8 +35,8 @@ Your everyday vault is the **workshop**. The bundle is the **exhibition**: a sec
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".assets/lokf-two-vaults-dimmed.svg">
-    <img src=".assets/lokf-two-vaults.svg" alt="Workshop vault and exhibition vault, one folder, no shared index" width="720" />
+    <source media="(prefers-color-scheme: dark)" srcset=".assets/ktl-two-vaults-dimmed.svg">
+    <img src=".assets/ktl-two-vaults.svg" alt="Workshop vault and exhibition vault, one folder, no shared index" width="720" />
   </picture>
 </p>
 
@@ -44,9 +44,9 @@ How the link behaves on each host - Windows junctions, synced drives that drop l
 
 ## Quick start
 
-1. **Get a bundle.** At the host, run `lokf-sidecar` once and then `lokf-librarian` to derive concepts from your sources, every one marked a draft. (A bundle grown by hand with LOKF Registrar works too, once it has a concept, a source, and a person to read one against the other.)
+1. **Get a bundle.** At the host, run `ktl-sidecar` once and then `ktl-librarian` to derive concepts from your sources, every one marked a draft. (A bundle grown by hand with KTL Registrar works too, once it has a concept, a source, and a person to read one against the other.)
 2. **Open it as a vault.** **File → Open folder as vault**, pick `knowledge_bundle`.
-3. **Install the plugin there** ([Install](#install)), in that vault's `.obsidian/plugins/`, not in your workshop. Installed in a vault with no bundle it reads *Curate: no bundle* and does nothing. Install LOKF Registrar beside it.
+3. **Install the plugin there** ([Install](#install)), in that vault's `.obsidian/plugins/`, not in your workshop. Installed in a vault with no bundle it reads *Curate: no bundle* and does nothing. Install KTL Registrar beside it.
 4. **Review.** Click the status-bar item or the ribbon's gem, pick a card from *Worth ten minutes today*, read the source beside the claim, press one of five buttons. The first verb asks for your **curator id**, a short lowercase name with hyphens (`ada-lovelace`), recorded on every verdict as `human:<id>`. Never an email: the bundle may be public.
 
 ## Using it
@@ -72,7 +72,7 @@ Everything but **Later** also keeps one running `**Curation**` line under today'
 
 **In the editor**, a concept's frontmatter carries a small tier badge (*Confirmed*, *Automation*, *Unchecked*, *Draft*, *Retired*), and autocomplete offers the values a curator hand-types: the `human:<id>` actor, the lifecycle `status`, and dates for `at` and `stale_after`. Both work on raw frontmatter (Source mode) and switch off under *Settings → In-editor*.
 
-**Commands.** Open the command palette and search for **LOKF Curator**:
+**Commands.** Open the command palette and search for **KTL Curator**:
 
 | Command | What it does |
 | --- | --- |
@@ -104,29 +104,29 @@ A folder inside a dot-folder is accepted but only read if something has put it i
 
 ## Install
 
-Not yet in the community plugin store. Install it in the bundle's vault, at `<bundle>/.obsidian/plugins/lokf-curator/`.
+Not yet in the community plugin store. Install it in the bundle's vault, at `<bundle>/.obsidian/plugins/ktl-curator/`.
 
-- **From a [GitHub release](https://github.com/noelmcloughlin/obsidian-lokf-curator/releases)** - copy `main.js`, `manifest.json` and `styles.css` into that folder and enable the plugin under **Settings → Community plugins**.
-- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)** - add `noelmcloughlin/obsidian-lokf-curator` as a beta plugin; BRAT installs the latest release and keeps it updated.
+- **From a [GitHub release](https://github.com/noelmcloughlin/obsidian-ktl-curator/releases)** - copy `main.js`, `manifest.json` and `styles.css` into that folder and enable the plugin under **Settings → Community plugins**.
+- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)** - add `noelmcloughlin/obsidian-ktl-curator` as a beta plugin; BRAT installs the latest release and keeps it updated.
 - **From source** - `npm ci && npm run build`, then copy the same three files.
 
 Requires Obsidian **1.13.0** or later.
 
 ## Settings
 
-Under **Settings → LOKF Curator**; every setting is also reachable through Obsidian's settings search.
+Under **Settings → KTL Curator**; every setting is also reachable through Obsidian's settings search.
 
 - **Who is curating** - the curator id.
 - **In-editor** - the tier badge and the autocomplete, both on by default.
 - **Scope** - the bundle-root settings above, and excluded folders.
-- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/lokf-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as LOKF Registrar's *Known LOKF types*.
+- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as KTL Registrar's *Known LOKF types*.
 - **Review intervals** - months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
 - **Queue** - how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
 - **Feedback** - an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](docs/for-the-curious.md#on-the-feedback-file)).
 
 ## For the curious
 
-How each label is computed and from which fields, what is left to LOKF Registrar and the librarian, where the plugin sits on the four-tier trust model, where the bundle can live host by host, and the feedback file: [docs/for-the-curious.md](docs/for-the-curious.md).
+How each label is computed and from which fields, what is left to KTL Registrar and the librarian, where the plugin sits on the four-tier trust model, where the bundle can live host by host, and the feedback file: [docs/for-the-curious.md](docs/for-the-curious.md).
 
 ## Privacy
 
@@ -166,8 +166,8 @@ This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained b
 - [Introducing the Open Knowledge Bundle, Google blog](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing), creator of the Open Knowledge Format specification.
 - [LLM Wiki, Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), a pattern for building personal knowledge bases using LLMs.
 - [obsidian-sample-plugin](https://github.com/obsidianmd/obsidian-sample-plugin), whose build, lint and release layout this repository follows.
-- [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), the `lokf-curator` skill this plugin implements as an in-editor workflow, and whose trust model and plain-language labels it shares.
-- [LOKF Registrar](https://github.com/noelmcloughlin/obsidian-lokf-registrar), the sibling plugin, this one's fork parent, and the source of the shared bundle-root plumbing in `src/bundle.ts`.
+- [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), the `ktl-curator` skill this plugin implements as an in-editor workflow, and whose trust model and plain-language labels it shares.
+- [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar), the sibling plugin, this one's fork parent, and the source of the shared bundle-root plumbing in `src/bundle.ts`.
 
 Nothing else records a person's verdict in LOKF's trust fields, as far as we know. Validators for the plain OKF v0.2 layer beneath it, such as [OKF Enforcer](https://github.com/MartinForReal/okf-enforcer), check well-formedness only and are unrelated to curation.
 

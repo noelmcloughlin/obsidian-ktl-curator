@@ -1,6 +1,6 @@
 // trust.ts - one concept's trust record, the bundle health counts, and the
 // ranked "worth ten minutes today" queue. Pure: no Obsidian, no Date.now().
-// Rules verbatim from lokf-curator's references/trust-fields.md - this file
+// Rules verbatim from ktl-curator's references/trust-fields.md - this file
 // does not restate them, it implements them.
 import { KNOWN_LOKF_TYPES, RELATION_FIELDS, classify, dirOf, normalizeTypeKey, resolveRelationTarget, toBundlePath } from "./bundle";
 
@@ -28,7 +28,7 @@ export interface TrustRecord {
    *  (YYYY-MM-DD), for the handoff hint "Confirmed by <id> on <date>". */
   confirmedBy: string | null;
   confirmedAt: string | null;
-  /** The `generated.by` producer (e.g. "process:lokf-librarian"), for the
+  /** The `generated.by` producer (e.g. "process:ktl-librarian"), for the
    *  "drafted by the librarian" handoff. */
   generatedBy: string | null;
   editedSinceConfirmed: boolean | null; // null = can't tell

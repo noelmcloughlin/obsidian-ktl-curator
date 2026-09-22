@@ -54,7 +54,7 @@ export default defineConfig(
 			// `brands` match case-insensitively, rewrite to the canonical casing,
 			// and are the only tokens exempt from being capitalized as the first
 			// word of a sentence. So terms that must never be sentence-cased even
-			// in the leading position ("LOKF Curator - click to open") go here - as
+			// in the leading position ("KTL Curator - click to open") go here - as
 			// does `http_method`, a frontmatter key that is lowercase by spec and
 			// would otherwise be uppercased by the built-in HTTP acronym.
 			//
@@ -70,7 +70,7 @@ export default defineConfig(
 				{
 					brands: [
 						'LOKF',
-						'LOKF Curator',
+						'KTL Curator',
 						'OKF',
 						'Diátaxis',
 						'http_method',
