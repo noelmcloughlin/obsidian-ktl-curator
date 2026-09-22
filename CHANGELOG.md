@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-22
+
 ### Added
 
 - **A dimmed counterpart for all three diagrams**, `*-dimmed.svg` beside each original: the same geometry on warm grey paper rather than a dark one. Shared byte-for-byte with the other repositories.
