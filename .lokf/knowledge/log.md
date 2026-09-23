@@ -1,5 +1,16 @@
 # Change Log
 
+## 2026-09-23
+
+* **The scheduled librarian installs its skill from a tag that has it.** The
+  pin still read `v0.21.0`, where the skills are named `lokf-*`; the rename to
+  `ktl-*` landed in `v0.22.0`. The install step copies `skills/ktl-librarian`
+  and is not gated on `KNOWLEDGE_LIBRARIAN_ENABLED`, so every weekly run has
+  been failing there since the plugin took the KTL name, armed or not. The pin
+  moves to `v0.22.0`, the first tag carrying that path. The five scripts under
+  `.lokf/scripts/` already match that release's templates, so nothing else had
+  to move with it.
+
 ## 2026-09-19
 
 * **The logo now carries knowledge and trust.** The first mark was three rungs
