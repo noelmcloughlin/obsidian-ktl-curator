@@ -2,6 +2,21 @@
 
 ## 2026-09-23
 
+* **The docent records a reader's gap without reading the file it goes in.**
+  `.lokf/feedback.md` is kept newest first, so adding an entry meant reading
+  it, editing it and writing it back, which put every earlier reader's report
+  into the docent's context - free text from someone who may have no access
+  here - guarded by nothing but a line of prose telling the agent to ignore
+  what it had just read. A Snyk W011 audit named the path. The sidecar now
+  carries `knowledge-feedback.sh`, a sixth script: the docent hands over its
+  own entry and never opens the file, and the script prints only a kind, a
+  date and a count. The preflight reports a bundle whose sidecar predates it,
+  and `.lokf/.gitignore` covers the temporary file and lock the script writes
+  beside `feedback.md`. Copied from the `ktl-sidecar` templates ahead of the
+  release that will carry them, as this repository's `knowledge-registrar.yaml`
+  already was; the pin moves when that release lands. Nothing changed for the
+  scheduled librarian, which still reads the entries to consume them.
+
 * **The scheduled librarian installs its skill from a tag that has it.** The
   pin still read `v0.21.0`, where the skills are named `lokf-*`; the rename to
   `ktl-*` landed in `v0.22.0`. The install step copies `skills/ktl-librarian`

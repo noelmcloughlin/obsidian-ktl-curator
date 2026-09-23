@@ -14,6 +14,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 - **The scheduled librarian installs its skill from `v0.22.0`**, the first tag with `skills/ktl-librarian`; the weekly run had failed at that step since the plugin took the KTL name.
 
+### Security
+
+- **The sidecar carries `knowledge-feedback.sh`.** ktl-docent records a reader's gap through it and never opens `feedback.md`, so no other reader's text enters its session (Snyk W011). It is copied from the `ktl-sidecar` templates ahead of the release that ships it, as `knowledge-registrar.yaml` was.
+
 ## [1.3.0] - 2026-09-22
 
 ### Added
