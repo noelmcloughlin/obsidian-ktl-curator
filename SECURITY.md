@@ -40,6 +40,6 @@ If every inherited guard failed, the worst case is a pull request confined to th
 
 ## Not covered
 
-- The sidecar templates' design, which is `knowledge-trust-ladder`'s. The copies here - both knowledge workflows and the scripts under `.lokf/scripts/` - move only when copied again from a release; a `TRUST_LADDER_SKILLS_REF` bump changes only the skill the scheduled run installs. `knowledge-preflight.sh` reports drift on its `copies` line, and `diff` against `skills/ktl-sidecar/templates/` at that tag confirms a copy.
+- The sidecar templates' design, which is `knowledge-trust-ladder`'s. `knowledge-registrar.yaml` and the scripts under `.lokf/scripts/` are copies of its `skills/ktl-sidecar/templates/` and move only when copied again from there: from the release `TRUST_LADDER_SKILLS_REF` names, or from its `main` when a fix should not wait for the next tag; the pin then follows at that release. The pin itself changes only the skill the scheduled run installs, and `knowledge-librarian.yaml` carries local changes, so it is compared by hand. To confirm a copy, `diff` it against the templates at the copied ref; `knowledge-preflight.sh` also reports drift on its `copies` line where a sidecar is installed to compare against.
 - A compromised runner, upstream action or agent harness: this is a baseline, not a sandbox. Report a finding in one anyway, with scope and reproduction.
 - Whether a bundle is *true*. [AI_COVENANT.md](AI_COVENANT.md) sets the human-accountability rules this automation runs under.
