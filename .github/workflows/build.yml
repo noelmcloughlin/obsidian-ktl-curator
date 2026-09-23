@@ -2,14 +2,14 @@ name: Node.js build
 
 on:
     # push and pull_request both firing on every branch used to run this
-    # workflow twice for the same commit — once when it landed on the branch,
-    # again when the PR using that branch opened or synchronized, since the
-    # two events aren't deduplicated by SHA. push is scoped to main, matching
+    # workflow twice for the same commit: once when it landed on the branch,
+    # again when its PR opened or synchronized. The two events are not
+    # deduplicated by SHA. push is scoped to main, matching
     # validate.yml/semantic-release.yml elsewhere in this family: an open PR
     # can never have main as its head, so the two triggers can no longer
     # cover the same commit. A branch pushed before its PR exists goes
-    # untested until the PR opens — acceptable given CONTRIBUTING.md's own
-    # convention that changes reach main by pull request; workflow_dispatch
+    # untested until the PR opens. That is acceptable given CONTRIBUTING.md's
+    # own convention that changes reach main by pull request; workflow_dispatch
     # remains for anyone who wants a result sooner.
     push:
         branches: [main]
@@ -20,12 +20,12 @@ on:
 # job below opts back into only the read access it needs to check out code;
 # no other job (present or future) inherits more. `pull_request` (not
 # `pull_request_target`) already keeps a fork PR's GITHUB_TOKEN read-only and
-# its run secret-free, regardless of this setting — this is defense in depth,
+# its run secret-free, regardless of this setting. This is defense in depth,
 # not what makes fork PRs safe here.
 permissions: {}
 
-# Cancel a superseded run on the same ref — a rapid re-push to an open PR, or
-# to main — to save runner time; no run outlives the commit it was testing.
+# Cancel a superseded run on the same ref (a rapid re-push to an open PR, or
+# to main) to save runner time; no run outlives the commit it was testing.
 concurrency:
     group: build-${{ github.ref }}
     cancel-in-progress: true
@@ -43,13 +43,13 @@ jobs:
 
         steps:
             # Monitors the runner's outbound network traffic for the rest of this
-            # job and flags anything unexpected — the main defense here against a
-            # compromised dependency's postinstall script (`npm ci` below runs
-            # esbuild's, which fetches a platform binary) phoning home, doubly
-            # relevant on a job that also builds arbitrary fork PR branches.
-            # Audit mode only: it observes and reports, it does not block, since
-            # hand-maintaining an exact egress allowlist here would be fragile
-            # against ordinary dependency churn. See
+            # job and flags anything unexpected. It is the main defense here
+            # against a compromised dependency's postinstall script phoning home
+            # (`npm ci` below runs esbuild's, which fetches a platform binary).
+            # That is doubly relevant on a job that also builds arbitrary fork
+            # PR branches. Audit mode only: it observes and reports, it does not
+            # block, since hand-maintaining an exact egress allowlist here would
+            # be fragile against ordinary dependency churn. See
             # https://github.com/step-security/harden-runner.
             - name: Harden the runner
               uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1

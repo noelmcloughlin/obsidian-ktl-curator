@@ -2,16 +2,16 @@ name: Lint & docs
 
 # Static checks for the shell, workflows, and prose this repo ships. These
 # never touch the Node build (see build.yml) or the LOKF bundle's own
-# semantics (see knowledge-registrar.yaml) - this is the CI-hardening pass
+# semantics (see knowledge-registrar.yaml). This is the CI-hardening pass
 # backported from knowledge-trust-ladder's validate.yml (FIXES.md F1-F3).
 on:
   # push and pull_request both firing on every branch used to run this
-  # workflow twice for the same commit - once on landing, again when the PR
-  # using that branch opened or synchronized, since the two events aren't
-  # deduplicated by SHA (concurrency doesn't catch it either: github.ref
-  # differs between a push and a pull_request event for the same commit).
+  # workflow twice for the same commit: once on landing, again when the PR
+  # using that branch opened or synchronized. The two events are not
+  # deduplicated by SHA, and concurrency does not catch it either. github.ref
+  # differs between a push and a pull_request event for the same commit.
   # push is scoped to main, matching validate.yml/semantic-release.yml
-  # elsewhere in this family - an open PR can never have main as its head, so
+  # elsewhere in this family. An open PR can never have main as its head, so
   # the two triggers can no longer cover the same commit.
   push:
     branches: [main]
@@ -63,8 +63,8 @@ jobs:
         with:
           args: -color
       # actionlint checks syntax, not pinning. A tag or branch ref floats, so
-      # every `uses:` must name a commit SHA (or an image digest), with the
-      # version in a trailing comment for Dependabot to bump.
+      # every `uses:` must name a commit SHA (or an image digest). The
+      # version sits in a trailing comment for Dependabot to bump.
       - name: Every action is pinned to a commit
         run: |
           if grep -rnE '^\s*-?\s*uses:' .github/workflows/ \
