@@ -5,6 +5,10 @@ exclude = [
   # This repo's own placeholder base_iri (RFC 2606 reserved domain) - see
   # FIXES.md F5. Drop once a real namespace is registered.
   '^https://ktl-curator\.example/',
+  # conventionalcommits.org (Netlify) answers CI runners with 503 on every
+  # retry while serving 200 elsewhere; not a dead link. Drop this exclusion
+  # if CI reaches it again.
+  '^https://www\.conventionalcommits\.org/',
 ]
 
 # knowledge_bundle is a symlink to .lokf/knowledge (the Obsidian vault entry
