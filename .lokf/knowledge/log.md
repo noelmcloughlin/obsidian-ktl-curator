@@ -7,18 +7,17 @@
   it, editing it and writing it back, which put other readers' free text into
   the docent's session, held off by prose alone (Snyk W011). The sidecar now
   carries `knowledge-feedback.sh`: the docent hands over its own entry and
-  never opens the file. The script is copied from the `ktl-sidecar` templates
-  ahead of the release that will carry it, as `knowledge-registrar.yaml`
-  already was; the pin moves when that release lands.
+  never opens the file. The script comes from the `v0.23.0` templates, the
+  release that ships it, and the pin moved to that tag with it.
 
 * **The scheduled librarian installs its skill from a tag that has it.** The
   pin still read `v0.21.0`, where the skills are named `lokf-*`; the rename to
   `ktl-*` landed in `v0.22.0`. The install step copies `skills/ktl-librarian`
   and is not gated on `KNOWLEDGE_LIBRARIAN_ENABLED`, so every weekly run has
   been failing there since the plugin took the KTL name, armed or not. The pin
-  moves to `v0.22.0`, the first tag carrying that path. The five scripts under
-  `.lokf/scripts/` already match that release's templates, so nothing else had
-  to move with it.
+  moves to `v0.23.0`, the release that also ships `knowledge-feedback.sh`. The
+  scripts under `.lokf/scripts/` and `knowledge-registrar.yaml` all match its
+  templates.
 
 ## 2026-09-19
 
