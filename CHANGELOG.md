@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-09-23
+
 ### Fixed
 
 - **The scheduled librarian installs its skill from `v0.23.0`**, the release that ships `knowledge-feedback.sh`. 1.3.1 still pinned `v0.22.0`, so the copied script matched no tag the pin named.
