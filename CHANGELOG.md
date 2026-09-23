@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The README and `docs/for-the-curious.md` are restyled for the reader**: shorter sentences, plain statements, labels set off with a colon. The host-by-host layouts now live once in the skills' `docs/obsidian.md`; this repository keeps only what each layout means for the review card.
+
 ## [1.3.0] - 2026-09-22
 
 ### Added

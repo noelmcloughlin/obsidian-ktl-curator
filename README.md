@@ -21,13 +21,13 @@ An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** m
 
 A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](https://lokf.nolan-nichols.com/) (LOKF): one concept per note, a few properties on each, and an `index.md` at the root that names the bundle. The [`knowledge-trust-ladder`](https://github.com/noelmcloughlin/knowledge-trust-ladder) skills build one beside whatever they are run on, with every record marked a draft until a person has read it against its source.
 
-That person is the **curator**, always a human, and often not the person who runs agents or terminals; this plugin is the curator's assistant, the `ktl-curator` skill's review session done at a desk in Obsidian instead of in a terminal - the same five verbs, the same fields written.
+That person is the **curator**, always a human, and often not the person who runs agents or terminals. This plugin is the curator's assistant: the `ktl-curator` skill's review session, done at a desk in Obsidian instead of in a terminal, with the same five verbs and the same fields written.
 
-Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The whole cast is in the skills' README under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder#the-fifth-role-which-is-not-a-skill); for anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
+Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. All the roles are in the skills' README under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder#the-fifth-role-which-is-not-a-skill). For anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
 
 Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
 
-> **Prefer to ask?** Install the docent skill into any agent you already use - `npx skills add noelmcloughlin/knowledge-trust-ladder --skill ktl-docent --yes` - and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
+> **Prefer to ask?** Install the docent skill into any agent you already use (`npx skills add noelmcloughlin/knowledge-trust-ladder --skill ktl-docent --yes`) and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked. **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
 
 ## Two vaults
 
@@ -40,7 +40,7 @@ Your everyday vault is the **workshop**. The bundle is the **exhibition**: a sec
   </picture>
 </p>
 
-How the link behaves on each host - Windows junctions, synced drives that drop links, what Obsidian's file reconciler does with it - is the skills' business, and recorded once in their playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md). If the link is missing, `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows) makes it, or open `.lokf/knowledge` by path.
+How the link behaves on each host is the skills' business, recorded once in their playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md): Windows junctions, synced drives that drop links, and what Obsidian's file reconciler does with it. If the link is missing, `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows) makes it, or open `.lokf/knowledge` by path.
 
 ## Quick start
 
@@ -53,8 +53,8 @@ How the link behaves on each host - Windows junctions, synced drives that drop l
 
 **The panel** opens from the status bar, the ribbon, or **Open curator panel**:
 
-- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These overlap by design; only the total is a total. What each label rests on is in the skills' README under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder#trust-stays-visible), and the exact rule per label in [docs/for-the-curious.md](docs/for-the-curious.md#the-trust-labels-and-the-fields-they-come-from).
-- **Worth ten minutes today**: up to five concepts, ranked by what most needs a person - past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each, most-relied-upon first.
+- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. What each label rests on is in the skills' README under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder#trust-stays-visible), and the exact rule per label in [docs/for-the-curious.md](docs/for-the-curious.md#the-trust-labels-and-the-fields-they-come-from).
+- **Worth ten minutes today**: up to five concepts, ranked by what most needs a person: past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each, most-relied-upon first.
 - **Open questions the librarian left**: what a previous pass flagged and could not settle alone.
 - The **active note**, pinned, with its labels and a *Review this note* button.
 
@@ -83,13 +83,13 @@ Everything but **Later** also keeps one running `**Curation**` line under today'
 | Create curation policy | Writes `policies/knowledge-curation.md`, the table that sets how often each kind of concept is re-confirmed |
 | Record something missing | Writes a placeholder concept - type, title, one open question - for the librarian to fill in |
 
-The confirmed count is meant to rise slowly: a handful of concepts in a sitting, cumulative and partial by design. A large or fast-growing bundle never quite reaches fully-confirmed, and the report says so instead of pretending.
+The confirmed count is meant to rise slowly, a handful of concepts in a sitting. A large or fast-growing bundle never quite reaches fully-confirmed, and the report says so.
 
 ## Which folder is the bundle
 
 With nothing configured, the vault decides:
 
-1. A root `index.md` with a LOKF header means **the whole vault is the bundle** - the case whenever you open `knowledge_bundle` as a vault. That header is what gives each concept its id.
+1. A root `index.md` with a LOKF header means **the whole vault is the bundle**, which is the case whenever you open `knowledge_bundle` as a vault. That header is what gives each concept its id.
 2. Otherwise a top-level `knowledge_bundle/` folder with its own `index.md` is the bundle, and notes outside it are left alone.
 3. Otherwise there is **no bundle**. No report, no queue, nothing written, and the panel says why.
 
@@ -97,8 +97,8 @@ Inside a bundle, a note without trust fields is simply *nobody has checked this 
 
 Two settings widen that under *Settings → Scope*:
 
-- **Bundle root folders** - for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue; *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions - which is why the skills lay the bundle down as a separate vault instead (the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why).
-- **Treat the vault root as the bundle** - a break-glass switch for a vault that really is a bundle but whose root `index.md` has no header yet.
+- **Bundle root folders**: for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue; *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions, which is why the skills lay the bundle down as a separate vault instead (the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why).
+- **Treat the vault root as the bundle**: a break-glass switch for a vault that really is a bundle but whose root `index.md` has no header yet.
 
 A folder inside a dot-folder is accepted but only read if something has put it in Obsidian's index (the community plugin *Hidden Folders Access* does that); otherwise the report says so rather than showing an empty bundle.
 
@@ -106,9 +106,9 @@ A folder inside a dot-folder is accepted but only read if something has put it i
 
 Not yet in the community plugin store. Install it in the bundle's vault, at `<bundle>/.obsidian/plugins/ktl-curator/`.
 
-- **From a [GitHub release](https://github.com/noelmcloughlin/obsidian-ktl-curator/releases)** - copy `main.js`, `manifest.json` and `styles.css` into that folder and enable the plugin under **Settings → Community plugins**.
-- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)** - add `noelmcloughlin/obsidian-ktl-curator` as a beta plugin; BRAT installs the latest release and keeps it updated.
-- **From source** - `npm ci && npm run build`, then copy the same three files.
+- **From a [GitHub release](https://github.com/noelmcloughlin/obsidian-ktl-curator/releases)**: copy `main.js`, `manifest.json` and `styles.css` into that folder and enable the plugin under **Settings → Community plugins**.
+- **[BRAT](https://github.com/TfTHacker/obsidian42-brat)**: add `noelmcloughlin/obsidian-ktl-curator` as a beta plugin; BRAT installs the latest release and keeps it updated.
+- **From source**: `npm ci && npm run build`, then copy the same three files.
 
 Requires Obsidian **1.13.0** or later.
 
@@ -116,17 +116,17 @@ Requires Obsidian **1.13.0** or later.
 
 Under **Settings → KTL Curator**; every setting is also reachable through Obsidian's settings search.
 
-- **Who is curating** - the curator id.
-- **In-editor** - the tier badge and the autocomplete, both on by default.
-- **Scope** - the bundle-root settings above, and excluded folders.
-- **Type vocabulary** - the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as KTL Registrar's *Known LOKF types*.
-- **Review intervals** - months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
-- **Queue** - how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
-- **Feedback** - an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](docs/for-the-curious.md#on-the-feedback-file)).
+- **Who is curating**: the curator id.
+- **In-editor**: the tier badge and the autocomplete, both on by default.
+- **Scope**: the bundle-root settings above, and excluded folders.
+- **Type vocabulary**: the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as KTL Registrar's *Known LOKF types*.
+- **Review intervals**: months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
+- **Queue**: how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
+- **Feedback**: an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](docs/for-the-curious.md#on-the-feedback-file)).
 
 ## For the curious
 
-How each label is computed and from which fields, what is left to KTL Registrar and the librarian, where the plugin sits on the four-tier trust model, where the bundle can live host by host, and the feedback file: [docs/for-the-curious.md](docs/for-the-curious.md).
+How each label is computed and from which fields, what is left to KTL Registrar and the librarian, where the plugin sits on the four-tier trust model, what each host layout means for the review card, and the feedback file: [docs/for-the-curious.md](docs/for-the-curious.md).
 
 ## Privacy
 
@@ -153,7 +153,7 @@ docs/               the reasoning behind the labels
 .lokf/              this repository's own LOKF knowledge bundle
 ```
 
-`bundle.ts`, `trust.ts` and `edits.ts` import nothing - no Obsidian, no YAML parser, no `Date.now()`. They take already-parsed frontmatter and, where a date matters, the day as a parameter, so the whole rule set runs under plain Node via `npm run smoke-test` and every date-dependent label is reproducible. Parsing and the clock live in `src/main.ts`.
+`bundle.ts`, `trust.ts` and `edits.ts` import nothing: no Obsidian, no YAML parser, no `Date.now()`. They take already-parsed frontmatter and, where a date matters, the day as a parameter, so the whole rule set runs under plain Node via `npm run smoke-test` and every date-dependent label is reproducible. Parsing and the clock live in `src/main.ts`.
 
 ## This repository's own bundle
 
@@ -169,8 +169,8 @@ This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained b
 - [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder), the `ktl-curator` skill this plugin implements as an in-editor workflow, and whose trust model and plain-language labels it shares.
 - [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar), the sibling plugin, this one's fork parent, and the source of the shared bundle-root plumbing in `src/bundle.ts`.
 
-Nothing else records a person's verdict in LOKF's trust fields, as far as we know. Validators for the plain OKF v0.2 layer beneath it, such as [OKF Enforcer](https://github.com/MartinForReal/okf-enforcer), check well-formedness only and are unrelated to curation.
+We know of no other tool that records a person's verdict in LOKF's trust fields. Validators for the plain OKF v0.2 layer beneath it, such as [OKF Enforcer](https://github.com/MartinForReal/okf-enforcer), check well-formedness only and are unrelated to curation.
 
 ## Contributing, security, license
 
-[CONTRIBUTING.md](CONTRIBUTING.md) covers the dev setup and the pre-PR checklist; participation is covered by the [Code of Conduct](CODE_OF_CONDUCT.md), and [AI_COVENANT.md](AI_COVENANT.md) sets out how AI-assisted contributions are handled. Report security issues as [SECURITY.md](SECURITY.md) describes. Apache-2.0 - see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+[CONTRIBUTING.md](CONTRIBUTING.md) covers the dev setup and the pre-PR checklist; participation is covered by the [Code of Conduct](CODE_OF_CONDUCT.md), and [AI_COVENANT.md](AI_COVENANT.md) sets out how AI-assisted contributions are handled. Report security issues as [SECURITY.md](SECURITY.md) describes. Apache-2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).

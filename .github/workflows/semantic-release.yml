@@ -1,30 +1,30 @@
 name: Semantic release
 
-# Computes the next version from Conventional Commits on `main`, promotes
+# Computes the next version from Conventional Commits on `main` and promotes
 # this repository's own CHANGELOG.md "## [Unreleased]" section into a dated
-# version heading, and bumps manifest.json/package.json/versions.json the
-# same way `npm version` already does by hand (see CONTRIBUTING.md
-# "Releasing") - via .github/scripts/changelog-release.mjs, run as
-# semantic-release's own verifyRelease/generateNotes/prepare hooks. Building
-# the plugin, attesting provenance, and opening the draft GitHub release
-# stay exactly where they already were: the `release` job below hands off
-# to release.yml (unchanged, still also tag-triggered for a hand-pushed
-# tag) rather than duplicating any of it.
+# version heading, via .github/scripts/changelog-release.mjs run as
+# semantic-release's own verifyRelease/generateNotes/prepare hooks. It bumps
+# manifest.json/package.json/versions.json the same way `npm version`
+# already does by hand (see CONTRIBUTING.md "Releasing"). Building the
+# plugin, attesting provenance, and opening the draft GitHub release stay
+# exactly where they already were. The `build-and-attest` job below hands off to
+# release.yml (unchanged, still also tag-triggered for a hand-pushed tag)
+# rather than duplicating any of it.
 #
-# `plan` previews every pull request into main with `--dry-run` - which
-# writes nothing and needs no write scope - so a broken commit message or a
+# `plan` previews every pull request into main with `--dry-run`, which
+# writes nothing and needs no write scope. So a broken commit message or a
 # broken exec script is caught in review, not after merge. `release` runs
-# only on a push to main and sits behind the `release` GitHub Environment:
-# configure required reviewers on it in this repository's own
+# only on a push to main and sits behind the `release` GitHub Environment.
+# Configure required reviewers on it in this repository's own
 # Settings > Environments (creating the environment here does not do that
-# for you), the same gate the sibling skills repository's publish workflow
-# already uses, or every qualifying merge to main will cut a release with no
-# human step in between.
+# for you). It is the same gate the sibling skills repository's publish
+# workflow already uses. Otherwise every qualifying merge to main will cut
+# a release with no human step in between.
 #
 # semantic-release itself is installed fresh, at exact pinned versions,
-# rather than added to package.json: this repository's own runtime
-# dependency tree - and every `npm ci` in build.yml - never carries the
-# release tool's, only this one workflow's two jobs do.
+# rather than added to package.json. This repository's own runtime
+# dependency tree, and every `npm ci` in build.yml, never carries the
+# release tool's; only this one workflow's two jobs do.
 
 on:
   pull_request:
@@ -92,23 +92,24 @@ jobs:
 
       # semantic-release detects a pull_request event itself and exits before
       # running any plugin, including @semantic-release/exec's verifyRelease
-      # hook - so the --dry-run below never calls changelog-release.mjs check
-      # on this event, and an empty "## [Unreleased]" would otherwise pass a
-      # pull request and only fail at release time. Call it directly - but
-      # only when these commits would actually release, or a chore-only pull
-      # request (a Dependabot bump, a docs tidy) fails for lacking notes it
-      # was never meant to write.
+      # hook. So the --dry-run below never calls changelog-release.mjs check
+      # on this event. An empty "## [Unreleased]" would otherwise pass a
+      # pull request and only fail at release time. Call it directly, but
+      # only when these commits would release, or a chore-only pull request
+      # (a Dependabot bump, a docs tidy) fails for lacking notes it was never
+      # meant to write.
       - name: Refuse an empty changelog entry when these commits would release
         if: steps.commits.outputs.releases == 'true'
         run: node .github/scripts/changelog-release.mjs check
 
       # A squash merge takes its commit subject from the pull request title,
       # and GitHub's default title is the branch name in words, which carries
-      # no type - so a typed `fix:` commit reaches main as "Fix the thing (#12)"
-      # and releases nothing, leaving its notes stranded in "## [Unreleased]".
-      # So when the commits would release, the title must too: then either
-      # merge strategy releases. The title is read through `env:`, never
-      # interpolated into the script, since anyone can open a pull request.
+      # no type. A typed `fix:` commit then reaches main as "Fix the thing
+      # (#12)" and releases nothing, leaving its notes stranded in
+      # "## [Unreleased]". So when the commits would release, the title must
+      # too: then either merge strategy releases. The title is read through
+      # `env:`, never interpolated into the script, since anyone can open a
+      # pull request.
       - name: Refuse a title that would lose the release on a squash merge
         if: steps.commits.outputs.releases == 'true'
         env:
@@ -142,11 +143,11 @@ jobs:
         with:
           egress-policy: audit
 
-      # This job's own job is to push a commit and a tag to `main`, so -
-      # unlike the read-only jobs elsewhere in this repository - it keeps
-      # the checkout action's default credential helper rather than passing
-      # persist-credentials: false. That's safe here for the same reason
-      # it's safe in knowledge-librarian.yaml's write-scoped "publish" job:
+      # This job's own job is to push a commit and a tag to `main`. So it
+      # keeps the checkout action's default credential helper rather than
+      # passing persist-credentials: false, unlike the read-only jobs
+      # elsewhere in this repository. That is safe here for the same reason
+      # it is safe in knowledge-librarian.yaml's write-scoped "publish" job:
       # nothing untrusted runs in this job, only the pinned release tool
       # above and this repository's own reviewed script below.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

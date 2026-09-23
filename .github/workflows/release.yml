@@ -5,9 +5,9 @@ on:
         tags:
             - '*'
     # Invoked directly by semantic-release.yml's `build-and-attest` job right
-    # after it pushes a new version tag, since a tag pushed with the default
+    # after it pushes a new version tag. A tag pushed with the default
     # GITHUB_TOKEN does not itself re-trigger the `push: tags:` event above
-    # (GitHub's own loop prevention) — workflow_call sidesteps that, and a
+    # (GitHub's own loop prevention). workflow_call sidesteps that, and a
     # hand-pushed tag still goes through the trigger above unchanged, so
     # either path builds, attests, and opens the same draft release.
     workflow_call:
@@ -31,13 +31,14 @@ jobs:
             attestations: write
         steps:
             # Monitors the runner's outbound network traffic for the rest of this
-            # job and flags anything unexpected — the main defense this workflow
-            # has against a compromised dependency's postinstall script (`npm ci`
-            # below runs esbuild's, which fetches a platform binary) trying to
-            # exfiltrate GITHUB_TOKEN or phone home. Audit mode only: it observes
-            # and reports, it does not block, since hand-maintaining an exact
-            # egress allowlist here would be fragile against ordinary dependency
-            # churn. See https://github.com/step-security/harden-runner.
+            # job and flags anything unexpected. It is the main defense this
+            # workflow has against a compromised dependency's postinstall script
+            # (`npm ci` below runs esbuild's, which fetches a platform binary)
+            # trying to exfiltrate GITHUB_TOKEN or phone home. Audit mode only:
+            # it observes and reports, it does not block, since hand-maintaining
+            # an exact egress allowlist here would be fragile against ordinary
+            # dependency churn. See
+            # https://github.com/step-security/harden-runner.
             - name: Harden the runner
               uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
               with:
@@ -50,12 +51,12 @@ jobs:
                   persist-credentials: false
 
             # Obsidian matches a release to a plugin version by tag name, exact
-            # string equality against manifest.json's "version" — no "v" prefix,
+            # string equality against manifest.json's "version": no "v" prefix,
             # no partial match. Catch a mistagged push (e.g. `v0.2.0` instead of
             # `0.2.0`) here, before spending a build + attestation on a release
             # Obsidian's installer would never find.
             # The tag reaches the shell through the environment, never through
-            # ${{ }} interpolation: a tag name is free-form text, and git permits
+            # ${{ }} interpolation. A tag name is free-form text, and git permits
             # `$`, backticks and quotes in one, so interpolating it directly into
             # a run: block would let a pushed tag execute here.
             - name: Verify tag matches manifest version
