@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.5] - 2026-09-24
+
 ### Security
 
 - **The sidecar copies and the skills pin match `v0.26.0`.** Conventions rule 11 rejects an `at:` later than the commit that recorded it; the three librarian times in this bundle that broke it now carry that commit's time. `knowledge-librarian.yaml` matches its template apart from the pin. No plugin change.
