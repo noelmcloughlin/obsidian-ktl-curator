@@ -20,6 +20,12 @@ name: Knowledge Release
 #   gh workflow run knowledge-release.yaml --ref "$TAG" -f tag="$TAG"
 # with `actions: write` on that job.
 #
+# A release whose bundle is unchanged gets no tarball. `pack` compares the
+# bundle's git tree at this tag with its tree at the newest other published
+# release that carries a knowledge tarball. When the two match, the run ends
+# green with a notice and uploads nothing. The `force` input of a manual run
+# skips the comparison, for repairing a release's assets.
+#
 # Two jobs, for least privilege. `pack` installs the lokf toolkit (third-party
 # packages), validates the bundle and builds the tarball under a read-only
 # token. `attach` holds the write token, runs no third-party packages, checks
@@ -33,6 +39,11 @@ on:
         description: "Tag of an existing release to attach the bundle to, e.g. v1.4.0"
         required: true
         type: string
+      force:
+        description: "Attach even when the bundle matches the last release's"
+        required: false
+        default: false
+        type: boolean
 
 permissions: {} # deny by default; each job requests only the scopes it needs
 
@@ -48,6 +59,7 @@ jobs:
     permissions:
       contents: read
     outputs:
+      changed: ${{ steps.compare.outputs.changed }}
       asset: ${{ steps.pack.outputs.asset }}
     env:
       TAG: ${{ inputs.tag || github.event.release.tag_name }}
@@ -67,29 +79,83 @@ jobs:
           # against the tree, and reports a shallow clone instead of passing it.
           fetch-depth: 0
 
+      # Runs before anything is installed, so the read-only token this step
+      # holds never shares a step with third-party packages. The bundle lives
+      # at `.lokf/knowledge`, or at `knowledge_bundle` on a host rearranged by
+      # hand, where `.lokf/knowledge` is a link and git stores it as a blob.
+      # The step picks whichever of the two is a tree at each release.
+      - name: Compare with the last released bundle
+        id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          FORCE: ${{ inputs.force || false }}
+        run: |
+          set -euo pipefail
+          bundle_tree() {
+            local ref="$1" path
+            for path in .lokf/knowledge knowledge_bundle; do
+              if [ "$(git cat-file -t "$ref:$path" 2>/dev/null)" = tree ]; then
+                printf '%s %s\n' "$(git rev-parse "$ref:$path")" "$path"
+                return 0
+              fi
+            done
+            return 1
+          }
+          read -r tree path < <(bundle_tree "$TAG") || { echo "::error::No bundle folder at $TAG"; exit 1; }
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          # Newest first. Drafts are left out, since nobody has published them.
+          # The tag is filtered in the shell, so no tag name reaches jq's source.
+          tags="$(gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
+            --jq '.[] | select(.draft | not)
+                  | select(any(.assets[]; .name | startswith("knowledge-") and endswith(".tar.gz")))
+                  | .tag_name')"
+          prev="$(printf '%s\n' "$tags" | grep -vxF -- "$TAG" | sed -n 1p || true)"
+          if [ "$FORCE" = true ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::force is set, so the bundle is attached without comparing it."
+          elif [ -z "$prev" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "No earlier release carries a knowledge tarball; this is the first."
+          elif ! read -r prev_tree _ < <(bundle_tree "$prev"); then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::$prev carries a tarball but its tag holds no bundle here; attaching without a comparison."
+          elif [ "$tree" = "$prev_tree" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::The bundle at $TAG is identical to the one released with $prev (tree ${tree:0:12}), so no tarball is attached."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "The bundle changed since $prev: $(git diff --shortstat "$prev" "$TAG" -- "$path")"
+          fi
+
       - name: Set up uv
+        if: steps.compare.outputs.changed == 'true'
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           python-version: "3.12"
 
       - name: Install the lokf sidecar
+        if: steps.compare.outputs.changed == 'true'
         run: uv sync --locked
         working-directory: .lokf
 
       # The registrar's two checks, so a release never carries a bundle its
       # own gate would fail.
       - name: Validate the knowledge bundle and its relation targets
+        if: steps.compare.outputs.changed == 'true'
         run: uv run lokf validate --check-refs knowledge
         working-directory: .lokf
 
       - name: Check the conventions lokf validate cannot see
+        if: steps.compare.outputs.changed == 'true'
         run: bash scripts/knowledge-conventions.sh knowledge
         working-directory: .lokf
 
-      # The same commit always gives the same bytes: names sorted, owner,
-      # group and modes fixed, every mtime set to the commit's time, and no
-      # name or time in the gzip header. A reader can rebuild the tarball from
-      # the tag and compare checksums.
+      # The same bundle always gives the same bytes: names sorted, owner,
+      # group and modes fixed, every mtime set to the time of the last commit
+      # that touched the bundle, and no name or time in the gzip header. A
+      # reader can rebuild the tarball from the tag and compare checksums, and
+      # an unchanged bundle has the same checksum at every release.
       #
       # `.lokf/knowledge` is a link onto `knowledge_bundle/` on a host
       # rearranged by hand (see the sidecar's references/portability.md), so
@@ -100,11 +166,14 @@ jobs:
       # checkout holds nothing else.
       - name: Pack the bundle
         id: pack
+        if: steps.compare.outputs.changed == 'true'
+        env:
+          BUNDLE_PATH: ${{ steps.compare.outputs.path }}
         run: |
           set -euo pipefail
           asset="knowledge-${TAG//\//-}.tar.gz"
           src="$(cd .lokf/knowledge && pwd -P)"
-          mtime="$(git log -1 --format=%ct)"
+          mtime="$(git log -1 --format=%ct -- "$BUNDLE_PATH")"
           mkdir -p "$RUNNER_TEMP/release"
           tar -C "$src" --sort=name --mtime="@$mtime" --owner=0 --group=0 --numeric-owner --mode='u=rwX,go=rX' --transform 's,^\.,knowledge,S' -cf - . | gzip -n > "$RUNNER_TEMP/release/$asset"
           (cd "$RUNNER_TEMP/release" && sha256sum "$asset" > "$asset.sha256")
@@ -112,6 +181,7 @@ jobs:
           echo "Packed $(tar -tzf "$RUNNER_TEMP/release/$asset" | grep -vc '/$') files into $asset"
 
       - name: Upload the tarball
+        if: steps.compare.outputs.changed == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: knowledge-release
@@ -122,6 +192,7 @@ jobs:
   attach:
     name: Attach the tarball to the release (privileged)
     needs: pack
+    if: needs.pack.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write # upload release assets
