@@ -2,6 +2,7 @@
 
 ## 2026-09-24
 
+* **Future-dated times corrected.** 3 `process:ktl-librarian` times were later than the commit that recorded them (round placeholders written as UTC). Each now carries that commit's time, the latest moment git attests, so the bundle keeps the sidecar's new conventions rule 11.
 * **The signing setup moved to its own page in the skills.**
   knowledge-trust-ladder split the registrar gate out of `automation.md` into
   `gate.md`, so `playbooks/knowledge-registrar-gate.md` now points there for

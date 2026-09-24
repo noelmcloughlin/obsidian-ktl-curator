@@ -12,7 +12,7 @@ generated:
 status: draft
 verified:
   - by: process:ktl-librarian
-    at: "2026-09-14T17:30:00Z"
+    at: "2026-09-14T16:26:10Z"
 ---
 
 Stated in `SECURITY.md` ("The plugin" section, kept even after the
