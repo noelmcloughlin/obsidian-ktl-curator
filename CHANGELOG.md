@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The sidecar copies follow knowledge-trust-ladder's `main`.** `knowledge-release.yaml` is new: it attaches the bundle to a release as a tarball, runs when dispatched by hand and on each published release once `KNOWLEDGE_RELEASE_ENABLED` is `true`, and is otherwise inert. The librarian workflow and wrapper take the agent's key from the `AGENT_API_KEY` secret and hand it to the agent only, under the name `AGENT_API_KEY_ENV` gives. `knowledge-preflight.sh` compares the new workflow with its template.
+
 ## [1.3.3] - 2026-09-24
 
 ### Security

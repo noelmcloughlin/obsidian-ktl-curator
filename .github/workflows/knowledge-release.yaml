@@ -1,0 +1,167 @@
+name: Knowledge Release
+
+# Attaches the LOKF knowledge bundle to a GitHub release as a tarball, so a
+# reader can take the bundle as it stood at that release without cloning the
+# repository. It runs no LLM or agent, and it never commits or pushes.
+#
+# Two ways to start it:
+#
+#   workflow_dispatch   always runs. Name an existing release's tag. A person
+#                       starting it by hand is the decision to publish.
+#
+#   release published   runs only once the KNOWLEDGE_RELEASE_ENABLED
+#                       repository variable is "true". Unset, every release
+#                       shows this run as skipped, so the workflow is inert
+#                       until someone arms it.
+#
+# GitHub starts no workflow for a release created with the default
+# GITHUB_TOKEN. If your release job makes the release that way, the release
+# trigger never fires. Have that job dispatch this workflow instead:
+#   gh workflow run knowledge-release.yaml --ref "$TAG" -f tag="$TAG"
+# with `actions: write` on that job.
+#
+# Two jobs, for least privilege. `pack` installs the lokf toolkit (third-party
+# packages), validates the bundle and builds the tarball under a read-only
+# token. `attach` holds the write token, runs no third-party packages, checks
+# the tarball against its checksum and uploads both to the release.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag of an existing release to attach the bundle to, e.g. v1.4.0"
+        required: true
+        type: string
+
+permissions: {} # deny by default; each job requests only the scopes it needs
+
+concurrency:
+  group: knowledge-release-${{ inputs.tag || github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  pack:
+    name: Validate and pack the bundle (read-only)
+    if: github.event_name == 'workflow_dispatch' || vars.KNOWLEDGE_RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      asset: ${{ steps.pack.outputs.asset }}
+    env:
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      # The bundle as it stood at the tag, not at the branch head.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.TAG }}
+          persist-credentials: false
+          # Full history: knowledge-conventions.sh resolves each `revision`
+          # against the tree, and reports a shallow clone instead of passing it.
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the lokf sidecar
+        run: uv sync --locked
+        working-directory: .lokf
+
+      # The registrar's two checks, so a release never carries a bundle its
+      # own gate would fail.
+      - name: Validate the knowledge bundle and its relation targets
+        run: uv run lokf validate --check-refs knowledge
+        working-directory: .lokf
+
+      - name: Check the conventions lokf validate cannot see
+        run: bash scripts/knowledge-conventions.sh knowledge
+        working-directory: .lokf
+
+      # The same commit always gives the same bytes: names sorted, owner,
+      # group and modes fixed, every mtime set to the commit's time, and no
+      # name or time in the gzip header. A reader can rebuild the tarball from
+      # the tag and compare checksums.
+      #
+      # `.lokf/knowledge` is a link onto `knowledge_bundle/` on a host
+      # rearranged by hand (see the sidecar's references/portability.md), so
+      # the path is resolved first. The archive root is always `knowledge/`.
+      # Links inside the bundle are stored as links and never followed, so
+      # nothing outside the bundle can reach the tarball. The `S` flag keeps
+      # their targets as written. Only tracked files are packed, because the
+      # checkout holds nothing else.
+      - name: Pack the bundle
+        id: pack
+        run: |
+          set -euo pipefail
+          asset="knowledge-${TAG//\//-}.tar.gz"
+          src="$(cd .lokf/knowledge && pwd -P)"
+          mtime="$(git log -1 --format=%ct)"
+          mkdir -p "$RUNNER_TEMP/release"
+          tar -C "$src" --sort=name --mtime="@$mtime" --owner=0 --group=0 --numeric-owner --mode='u=rwX,go=rX' --transform 's,^\.,knowledge,S' -cf - . | gzip -n > "$RUNNER_TEMP/release/$asset"
+          (cd "$RUNNER_TEMP/release" && sha256sum "$asset" > "$asset.sha256")
+          echo "asset=$asset" >> "$GITHUB_OUTPUT"
+          echo "Packed $(tar -tzf "$RUNNER_TEMP/release/$asset" | grep -vc '/$') files into $asset"
+
+      - name: Upload the tarball
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: knowledge-release
+          path: ${{ runner.temp }}/release/
+          retention-days: 1
+          if-no-files-found: error
+
+  attach:
+    name: Attach the tarball to the release (privileged)
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload release assets
+      id-token: write # sign the build-provenance attestation
+      attestations: write # store the attestation
+    env:
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      ASSET: ${{ needs.pack.outputs.asset }}
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Download the tarball
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: knowledge-release
+          path: ${{ runner.temp }}/release
+
+      - name: Check the tarball against its checksum
+        run: sha256sum -c "$ASSET.sha256"
+        working-directory: ${{ runner.temp }}/release
+
+      # A signed record of which workflow run, commit and repository built the
+      # tarball. Anyone can check it with `gh attestation verify <file> -R
+      # <owner>/<repo>`. GitHub stores attestations for public repositories on
+      # every plan; a private repository needs GitHub Enterprise Cloud, so the
+      # step skips itself there.
+      - name: Attest build provenance
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ runner.temp }}/release/${{ env.ASSET }}
+
+      # `--clobber` replaces an earlier upload of the same name, so running the
+      # workflow again for one tag repairs its assets instead of failing.
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload "$TAG" "$ASSET" "$ASSET.sha256" --clobber
+        working-directory: ${{ runner.temp }}/release
