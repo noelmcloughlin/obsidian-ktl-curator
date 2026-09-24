@@ -1,5 +1,12 @@
 # Change Log
 
+## 2026-09-24
+
+* **The signing setup moved to its own page in the skills.**
+  knowledge-trust-ladder split the registrar gate out of `automation.md` into
+  `gate.md`, so `playbooks/knowledge-registrar-gate.md` now points there for
+  the signing setup.
+
 ## 2026-09-23
 
 * **The docent records a reader's gap without reading the file it goes in.**
