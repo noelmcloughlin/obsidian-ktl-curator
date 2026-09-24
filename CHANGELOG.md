@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.6] - 2026-09-24
+
 ### Security
 
 - **The sidecar copies and the skills pin match `v0.27.0`.** Releases now carry the docent as a Microsoft 365 Copilot skill: `knowledge-release.yaml` attaches `ktl-docent-m365-<tag>-<repository>.zip` beside the bundle zip, checks each zip against its checksum and attests each one. The new `.lokf/m365/` holds that skill's instructions, `ktl-docent-m365.md`, and `knowledge-m365.sh`, which builds it from a snapshot of the bundle; `knowledge-preflight.sh` compares both with their templates, and `CONTRIBUTING.md` and `SECURITY.md` count them among the copies that move with the pin. The release workflow stays inert until `KNOWLEDGE_RELEASE_ENABLED` is `true`. No plugin change.
