@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.4] - 2026-09-24
+
 ### Security
 
 - **The sidecar copies and the skills pin match `v0.25.0`.** The scheduled librarian installs its skill from that release. `knowledge-release.yaml` is new: it attaches the bundle to a release as `knowledge-<tag>-<repository>.zip` unless the bundle matches the last release's, runs when dispatched by hand and on each published release once `KNOWLEDGE_RELEASE_ENABLED` is `true`, and is otherwise inert. The librarian workflow and wrapper hand the agent its credential, the `AGENT_API_KEY` secret or the job's own token with `AGENT_USE_JOB_TOKEN`, under the name `AGENT_API_KEY_ENV` gives and to nothing else; the job requests `copilot-requests: write` for Copilot CLI, idle until then, and sets up Node 22 for an `npx`-run agent. `knowledge-preflight.sh` compares the new workflow with its template.
