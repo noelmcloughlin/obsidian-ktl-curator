@@ -9,11 +9,11 @@ about:
   - https://ktl-curator.example/knowledge/references/lokf-specification
 generated:
   by: process:ktl-librarian
-  at: "2026-09-18T11:00:00Z"
+  at: "2026-09-17T23:55:35Z"
 status: draft
 verified:
   - by: process:ktl-librarian
-    at: "2026-09-18T11:00:00Z"
+    at: "2026-09-17T23:55:35Z"
 ---
 
 Maps each human-facing label ("confirmed by a person", "past its review
