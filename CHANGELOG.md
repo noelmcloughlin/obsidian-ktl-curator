@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-09-24
+
 ### Security
 
 - **The sidecar's preflight and skills pin match `v0.23.1`.** The preflight now compares a librarian workflow with the template's apart from `TRUST_LADDER_SKILLS_REF`, which each repository moves on its own schedule. This repository has no bare `skills/` directory for that check to compare against, so its output does not change; no plugin change.
