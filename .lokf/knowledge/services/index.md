@@ -1,8 +1,8 @@
 # Services
 
-* [KTL Curator plugin](ktl-curator-plugin.md) - the Obsidian plugin entry point.
-* [Trust engine](trust-engine.md) - the trust-record model, health counts, ranked queue.
-* [Edits engine](edits-engine.md) - the five verbs' transforms, the log.md upsert.
-* [Curator side panel](curator-view.md) - the "Curate" report + review card.
-* [Settings tab](settings-tab.md) - the declarative settings tab.
-* [In-editor aids](in-editor-aids.md) - field lookup, the inline trust badge, and frontmatter autocomplete.
+* [KTL Curator plugin](ktl-curator-plugin.md) - The Obsidian plugin entry point - scans configured bundle roots via metadataCache, computes and caches a trust report per bundle, owns the one-concept-at-a-time review session (curator-id modal, the five verdict verbs, the mtime guard on "corrected"), and exposes the Step 3 commands. With no bundle root configured or detected, and the break-glass "treat vault root as bundle" setting off, the vault has no bundle at all - no report, no queue, nothing written.
+* [Trust engine](trust-engine.md) - Pure, import-free modules computing one concept's trust record, the bundle's seven health counts, and the ranked "worth ten minutes today" queue from already-parsed frontmatter and headings.
+* [Edits engine](edits-engine.md) - Pure string/object transforms for every write the review session makes - the five verbs' frontmatter and body edits, the log.md upsert, and the two Step-3 templates.
+* [Curator side panel](curator-view.md) - The "Curate" ItemView - the read-only trust report (health chips, ranked queue, open questions, active-note card) and the one-concept-at-a-time review card (evidence-first: source, claim, current trust, then the question).
+* [Settings tab](settings-tab.md) - The declarative Obsidian settings tab (1.13+) - curator id, bundle scope, the known type vocabulary, review intervals, queue size, and the feedback file path.
+* [In-editor aids](in-editor-aids.md) - Three Settings → In-editor conveniences while a curator hand-edits a concept's raw frontmatter - a searchable "Look up a LOKF field" command, a live trust-tier badge on the frontmatter (Source mode only), and autocomplete for the values a curator hand-types (the human:<id> actor, status, and at/stale_after dates) - plus the shared trust-tier label vocabulary they and the status bar all render identically.

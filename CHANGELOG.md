@@ -6,6 +6,12 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The sidecar copies and the skills pin match `v0.33.0`.** The scheduled librarian's one output is now `.lokf/patch.yaml`. `knowledge-apply.sh`, new here, checks every operation in it and writes the bundle, and keeps an index in the shape a person gave it. `publish` reads each person's event and note off the patched tree before it pushes, and the registrar gate asks the person behind a confirmation that a change removes, as it asks the one behind a confirmation it adds. `knowledge-report.sh`, also new, computes the health line and the record changes the pull request carries. A scheduled week with nothing waiting runs no agent, though a month's first week always does. A handled feedback entry moves to `.lokf/questions.md`, and the librarian's hand-off reaches the pull request in a code block. Release assets take their name from `KNOWLEDGE_RELEASE_NAME` when it is set, and a retrieval score runs only once `KNOWLEDGE_RETRIEVAL` is `true`.
+
+  Conventions rule 12 holds an index bullet equal to its concept's title and description, so the apply script's `reindex` operation re-derived the bullets of the eight concepts here that had drifted. Rule 13 fails a change to a confirmed concept that does not move its `generated` stamp past the confirmation. The scripts' comments read plainer. `SECURITY.md` names the new path and checks, and says the workflow copy differs from its template only in the pin. No plugin change.
+
 ## [1.3.6] - 2026-09-24
 
 ### Security
