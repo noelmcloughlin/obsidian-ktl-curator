@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.11] - 2026-10-05
+
 ### Security
 
 - **The sidecar copies and the skills pin match `v0.34.2`.** The preflight reads the CI variables by indirect expansion rather than `eval`, so a scanner that searches for `eval` finds none, and its output is unchanged. When `knowledge-feedback.sh` or `knowledge-report.sh` is missing, it names ktl-curator and an earlier ktl-docent as the skills that need it, since ktl-docent now runs its own copies. The scheduled librarian installs a ktl-librarian that reads LOKF's schema from a commit rather than a tag (Snyk W012). No plugin change.
