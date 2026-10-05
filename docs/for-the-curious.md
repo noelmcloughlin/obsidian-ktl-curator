@@ -9,8 +9,8 @@ Every label is arithmetic over frontmatter, computed afresh on each refresh and 
 | Label | Rule |
 |---|---|
 | Confirmed by a person | any `verified[].by` starts with `human:` |
-| Checked by automation only | `verified` present, no `human:` actor |
-| Nobody has checked this yet | no `verified` key at all |
+| Checked by automation only | `verified` holds events, none by a `human:` actor |
+| Nobody has checked this yet | no `verified` key, or one with no events |
 | Still a draft | `status: draft` |
 | Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue |
 | Edited since a person last confirmed it | `generated.at` later than the newest `human:` `verified[].at` |

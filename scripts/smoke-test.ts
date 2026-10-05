@@ -348,6 +348,18 @@ section("trust.ts - due-soon flips to past-review when today advances", () => {
   expect("moving today past stale_after flips dueSoon -> pastReview", laterRecord.pastReview && !laterRecord.dueSoon, JSON.stringify(laterRecord));
 });
 
+section("trust.ts - a verified key with no events reads as unchecked", () => {
+  // knowledge-report.sh and KTL's trust-fields.md count events, not the key.
+  const build = (frontmatter: Record<string, unknown>): TrustRecord =>
+    buildTrustRecord({ path: "knowledge/glossary/t.md", bundleRoot: "knowledge", frontmatter, headings: [], mintId: () => "x" }, TODAY);
+  const empty = build({ verified: [] });
+  expect("an empty verified list -> unchecked, not automationOnly", empty.unchecked && !empty.automationOnly, JSON.stringify(empty));
+  const bare = build({ verified: null });
+  expect("a bare verified key -> unchecked, not automationOnly", bare.unchecked && !bare.automationOnly, JSON.stringify(bare));
+  const auto = build({ verified: [{ by: "process:ci", at: "2026-09-01T05:00:00Z" }] });
+  expect("one process event -> automationOnly, not unchecked", auto.automationOnly && !auto.unchecked, JSON.stringify(auto));
+});
+
 section("trust.ts - ranked queue", () => {
   const { records } = loadFixtureBundle();
   const capped = rankQueue(records, 5);
