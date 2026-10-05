@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.10] - 2026-10-05
+
 ### Fixed
 
 - **A concept whose `verified` list is empty reads as *nobody has checked this yet*.** The plugin counted any `verified` key as a check, so `verified: []` or a bare `verified:` showed as *checked by automation only* in the concept's label and the health line, and came later in the review queue than an unchecked concept. KTL's `trust-fields.md` and its report script count events, not the key, and the plugin now does too. `docs/for-the-curious.md` states the rule the same way.
