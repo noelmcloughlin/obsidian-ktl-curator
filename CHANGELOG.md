@@ -10,6 +10,12 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 - **A concept whose `verified` list is empty reads as *nobody has checked this yet*.** The plugin counted any `verified` key as a check, so `verified: []` or a bare `verified:` showed as *checked by automation only* in the concept's label and the health line, and came later in the review queue than an unchecked concept. KTL's `trust-fields.md` and its report script count events, not the key, and the plugin now does too. `docs/for-the-curious.md` states the rule the same way.
 
+## [1.3.9] - 2026-10-05
+
+### Security
+
+- **The sidecar copies and the skills pin match `v0.34.1`.** The Copilot docent's instructions, `.lokf/m365/ktl-docent-m365.md`, label a concept as the report script does. A retired concept carries no other label, *edited since a person last confirmed it* takes the place of *confirmed by a person*, and an empty `verified` list reads as *nobody has checked this yet*. A Miss in its gap report starts with the reader's question and says whether a concept looked relevant from `index.md`. No plugin change.
+
 ## [1.3.8] - 2026-10-05
 
 ### Security
