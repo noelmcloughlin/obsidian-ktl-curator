@@ -22,8 +22,8 @@ export interface TrustRecord {
   invalidStatus: boolean; // status present and not draft|stable|deprecated
   status: ConceptStatus;
   humanConfirmed: boolean; // any verified[].by starts with "human:"
-  automationOnly: boolean; // verified present, no human: actor
-  unchecked: boolean; // no verified key at all
+  automationOnly: boolean; // verified holds events, none by a human: actor
+  unchecked: boolean; // no verified key, or one with no events
   /** The latest human verification's actor (raw, e.g. "human:alice") and date
    *  (YYYY-MM-DD), for the handoff hint "Confirmed by <id> on <date>". */
   confirmedBy: string | null;
@@ -150,12 +150,13 @@ export function buildTrustRecord(
   const invalidStatus = statusStr !== null && !isValidStatus(statusStr);
   const status: ConceptStatus = statusStr && isValidStatus(statusStr) ? statusStr : "stable";
 
-  const hasVerifiedKey = "verified" in fm;
+  // Events decide, not the key: `verified: []` and a bare `verified:` hold
+  // none, so nobody has checked, as knowledge-report.sh reads them.
   const events = normalizeVerifiedList(fm["verified"]);
   const humanEvents = events.filter((e) => e.by.startsWith("human:"));
   const humanConfirmed = humanEvents.length > 0;
-  const automationOnly = hasVerifiedKey && !humanConfirmed;
-  const unchecked = !hasVerifiedKey;
+  const automationOnly = events.length > 0 && !humanConfirmed;
+  const unchecked = events.length === 0;
 
   const generatedRaw = fm["generated"];
   let generatedAt: string | null = null;
