@@ -22,7 +22,8 @@
     "open-knowledge-format",
     "frontmatter",
     "metadata",
-    "linked-data"
+    "linked-data",
+    "wikiskill"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
