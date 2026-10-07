@@ -40,18 +40,32 @@ export const SCHEMA_VERSION: string = (() => {
   return typeof v === "string" ? v : "";
 })();
 
-export const RELATION_FIELDS = [
-  "isPartOf",
-  "hasPart",
-  "references",
-  "dependsOn",
-  "derivedFrom",
-  "about",
-  "sameAs",
-  "relatedTo",
-  "definedBy",
-  "source",
-] as const;
+// The relation fields: every slot the pinned schema ranges over Concept, apart
+// from two structural ones, `concepts` (the bundle's own list) and `target` (a
+// reified relation's). "N other concepts rely on this" counts through them
+// (trust.ts), and the sidecar's knowledge-report.sh counts through the same
+// list, which the skills repository's contract holds to the schema. The
+// manifest supplies the list, as it supplies the classes. The hard-coded list
+// is the fallback for a manifest that carries no ranges, and the smoke test
+// holds it to the manifest.
+const STRUCTURAL_CONCEPT_SLOTS = new Set(["concepts", "target"]);
+
+function manifestRelationFields(): string[] | null {
+  const slots = (lokfVocab as { slots?: { name?: unknown; range?: unknown }[] }).slots;
+  if (!Array.isArray(slots)) return null;
+  const names: string[] = [];
+  for (const s of slots) {
+    if (s?.range === "Concept" && typeof s.name === "string" && !STRUCTURAL_CONCEPT_SLOTS.has(s.name)) names.push(s.name);
+  }
+  return names.length ? names : null;
+}
+
+export const HARDCODED_RELATION_FIELDS: readonly string[] = [
+  "isPartOf", "hasPart", "references", "dependsOn", "derivedFrom", "about", "sameAs",
+  "relatedTo", "definedBy", "source", "measures", "memberOf", "holder",
+];
+
+export const RELATION_FIELDS: readonly string[] = manifestRelationFields() ?? HARDCODED_RELATION_FIELDS;
 
 /** Settles the spellings a person plausibly types for one folder onto the
  *  single form Obsidian's vault paths use: forward slashes, no leading or

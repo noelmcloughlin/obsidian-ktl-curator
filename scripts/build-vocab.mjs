@@ -88,13 +88,24 @@ const genres = Object.entries(enums.DiataxisMode?.permissible_values ?? {}).map(
 // fall back to reading the slot descriptions straight from lokf.yaml when that
 // CLI (or its --all flag) isn't installed yet - so a schema bump refreshes the
 // field reference either way.
+/** One manifest row for a slot: its name and description, plus the range and
+ *  the cardinality the schema gives it when it does. A consumer reads the
+ *  relation fields off the rows whose range is Concept, and the smoke test
+ *  holds the hard-coded list to them, so neither needs a second hand-kept
+ *  copy of what the schema already says. */
+function slotRow(name, description, range, multivalued) {
+  const row = { name: String(name ?? ""), description: String(description ?? "").trim() };
+  if (typeof range === "string" && range) row.range = range;
+  if (multivalued === true) row.multivalued = true;
+  return row;
+}
 function slotsFromCli() {
   try {
     const out = inSidecar("lokf vocab --all --json");
     const rows = JSON.parse(out).slots;
     if (!Array.isArray(rows)) return null;
     const slots = rows
-      .map((s) => ({ name: String(s?.name ?? ""), description: String(s?.description ?? "").trim() }))
+      .map((s) => slotRow(s?.name, s?.description, s?.range, s?.multivalued))
       .filter((s) => s.name && s.description);
     return slots.length ? { slots, source: "lokf vocab --all --json" } : null;
   } catch {
@@ -103,7 +114,7 @@ function slotsFromCli() {
 }
 function slotsFromSchema() {
   const slots = Object.entries(doc.slots ?? {})
-    .map(([name, s]) => ({ name, description: String(s?.description ?? "").trim() }))
+    .map(([name, s]) => slotRow(name, s?.description, s?.range, s?.multivalued))
     .filter((s) => s.description);
   return { slots, source: "lokf.yaml" };
 }

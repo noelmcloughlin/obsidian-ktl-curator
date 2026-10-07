@@ -15,7 +15,7 @@ Every label is arithmetic over frontmatter, computed afresh on each refresh and 
 | Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue |
 | Edited since a person last confirmed it | `generated.at` later than the newest `human:` `verified[].at` |
 | Past its review date / due soon | `stale_after` against today |
-| *N* other concepts rely on this | concepts whose typed relations target this concept's `id`, across every configured bundle |
+| *N* other concepts rely on this | concepts whose typed relations target this concept's `id`, across every configured bundle; each relying concept counts once, and a retired concept counts for none and is counted for none |
 | Doesn't fit the known vocabulary | `type` outside the classes listed under *Settings → Type vocabulary*: the pinned LOKF schema's, plus a domain schema's where a bundle has one. Cosmetic; it never moves a concept into the queue |
 
 The rules, with every parsing edge case, are in `references/trust-fields.md` in the `ktl-curator` skill: a bare `verified` mapping, an exact `## Open questions` heading versus a passing mention in prose, cross-bundle relation targets. This plugin implements that document and does not relax or restate it.
