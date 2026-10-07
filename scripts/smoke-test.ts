@@ -28,6 +28,8 @@ import {
   mintExpectedId,
   resolveRelationTarget,
   isReserved,
+  RELATION_FIELDS,
+  HARDCODED_RELATION_FIELDS,
   classify,
   splitSourceLocator,
   hasUrlScheme,
@@ -402,6 +404,15 @@ section("trust.ts - reliance counting across bundles and folders", () => {
     ["a/glossary/three.md", { type: "GlossaryTerm", relatedTo: ["local"] }],
     // A stale target that names nothing must inflate nobody's count.
     ["a/services/four.md", { type: "Service", dependsOn: [`${baseA}services/ghost`] }],
+    // The three relation fields the schema added after the first ten count
+    // like the rest, and a concept naming one target through two fields
+    // counts once.
+    ["a/metrics/latency.md", { type: "Metric", measures: ["glossary/local.md"] }],
+    ["a/roles/owner.md", { type: "Role", memberOf: [`${baseA}glossary/local`], holder: ["glossary/local.md"] }],
+    // A retired concept counts for none and is counted for none.
+    ["a/services/old.md", { type: "Service", status: "deprecated", dependsOn: ["glossary/local.md"] }],
+    ["a/glossary/gone.md", { type: "GlossaryTerm", status: "deprecated" }],
+    ["a/services/five.md", { type: "Service", dependsOn: ["glossary/gone.md"] }],
     ["a/glossary/local.md", { type: "GlossaryTerm" }],
     ["b/glossary/term.md", { type: "GlossaryTerm" }],
   ]);
@@ -423,6 +434,11 @@ section("trust.ts - reliance counting across bundles and folders", () => {
     mk("a/services/two.md", "a", baseA),
     mk("a/glossary/three.md", "a", baseA),
     mk("a/services/four.md", "a", baseA),
+    mk("a/metrics/latency.md", "a", baseA),
+    mk("a/roles/owner.md", "a", baseA),
+    mk("a/services/old.md", "a", baseA),
+    mk("a/glossary/gone.md", "a", baseA),
+    mk("a/services/five.md", "a", baseA),
     mk("a/glossary/local.md", "a", baseA),
     mk("b/glossary/term.md", "b", baseB),
   ];
@@ -431,9 +447,14 @@ section("trust.ts - reliance counting across bundles and folders", () => {
 
   expect("a cross-bundle IRI counts for the TARGET bundle's concept", by("b/glossary/term.md").reliedOnBy === 1, String(by("b/glossary/term.md").reliedOnBy));
   expect(
-    "bundle-root-relative and sibling-relative targets both resolve",
-    by("a/glossary/local.md").reliedOnBy === 2,
+    "bundle-root-relative and sibling-relative targets both resolve, measures, memberOf and holder count, a concept counts once through two fields, and a retired one not at all",
+    by("a/glossary/local.md").reliedOnBy === 4,
     String(by("a/glossary/local.md").reliedOnBy)
+  );
+  expect(
+    "a retired concept is counted for none",
+    by("a/glossary/gone.md").reliedOnBy === 0 && by("a/services/old.md").reliedOnBy === 0,
+    `${by("a/glossary/gone.md").reliedOnBy} ${by("a/services/old.md").reliedOnBy}`
   );
   expect("a target naming no concept counts for nobody", records.every((r) => !r.path.endsWith("ghost")), "");
   expect("the citing concepts themselves are relied on by nobody", by("a/services/one.md").reliedOnBy === 0, String(by("a/services/one.md").reliedOnBy));
@@ -448,6 +469,17 @@ section("trust.ts - a concept naming itself is not relied upon by itself", () =>
   );
   computeReliedOnBy([record], fm, new Map([["", base]]));
   expect("self-reference does not inflate reliedOnBy", record.reliedOnBy === 0, String(record.reliedOnBy));
+});
+
+section("bundle.ts - the relation fields are the pinned schema's", () => {
+  // The rule the skills repository's contract applies to knowledge-report.sh:
+  // every slot the schema ranges over Concept, apart from `concepts` and `target`.
+  const slots = (lokfVocab as { slots?: { name: string; range?: string }[] }).slots ?? [];
+  const fromSchema = slots.filter((s) => s.range === "Concept" && s.name !== "concepts" && s.name !== "target").map((s) => s.name);
+  expect("the manifest carries each slot's range (else re-run scripts/build-vocab.mjs)", slots.some((s) => s.range !== undefined), "no range on any slot");
+  expect("RELATION_FIELDS is the schema's list", RELATION_FIELDS.join(",") === fromSchema.join(","), `code: ${RELATION_FIELDS.join(",")} | schema: ${fromSchema.join(",")}`);
+  expect("the hard-coded fallback is the same list", HARDCODED_RELATION_FIELDS.join(",") === fromSchema.join(","), HARDCODED_RELATION_FIELDS.join(","));
+  expect("measures, memberOf and holder are among them", ["measures", "memberOf", "holder"].every((f) => RELATION_FIELDS.includes(f)), RELATION_FIELDS.join(","));
 });
 
 section("trust.ts - every recorded source is captured, in order", () => {

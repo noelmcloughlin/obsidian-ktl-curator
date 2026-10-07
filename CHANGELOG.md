@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Fixed
+
+- **"N other concepts rely on this" counts a Metric's `measures` and a Role's `memberOf` and `holder`, counts each relying concept once, and leaves retired concepts out.** The LOKF schema ranges thirteen slots over `Concept` and the plugin's list had the first ten. The list now comes from the pinned schema manifest, as the classes do, with the hard-coded list as the fallback, and the smoke test holds both to the manifest. A concept that named one target through two fields counted twice, and a retired concept counted and was counted; ktl-curator's trust-fields.md says once and neither, and the sidecar's `knowledge-report.sh` applies that rule, so the card and the report now agree. `scripts/build-vocab.mjs` keeps each slot's range and cardinality in the manifest.
+
 ## [1.3.11] - 2026-10-05
 
 ### Security

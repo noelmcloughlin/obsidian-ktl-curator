@@ -247,7 +247,7 @@ export function buildTrustRecord(
 }
 
 /** The relation targets one concept declares, as raw frontmatter values: the
- *  ten typed fields (scalar or list) plus each `relations[].target`. */
+ *  typed relation fields (scalar or list) plus each `relations[].target`. */
 function relationTargetsOf(fm: Record<string, unknown>): unknown[] {
   const targets: unknown[] = [];
   for (const field of RELATION_FIELDS) {
@@ -278,7 +278,10 @@ function relationTargetsOf(fm: Record<string, unknown>): unknown[] {
  * A bare relative target is tried bundle-root-relative first, then relative
  * to the citing concept's own folder - an author may well have written a
  * sibling's filename. Only a candidate that names a real concept is counted,
- * so a stale or fabricated target inflates nobody's score.
+ * so a stale or fabricated target inflates nobody's score. A retired concept
+ * counts for none and is counted for none, and a concept that names one
+ * target through two fields counts once: the rule ktl-curator's
+ * trust-fields.md gives, and the sidecar's knowledge-report.sh applies.
  */
 export function computeReliedOnBy(
   records: TrustRecord[],
@@ -290,8 +293,10 @@ export function computeReliedOnBy(
   for (const r of records) r.reliedOnBy = 0;
 
   for (const citing of records) {
+    if (citing.status === "deprecated") continue;
     const fm = frontmatterByPath.get(citing.path);
     if (!fm) continue;
+    const counted = new Set<TrustRecord>();
     const baseIri = baseIriByRoot.get(citing.bundleRoot) ?? null;
     const conceptDir = dirOf(toBundlePath(citing.path, citing.bundleRoot));
 
@@ -311,7 +316,9 @@ export function computeReliedOnBy(
       }
       const hit = candidates.map((c) => byId.get(c)).find((r) => r !== undefined);
       // A concept naming itself is not "another concept relying on" it.
-      if (hit && hit !== citing) hit.reliedOnBy += 1;
+      if (!hit || hit === citing || hit.status === "deprecated" || counted.has(hit)) continue;
+      counted.add(hit);
+      hit.reliedOnBy += 1;
     }
   }
 }
