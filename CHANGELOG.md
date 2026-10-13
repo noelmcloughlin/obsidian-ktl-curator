@@ -10,6 +10,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 - **The sidecar's README links OKF's specification in its own repository.** Google moved the Open Knowledge Format to `GoogleCloudPlatform/open-knowledge-format` and froze the copy under `knowledge-catalog/okf/`.
 
+### Security
+
+- **The sidecar copies and the skills pin match `v0.38.2`.** The registrar, librarian and release workflows run the justfile's `lokf-check-refs` recipe, and their actions move to newer pinned releases. The docent's Copilot instructions prefer a retelling for a younger reader, and give the adult concept's label with it. The pen no longer adds a second "edited since" note to a log line that already has one. The scheduled librarian installs a ktl-librarian that retells a confirmed concept for younger readers when the curation policy declares a band. No plugin change.
+
 ## [1.3.13] - 2026-10-07
 
 ### Security
