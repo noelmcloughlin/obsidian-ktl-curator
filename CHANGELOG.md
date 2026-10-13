@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.14] - 2026-10-13
+
 ### Changed
 
 - **The sidecar's README links OKF's specification in its own repository.** Google moved the Open Knowledge Format to `GoogleCloudPlatform/open-knowledge-format` and froze the copy under `knowledge-catalog/okf/`.
