@@ -1,6 +1,6 @@
 # For the curious: what gets computed, and what it rests on
 
-[The README](../README.md) says everything you need to use KTL Curator. This page says how each label is computed, what the plugin leaves to others, and where the bundle can live.
+[Install](install.md) and [Using it](using.md) say everything you need to use KTL Curator. This page says how each label is computed, what the plugin leaves to others, and where the bundle can live.
 
 ## The trust labels, and the fields they come from
 

@@ -15,7 +15,7 @@ Only the latest release line receives fixes. A security fix ships as a patch rel
 KTL Curator runs inside Obsidian, on the vault you open it in, and nowhere else.
 
 - **No network, no telemetry, no remote code.** It makes no outward call and loads nothing while it runs.
-- **Writes only what you ask for.** It reads the vault to compute trust labels, and writes only through the five review verbs and two file-creating commands, each on a button press; [Privacy](README.md#privacy) lists them.
+- **Writes only what you ask for.** It reads the vault to compute trust labels, and writes only through the five review verbs and two file-creating commands, each on a button press; [Privacy](docs/architecture.md#privacy) lists them.
 - **Vault content is data, never instructions.** There is no AI model, and nothing in a note is executed as a command, a script, a template or a URL. Frontmatter, headings and source paths are inspected by deterministic rules.
 - **It never verifies a claim itself.** It puts a concept's recorded source beside its claim and asks a person; a source you open is shown to you, never fetched, parsed or interpreted by the plugin.
 - **No dependency on another plugin.** It detects nothing and calls into nothing else installed in the vault.
