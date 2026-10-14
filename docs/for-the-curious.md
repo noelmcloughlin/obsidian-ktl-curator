@@ -22,11 +22,18 @@ The rules, with every parsing edge case, are in `references/trust-fields.md` in 
 
 ## What this plugin leaves to others
 
-Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below, and this plugin assumes it: a concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed, with a valid `base_iri`, consistent ids and well-shaped `verified` and `generated` fields. Keep it schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks. There is no auto-fix, no proposed correction, and no tidying of a fact you did not ask it to touch.
+Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below, and this plugin assumes it. A concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed: a valid `base_iri`, consistent ids and well-shaped `verified` and `generated` fields. Keep it schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks. There is no auto-fix, no proposed correction, and no tidying of a fact you did not ask it to touch.
 
 ## Where this fits: the "human-confirmed" tier
 
-The companion [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder) project describes [four levels of trust](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/for-the-curious.md#four-levels-of-checking) a claim in a bundle can earn: **schema-valid**, the frontmatter is well-formed and its relations resolve; **source-consistent**, an agent re-checked it against its source; **human-confirmed**, a named person vouches for it; and **proven-in-use**, a reader's question was answered from it. Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind. This plugin is that third tier in the editor: the `ktl-curator` skill's review session, available without an agent in the loop.
+The companion [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowledge-trust-ladder) project describes [four levels of trust](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/for-the-curious.md#four-levels-of-checking) a claim in a bundle can earn:
+
+- **schema-valid**: the frontmatter is well-formed and its relations resolve;
+- **source-consistent**: an agent re-checked it against its source;
+- **human-confirmed**: a named person vouches for it;
+- **proven-in-use**: a reader's question was answered from it.
+
+Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind. This plugin is that third tier in the editor: the `ktl-curator` skill's review session, available without an agent in the loop.
 
 There is no dependency in either direction. This plugin reads Markdown and YAML and works on any LOKF bundle however it was produced: by hand, by the `lokf` CLI, or by the skills. It never loads or calls a skill, an agent or another plugin, and the skills do not need it either. All they share is the LOKF specification. KTL Registrar sits one tier below and is equally independent; neither plugin detects whether the other is installed.
 

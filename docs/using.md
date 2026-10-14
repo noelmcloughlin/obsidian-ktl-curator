@@ -40,7 +40,7 @@ Everything but **Later** also keeps one running `**Curation**` line under today'
 | Review the active note | Opens the review card for the note you are editing |
 | Look up a LOKF field | Searchable reference of the LOKF frontmatter fields |
 | Create curation policy | Writes `policies/knowledge-curation.md`, the table that sets how often each kind of concept is re-confirmed |
-| Record something missing | Writes a placeholder concept - type, title, one open question - for the librarian to fill in |
+| Record something missing | Writes a placeholder concept, with a type, a title and one open question, for the librarian to fill in |
 
 The confirmed count is meant to rise slowly, a handful of concepts in a sitting. A large or fast-growing bundle never quite reaches fully-confirmed, and the report says so.
 

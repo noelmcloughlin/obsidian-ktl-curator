@@ -10,7 +10,7 @@
 > We balance the earth in a pair of scales of our own devising."\
 > — Amy Lowell, *The Congressional Library* (1922)
 
-An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** may claim. Open the bundle as a vault, and the plugin says how far each record has actually been checked, puts the source beside the claim, and writes down what you decide. The status bar reads **Confirmed 12/40**, or, while you edit a concept, that note's own tier beside the count: **Draft · 3/12**. Nothing to configure, no network, no servers.
+An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** may claim. Open the bundle as a vault, and the plugin says how far each record has been checked, puts the source beside the claim, and writes down what you decide. The status bar reads **Confirmed 12/40**, or, while you edit a concept, that note's own tier beside the count: **Draft · 3/12**. Nothing to configure, no network, no servers.
 
 To install, see [the quick start](docs/install.md#quick-start). [The architecture](docs/architecture.md) says what a bundle is, which role this plugin plays in keeping one, and how it sits beside your own notes. [Using it](docs/using.md) lists the panel, the review card and its five verbs, the in-editor aids, the commands and the settings.
 
