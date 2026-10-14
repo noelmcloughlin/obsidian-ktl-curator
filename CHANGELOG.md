@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.15] - 2026-10-14
+
 ### Security
 
 - **The sidecar copies and the skills pin match `v0.39.0`.** The preflight looks for ktl-website among the installed skills. The librarian and release workflows say their variables go under Repository variables, never on an environment, which neither job can read, and the scheduled librarian installs a ktl-librarian whose setup page says the same. No plugin change.
