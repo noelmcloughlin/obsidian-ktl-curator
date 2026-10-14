@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The sidecar copies and the skills pin match `v0.41.0`.** The scheduled librarian takes an agent that wants its prompt somewhere other than after `-p`, named by the repository variable `AGENT_PROMPT_FLAG`. It writes its patch with the agent's own file tool, so an agent refused a shell write no longer gives up. Both came with the `v0.40.0` copies, which 1.3.16 included without an entry; `v0.41.0` changes only ktl-website, which this repository does not use. No plugin change.
+
 ## [1.3.16] - 2026-10-14
 
 ### Changed
