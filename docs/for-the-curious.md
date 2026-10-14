@@ -22,7 +22,7 @@ The rules, with every parsing edge case, are in `references/trust-fields.md` in 
 
 ## What this plugin leaves to others
 
-Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below, and this plugin assumes it. A concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed: a valid `base_iri`, consistent ids and well-shaped `verified` and `generated` fields. Keep it schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks. There is no auto-fix, no proposed correction, and no tidying of a fact you did not ask it to touch.
+Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below: a concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed, so keep it schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks, and proposes no correction.
 
 ## Where this fits: the "human-confirmed" tier
 
@@ -35,11 +35,11 @@ The companion [knowledge-trust-ladder](https://github.com/noelmcloughlin/knowled
 
 Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind. This plugin is that third tier in the editor: the `ktl-curator` skill's review session, available without an agent in the loop.
 
-There is no dependency in either direction. This plugin reads Markdown and YAML and works on any LOKF bundle however it was produced: by hand, by the `lokf` CLI, or by the skills. It never loads or calls a skill, an agent or another plugin, and the skills do not need it either. All they share is the LOKF specification. KTL Registrar sits one tier below and is equally independent; neither plugin detects whether the other is installed.
+This plugin never loads or calls a skill, an agent or another plugin, and KTL Registrar, one tier below, is equally independent: neither plugin detects whether the other is installed.
 
 ## Where the bundle lives, host by host
 
-The plugin sees a vault. Where that vault's folder sits is the **sidecar**'s business, and the skills' page [The bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/obsidian.md#where-the-bundle-lives-host-by-host) walks through the layouts: a code repository, a vault kept in git, a shared drive, and many hosts in one vault. What the layout decides here is whether the review card can open a source. In a code repository the sources sit above the bundle's small vault, so the card shows them as a path with a copy button and says it cannot open them. With several repositories' bundles linked into one vault and listed under *Bundle root folders*, the sources sit inside the vault and the card opens them side by side. Keep such links out of Obsidian Sync, which does not carry them.
+The skills' page [The bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/obsidian.md#where-the-bundle-lives-host-by-host) walks through the layouts: a code repository, a vault kept in git, a shared drive, and many hosts in one vault. The layout decides whether the review card can open a source. In a code repository the sources sit above the bundle's vault, so the card shows them as a path with a copy button. With several repositories' bundles linked into one vault and listed under *Bundle root folders*, the sources sit inside the vault and the card opens them side by side. Obsidian Sync does not carry such links.
 
 ## On the feedback file
 
