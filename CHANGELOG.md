@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.16] - 2026-10-14
+
 ### Changed
 
 - **The architecture and for-the-curious pages lose their dead sentences.** The host-by-host section and the independence paragraph say each fact once, and link what the skills' pages already record. No plugin change.
