@@ -205,7 +205,7 @@ export default class KtlCuratorPlugin extends Plugin {
   /** With nothing configured, let the vault say what it is: a root index.md
    *  carrying a LOKF header makes the whole vault the bundle; a top-level
    *  `knowledge_bundle/` with its own index.md is a notes vault keeping a
-   *  bundle as a folder among its notes (at the cost the README names);
+   *  bundle as a folder among its notes (at the cost docs/architecture.md names);
    *  neither is a workshop with no exhibition, left alone unless the break-glass setting
    *  says otherwise. Kept identical to KTL Registrar's; the decision itself
    *  is bundle.ts's pure `implicitBundleRoots`. */

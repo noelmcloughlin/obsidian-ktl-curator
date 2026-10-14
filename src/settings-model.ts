@@ -66,7 +66,7 @@ function arraysEqual(a: string[], b: readonly string[]): boolean {
  * refreshed to the pinned schema manifest's, so an upgrade picks up `Role` and
  * any later core class, while a list the person actually edited is left
  * exactly as they left it (and so never gains a later core class on its own -
- * the README and the setting's own description say so).
+ * docs/using.md and the setting's own description say so).
  *
  * The same rule, in the same shape, as KTL Registrar's `mergeSavedSettings`.
  */
