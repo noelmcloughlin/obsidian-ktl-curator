@@ -1,3 +1,9 @@
+# A failed request is retried with a wait that grows each time, so a
+# host that answers a burst with 503 (github.com, below) has time to
+# recover before the link is declared dead.
+max_retries = 3
+retry_wait_time = 5
+
 exclude = [
   # LOKF's published JSON-LD context; upstream's identifier, not this repo's,
   # currently 404s. Drop once the w3id.org redirect is registered.
@@ -17,3 +23,26 @@ exclude = [
 exclude_path = [
   "(^|/)knowledge_bundle/",
 ]
+
+# github.com answers automated clients with 503 or 429 on a file page
+# (/blob/) while it serves the repository pages, as it did to this
+# repository's CI on 2026-10-14 for a link to knowledge-trust-ladder's
+# AI_COVENANT.md. raw.githubusercontent.com serves the same file at the same
+# commit, tag or branch, and answers 404 once the file is gone, so lychee
+# checks each file link there instead. lychee remaps a link before it
+# applies `exclude`, so an exclusion for a file link must name its raw
+# address.
+remap = [
+  '^https://github\.com/([^/]+/[^/]+)/blob/([^?#]+)([?#].*)?$ https://raw.githubusercontent.com/$1/$2',
+  # A gist page failed the same way on 2026-10-14, with 500 from
+  # gist.github.com. Its raw address answers 404 once the gist is gone.
+  '^https://gist\.github\.com/([^/]+/[0-9a-f]+)([?#].*)?$ https://gist.githubusercontent.com/$1/raw',
+]
+
+# The rest of github.com, such as repository, folder and issue pages, also
+# answers a burst of requests from one CI runner with 503. Pace the
+# requests to it rather than exclude it, so a moved or deleted page still
+# fails.
+[hosts."github.com"]
+concurrency = 2
+request_interval = "250ms"
