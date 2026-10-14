@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The README is a doorway, in the style of Knowledge Trust Ladder's.** It keeps the poem, the opening paragraph and the agents note, and links the quick start, the architecture and the usage pages. What a bundle is, the two vaults, which folder is the bundle, privacy, the development layout and the credits moved to `docs/architecture.md`; the quick start and the install routes to `docs/install.md`; the panel, the review card and its five verbs, the commands and the settings to `docs/using.md`. No plugin change.
+
 ## [1.3.15] - 2026-10-14
 
 ### Security
