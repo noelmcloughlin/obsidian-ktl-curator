@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.20] - 2026-10-15
+
 ### Fixed
 
 - **`.lokf/justfile` takes a domain schema as one variable.** It was the copy from before ktl-sidecar `v0.38.0`, which the sidecar sync never carried. No plugin change.
