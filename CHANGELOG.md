@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.3.21] - 2026-10-15
+
 ### Security
 
 - **The skills pin matches `v0.43.1`.** The release changed none of the sidecar copies this repository carries. No plugin change.
