@@ -65,7 +65,7 @@ src/
   settings.ts       declarative settings tab (Obsidian 1.13+)
   ...               the in-editor tier badge, autocomplete and the field reference - one module each
 scripts/
-  smoke-test.ts     the three pure modules against a fixture bundle (npm run smoke-test)
+  smoke-test.ts     the pure modules against a fixture bundle (npm run smoke-test)
   build-vocab.mjs   regenerates src/lokf-vocab.json from a pinned lokf.yaml (a maintenance step)
   fixtures/         a bundle with one concept per trust-label state, on purpose
 docs/               the reasoning behind the labels
