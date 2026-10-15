@@ -2,35 +2,32 @@
 type: Playbook
 id: https://ktl-curator.example/knowledge/playbooks/contributing
 title: Contributing to the plugin
-description: Development setup, npm run check (build, lint, smoke-test - the same three steps CI's build.yml runs), the seven-module import-free pure-module rule, and the lint-and-docs.yaml checks (action-pin, link, Markdown) it also points at.
+description: "Development setup, npm run check (build, lint and smoke test, the same three steps CI's build.yml runs), the seven pure modules the smoke test covers, and the pull-request checklist: verb write limits, the changelog line, sibling links, the vocab refresh, the skills pin sync and releasing pull request titles."
 genre: how-to
 resource: CONTRIBUTING.md
 isPartOf:
-  - https://ktl-curator.example/knowledge/playbooks/knowledge-sources
+- https://ktl-curator.example/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
-  at: "2026-09-14T15:30:00Z"
+  at: "2026-10-15T23:47:44Z"
 status: draft
 verified:
-  - by: process:ktl-librarian
-    at: "2026-09-14T15:30:00Z"
+- by: process:ktl-librarian
+  at: "2026-10-15T23:47:44Z"
 ---
 
-`npm install && npm run dev` for esbuild watch mode. Before a PR: `npm run
-check`, which runs `npm run build` (type-check + bundle), `npm run lint`
-(`eslint-plugin-obsidianmd`; the settings-tab and `createEl` rules are
-errors, not warnings), and `npm run smoke-test` (`bundle.ts`/`trust.ts`/
-`edits.ts`/`settings-model.ts`/`trust-label.ts`/`suggest-context.ts`/
-`fields.ts` against `scripts/fixtures/curation-bundle/`, no Obsidian needed;
-a drift guard in the suite itself fails if this module list and
-`CONTRIBUTING.md`'s own sentence ever disagree) - the same three steps
-`.github/workflows/build.yml` runs in CI. `.github/workflows/lint-and-docs.yaml`
-separately lints shell scripts and workflow files, fails on any `uses:` not
-pinned to a commit SHA, and lints Markdown and checks links (a link into a
-sibling repository must already resolve on that repository's `main`).
-Anything touching the Obsidian `App` - the vault scan, the review session's
-actual writes, the mtime guard, split-leaf source opening - has no
-automated test and must be checked by hand in a real vault. That boundary
-is the reason `settings-model.ts` exists: logic worth testing is moved out
-of `main.ts` rather than tested through it. `main.js` is generated and
-git-ignored, never committed.
+Development needs Node 20 or later, and CI builds on 20, 22 and 24. `npm install` and then `npm run dev` start esbuild in watch mode, which rebuilds `src/main.ts` into `main.js`. `main.js` is generated and git-ignored, so a fresh clone has none until you build.
+
+Before a pull request, run `npm run check`. It runs the build (type-check and bundle), the lint and the smoke test, the same three steps `.github/workflows/build.yml` runs. The lint is `eslint-plugin-obsidianmd`, Obsidian's guidelines as rules: fix a finding in the code rather than widen the exceptions in `eslint.config.mts`.
+
+The smoke test (`npm run smoke-test`) runs seven pure modules (`bundle.ts`, `trust.ts`, `edits.ts`, `settings-model.ts`, `trust-label.ts`, `suggest-context.ts` and `fields.ts`) against `scripts/fixtures/curation-bundle/` under plain Node. The suite checks that `CONTRIBUTING.md`'s sentence names exactly what it imports. Everything that needs a real Obsidian `App` (`main.ts` with the scan, the review session and its writes, the curator view, the settings tab and the modals) has no automated test and is checked by hand in a vault. That boundary is why logic worth testing moves out of `main.ts` rather than being tested through it.
+
+The checklist also asks for these:
+
+- No write exceeds what `references/review-session.md` in the `ktl-curator` skill specifies for that verb.
+- A change to plugin behaviour adds a line or two under `## [Unreleased]` in `CHANGELOG.md`. The release pipeline refuses an empty one.
+- A link into a sibling repository already resolves on that repository's `main`, since the link check follows it.
+- `src/lokf-vocab.json` is refreshed with `npm run build-vocab`, and the result committed, only when the sidecar's pinned `lokf` moves.
+- Moving `TRUST_LADDER_SKILLS_REF` sets `TRUST_LADDER_SKILLS_SHA` beside it, and copies the three `knowledge-*.yaml` workflows and the files under `.lokf/scripts/` and `.lokf/m365/` from that release's templates in the same pull request.
+- A pull request whose commits would release carries the releasing type in its title (`feat:`, `fix:`, `security:`), because a squash merge takes its subject from the title and the `plan` job refuses a mismatch.
+- CI fails an action that is not pinned to a commit. Dependabot bumps the pinned action SHAs and the npm devDependencies.

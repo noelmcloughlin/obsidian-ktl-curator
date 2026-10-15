@@ -2,17 +2,17 @@
 type: Service
 id: https://ktl-curator.example/knowledge/services/settings-tab
 title: Settings tab
-description: The declarative Obsidian settings tab (1.13+) - curator id, bundle scope, the known type vocabulary, review intervals, queue size, and the feedback file path.
+description: "The declarative Obsidian settings tab (1.13+): curator id, the two in-editor toggles, bundle scope, the known type vocabulary, review intervals, queue size, and the feedback file path."
 resource: src/settings.ts
 isPartOf:
-  - https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
 generated:
   by: process:ktl-librarian
-  at: "2026-09-14T09:00:00Z"
+  at: "2026-10-15T23:47:44Z"
 status: draft
 verified:
-  - by: process:ktl-librarian
-    at: "2026-09-14T09:00:00Z"
+- by: process:ktl-librarian
+  at: "2026-10-15T23:47:44Z"
 ---
 
 # Overview
@@ -20,7 +20,7 @@ verified:
 `KtlCuratorSettingTab` returns definitions from `getSettingDefinitions()`
 rather than building DOM, which is what puts every setting into Obsidian's
 settings search. Groups: **Who is curating** (curator id, validated as a
-slug and refused if it contains `@`), **Scope** (bundle root folders and
+slug and refused if it contains `@`), **In-editor** (two toggles, both on by default: `trustMarker` shows a concept's trust tier on its frontmatter in Source mode and repaints open editors when changed, and `autocomplete` offers LOKF values inside a concept's frontmatter), **Scope** (bundle root folders and
 excluded folders - kept identical to the sibling `ktl-registrar` plugin: a
 dot-folder entry is accepted with a warning when Obsidian's index does not
 list it, rather than refused, and an empty list defers to the vault's own

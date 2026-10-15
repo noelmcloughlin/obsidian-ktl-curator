@@ -1,5 +1,24 @@
 # Change Log
 
+## 2026-10-15
+
+* **Rewrite**: Why KTL Curator exists follows `docs/for-the-curious.md`, which `docs/architecture.md` now links to in place of the README, and adds what the plugin leaves to KTL Registrar and the librarian.
+* **Rewrite**: Contributing follows the current `CONTRIBUTING.md` checklist: Node 20 or later, the changelog line, the vocab refresh, the skills pin sync and the releasing pull request title.
+* **Changed**: The Contributing description names the checklist items the concept now carries.
+* **Rewrite**: the registrar gate follows the current workflow: validate runs the justfile recipe after `uv sync --locked` and passes the merge base to the conventions script; provenance reads whole events, removals included, and checks signatures against `.lokf/curators/` too; the copy now keeps the template's jobs unchanged.
+* **Changed**: The registrar gate description covers removed confirmations, and its sources add `knowledge-provenance.sh`.
+* **Rewrite**: the source map adds the docs pages, the release config, the sidecar's other copies and the curator keys, and its registrar and skill-reference rows follow their current sources. The dated re-check notes are gone; the log keeps that history.
+* **Rewrite**: Releasing adds the `workflow_dispatch` path `release.yml` gained for a tag semantic-release pushed before failing, the `security` release type, and the `plan` job's changelog and title checks.
+* **Changed**: The Releasing description names the hand-run dispatch path, and its sources add `.releaserc.json`.
+* **Rewrite**: the no-telemetry policy follows `SECURITY.md`'s current wording and cites `docs/architecture.md`'s Privacy section, where the README's former Privacy section now lives.
+* **Changed**: The no-telemetry description follows `SECURITY.md`, and its sources add `docs/architecture.md`.
+* **Changed**: Curator side panel names the trust-ladder icon its tab and the ribbon now carry.
+* **Changed**: Edits engine says the caller writes the body through `vault.process`, not `vault.modify`, and adds the four exported functions it left out.
+* **Changed**: KTL Curator plugin: the verbs write the body through `vault.process`, the corrected guard is `hasReviewedCard` plus `hasChangedSinceCardOpened` (no `canMarkCorrected`), and all six commands and the ribbon icon are listed.
+* **Changed**: Settings tab adds the In-editor group, the trust-marker and autocomplete toggles it had left out.
+* **Changed**: Trust engine: reliance counts the schema's thirteen relation fields, once per relying concept with retired concepts left out, and an empty `verified` list reads as unchecked.
+* **Resolved**: `src/main.ts` wires the four modules as the concept says. Its Look up a LOKF field command opens `FieldReferenceModal` over `LOKF_FIELD_DOCS`, it registers `lokfTrustMarkerExtension` and `KtlCuratorSuggest`, and it renders `trustLabel` and `handoffLabel`.
+
 ## 2026-09-24
 
 * **Future-dated times corrected.** 3 `process:ktl-librarian` times were later than the commit that recorded them (round placeholders written as UTC). Each now carries that commit's time, the latest moment git attests, so the bundle keeps the sidecar's new conventions rule 11.
