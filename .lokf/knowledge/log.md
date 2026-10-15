@@ -2,6 +2,8 @@
 
 ## 2026-10-15
 
+* **Changed**: the OKF specification moved to `GoogleCloudPlatform/open-knowledge-format`, which still serves v0.2; the `knowledge-catalog/okf/` copy is frozen.
+* **Changed**: the source map links the canonical OKF specification.
 * **Rewrite**: Why KTL Curator exists follows `docs/for-the-curious.md`, which `docs/architecture.md` now links to in place of the README, and adds what the plugin leaves to KTL Registrar and the librarian.
 * **Rewrite**: Contributing follows the current `CONTRIBUTING.md` checklist: Node 20 or later, the changelog line, the vocab refresh, the skills pin sync and the releasing pull request title.
 * **Changed**: The Contributing description names the checklist items the concept now carries.

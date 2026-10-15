@@ -28,7 +28,7 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for KTL Curator. Every M
 # References
 
 * [LOKF specification](references/lokf-specification.md)
-* [OKF v0.2 specification](references/okf-specification.md)
+* [OKF v0.2 specification](references/okf-specification.md) - The Open Knowledge Format specification LOKF profiles - one concept per Markdown file, provenance/trust/lifecycle fields, permissive consumption.
 * [lokf toolkit (PyPI)](references/lokf-toolkit.md)
 * [Obsidian plugin developer guidelines](references/obsidian-plugin-guidelines.md)
 * [Trust fields (ktl-curator skill)](references/trust-fields.md)

@@ -7,7 +7,7 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-15T23:54:07Z"
 status: draft
 verified:
 - by: process:ktl-librarian
@@ -40,7 +40,7 @@ This map lists where the bundle's concepts come from, and how a later librarian 
 | `.github/pull_request_template.md` | the PR checklist, which `CONTRIBUTING.md` calls "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` does not cover |
 | `.assets/*.svg` | the card and two-vaults pictures, and the shared logo mark | none | decorative and left out as concepts on purpose; re-check only if an image starts carrying a claim the docs do not |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
-| <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
+| <https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
 | <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uvx --from pip pip index versions lokf` |
 | Obsidian's plugin developer docs (<https://docs.obsidian.md/Plugins>) | the platform API this plugin is built against (`processFrontMatter`, `metadataCache`, declarative settings) | `Reference` | re-reading for a breaking API change |
 | glossary terms recurring across `src/`, the skill and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
