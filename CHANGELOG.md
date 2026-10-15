@@ -6,11 +6,15 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The skills pin matches `v0.43.0`.** The release changed none of the sidecar copies this repository carries. No plugin change.
+
 ## [1.3.18] - 2026-10-14
 
 ### Security
 
-- **The sidecar copies and the skills pin match `v0.42.0`.** <what the release changed in the copies, from its changelog>. No plugin change.
+- **The sidecar copies and the skills pin match `v0.42.0`.** Conventions rule 13 no longer reads a move of the bundle's `base_iri` as an edit of every confirmed concept. No plugin change.
 
 ## [1.3.17] - 2026-10-14
 
