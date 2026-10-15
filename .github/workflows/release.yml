@@ -16,6 +16,15 @@ on:
                 description: 'Version tag to build and release (bare, no leading v)'
                 required: true
                 type: string
+    # Run by hand from the Actions tab when semantic-release pushed the tag but
+    # failed before build-and-attest. Pushing that tag again starts nothing,
+    # because it names the release commit, whose message carries [skip ci].
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: 'Version tag to build and release (bare, no leading v)'
+                required: true
+                type: string
 
 # Least-privilege default: every scope starts read-only (or none). The build
 # job below opts back into exactly the three write scopes it needs; no other
