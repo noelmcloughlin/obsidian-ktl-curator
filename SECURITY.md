@@ -20,7 +20,7 @@ KTL Curator runs inside Obsidian, on the vault you open it in, and nowhere else.
 - **It never verifies a claim itself.** It puts a concept's recorded source beside its claim and asks a person; a source you open is shown to you, never fetched, parsed or interpreted by the plugin.
 - **No dependency on another plugin.** It detects nothing and calls into nothing else installed in the vault.
 
-The realistic risk is a trust-label rule giving a wrong label, or a verb writing a malformed frontmatter edit or `log.md` line; every write goes through Obsidian's atomic `processFrontMatter` and `vault.modify`, and none can leak data or reach outside the vault. A source you open still deserves the scrutiny you would give any file; that is a property of the content, not of the plugin.
+The realistic risk is a trust-label rule giving a wrong label, or a verb writing a malformed frontmatter edit or `log.md` line; every write goes through Obsidian's atomic `processFrontMatter` and `vault.process`, and none can leak data or reach outside the vault. A source you open still deserves the scrutiny you would give any file; that is a property of the content, not of the plugin.
 
 ## This repository's automation
 

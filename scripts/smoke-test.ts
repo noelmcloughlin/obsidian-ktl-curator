@@ -1,10 +1,10 @@
 /**
- * Plain-Node regression check for bundle.ts / trust.ts / edits.ts - no
+ * Plain-Node regression check for the pure modules CONTRIBUTING.md names - no
  * Obsidian runtime needed. Run with `npm run smoke-test`. Exits non-zero on
  * any failed expectation.
  *
- * All three modules are import-free of Obsidian and take already-parsed
- * frontmatter plus a fixed `today`, so the only thing this harness adds is a
+ * Every one is import-free of Obsidian and takes already-parsed frontmatter
+ * (plus, for trust.ts, a fixed `today`), so the only thing this harness adds is a
  * YAML parser (a devDependency; the plugin itself uses Obsidian's parseYaml)
  * and a walk of scripts/fixtures/curation-bundle/.
  */
