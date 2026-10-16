@@ -5,6 +5,9 @@ import { globalIgnores, defineConfig } from 'eslint/config';
 export default defineConfig(
 	globalIgnores([
 		'node_modules',
+		// The knowledge website (ktl-website): its own Node project with its own
+		// build and link check, not part of the plugin bundle.
+		'website',
 		'dist',
 		'esbuild.config.mjs',
 		'version-bump.mjs',
