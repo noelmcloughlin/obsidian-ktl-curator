@@ -1,14 +1,14 @@
 ---
 type: Explanation
-id: https://ktl-curator.example/knowledge/explanation/why-ktl-curator
+id: https://w3id.org/ktl/curator/knowledge/explanation/why-ktl-curator
 title: Why KTL Curator exists
 description: Where this plugin sits on the four-tier trust model, and why it is the sibling of ktl-registrar rather than a superset or a dependency of it.
 genre: explanation
 resource: docs/for-the-curious.md
 about:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 relatedTo:
-- https://ktl-curator.example/knowledge/policies/no-telemetry
+- https://w3id.org/ktl/curator/knowledge/policies/no-telemetry
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

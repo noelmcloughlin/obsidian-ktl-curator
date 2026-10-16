@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://ktl-curator.example/knowledge/playbooks/knowledge-sources
+id: https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 title: Knowledge sources
 description: Where this bundle's concepts are derived from, and how to re-check each source on a later librarian run.
 genre: how-to

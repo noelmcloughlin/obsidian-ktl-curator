@@ -1,12 +1,12 @@
 ---
 type: Reference
-id: https://ktl-curator.example/knowledge/references/lokf-specification
+id: https://w3id.org/ktl/curator/knowledge/references/lokf-specification
 title: LOKF specification
 description: The Linked Open Knowledge Format specification - the semantic profile of OKF this plugin's trust labels and typed relations are defined against.
 genre: reference
 resource: https://lokf.nolan-nichols.com/specification/
 derivedFrom:
-  - https://ktl-curator.example/knowledge/references/okf-specification
+  - https://w3id.org/ktl/curator/knowledge/references/okf-specification
 generated:
   by: process:ktl-librarian
   at: "2026-09-13T19:00:00Z"

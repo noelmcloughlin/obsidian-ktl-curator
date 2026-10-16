@@ -1,6 +1,6 @@
 ---
 type: Reference
-id: https://ktl-curator.example/knowledge/references/obsidian-plugin-guidelines
+id: https://w3id.org/ktl/curator/knowledge/references/obsidian-plugin-guidelines
 title: Obsidian plugin developer guidelines
 description: The platform API surface and review guidelines this plugin is built against - declarative settings (1.13+), processFrontMatter, metadataCache, and the eslint-plugin-obsidianmd ruleset that encodes them.
 genre: reference

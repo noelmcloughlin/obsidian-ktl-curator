@@ -2,6 +2,7 @@
 
 ## 2026-10-16
 
+* **Changed**: the bundle's `base_iri` moved from the placeholder `https://ktl-curator.example/knowledge/` to `https://w3id.org/ktl/curator/knowledge/`, a namespace under Knowledge Trust Ladder's w3id.org authority, so the bundle can join a federation; every id and relation target moved with it, and no concept's text changed.
 * **Added**: Knowledge website, from `website/README.md` and `.github/workflows/knowledge-website.yaml`, which the ktl-website skill added in a259ac0.
 * **Changed**: the source map gains the knowledge website (`website/` and `knowledge-website.yaml`, added in a259ac0), and the README row says the doorway now links the website's pages.
 * **Prose**: reworded 12 concept bodies in plain English. No fact, link, number or frontmatter changed.

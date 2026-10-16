@@ -1,12 +1,12 @@
 ---
 type: Reference
-id: https://ktl-curator.example/knowledge/references/trust-fields
+id: https://w3id.org/ktl/curator/knowledge/references/trust-fields
 title: Trust fields (ktl-curator skill)
 description: The exact rule for each plain-language trust label - the spec of record trust-engine.md implements, and the source the README's health-line chips and docs/for-the-curious.md's label table summarize.
 genre: reference
 resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-curator/references/trust-fields.md
 about:
-  - https://ktl-curator.example/knowledge/references/lokf-specification
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-specification
 generated:
   by: process:ktl-librarian
   at: "2026-09-17T23:55:35Z"

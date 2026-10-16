@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://ktl-curator.example/knowledge/playbooks/knowledge-registrar-gate
+id: https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-registrar-gate
 title: Knowledge registrar gate
 description: "The knowledge-registrar.yaml workflow: validates the bundle and its relation targets on every pull request that touches it, and ties every human: confirmation a pull request adds, changes or removes to that person's approval of the pull request or their verified signature on the commit, with an environment reviewer's attestation as the fallback."
 genre: how-to
@@ -12,10 +12,10 @@ sources:
 - resource: .lokf/justfile
 - resource: SECURITY.md
 relatedTo:
-- https://ktl-curator.example/knowledge/services/edits-engine
-- https://ktl-curator.example/knowledge/references/review-session
+- https://w3id.org/ktl/curator/knowledge/services/edits-engine
+- https://w3id.org/ktl/curator/knowledge/references/review-session
 dependsOn:
-- https://ktl-curator.example/knowledge/references/lokf-toolkit
+- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

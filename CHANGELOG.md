@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The knowledge bundle's namespace is `https://w3id.org/ktl/curator/knowledge/`.** It was the placeholder `https://ktl-curator.example/knowledge/`, and every concept's id moved with it, so the bundle can join the KTL federation. No plugin change.
+
 ## [1.4.1] - 2026-10-16
 
 ### Fixed

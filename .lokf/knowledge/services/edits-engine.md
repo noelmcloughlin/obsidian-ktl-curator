@@ -1,13 +1,13 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/edits-engine
+id: https://w3id.org/ktl/curator/knowledge/services/edits-engine
 title: Edits engine
 description: "Pure string and object transforms for every write the review session makes: the five verbs' frontmatter and body edits, the log.md Curation and Deprecation lines, the repeated send-back hint, and the two Step-3 templates."
 resource: src/edits.ts
 isPartOf:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://ktl-curator.example/knowledge/references/review-session
+- https://w3id.org/ktl/curator/knowledge/references/review-session
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

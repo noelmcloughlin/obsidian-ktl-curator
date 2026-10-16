@@ -1,14 +1,14 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/in-editor-aids
+id: https://w3id.org/ktl/curator/knowledge/services/in-editor-aids
 title: In-editor aids
 description: Three Settings → In-editor conveniences while a curator hand-edits a concept's raw frontmatter - a searchable "Look up a LOKF field" command, a live trust-tier badge on the frontmatter (Source mode only), and autocomplete for the values a curator hand-types (the human:<id> actor, status, and at/stale_after dates) - plus the shared trust-tier label vocabulary they and the status bar all render identically.
 resource: src/fields.ts
 isPartOf:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://ktl-curator.example/knowledge/services/trust-engine
-- https://ktl-curator.example/knowledge/references/lokf-toolkit
+- https://w3id.org/ktl/curator/knowledge/services/trust-engine
+- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-09-12T22:00:00Z"

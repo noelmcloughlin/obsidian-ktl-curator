@@ -1,11 +1,11 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/settings-tab
+id: https://w3id.org/ktl/curator/knowledge/services/settings-tab
 title: Settings tab
 description: "The declarative Obsidian settings tab (1.13+): curator id, the two in-editor toggles, bundle scope, the known type vocabulary, review intervals, queue size, and the feedback file path."
 resource: src/settings.ts
 isPartOf:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

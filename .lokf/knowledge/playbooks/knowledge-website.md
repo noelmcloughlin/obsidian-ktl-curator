@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://ktl-curator.example/knowledge/playbooks/knowledge-website
+id: https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-website
 title: Knowledge website
 description: "The website/ folder and the knowledge-website.yaml workflow: an Astro Starlight site built from the bundle, the README, docs/ and the changelog, with a trust label on every concept page, built on pull requests and published to GitHub Pages at `https://noelmcloughlin.github.io/obsidian-ktl-curator/` once the repository variable KNOWLEDGE_WEBSITE_ENABLED is true."
 genre: how-to
@@ -14,7 +14,7 @@ sources:
 - resource: .markdownlint-cli2.jsonc
 - resource: lychee.toml
 dependsOn:
-- https://ktl-curator.example/knowledge/references/lokf-toolkit
+- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-10-16T00:37:38Z"

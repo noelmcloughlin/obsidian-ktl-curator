@@ -1,13 +1,13 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/trust-engine
+id: https://w3id.org/ktl/curator/knowledge/services/trust-engine
 title: Trust engine
 description: Pure, import-free modules computing one concept's trust record, the bundle's seven health counts, and the ranked "worth ten minutes today" queue from already-parsed frontmatter and headings.
 resource: src/trust.ts
 isPartOf:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://ktl-curator.example/knowledge/references/trust-fields
+- https://w3id.org/ktl/curator/knowledge/references/trust-fields
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

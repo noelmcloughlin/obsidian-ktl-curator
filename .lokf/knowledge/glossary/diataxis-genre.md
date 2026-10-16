@@ -1,11 +1,11 @@
 ---
 type: GlossaryTerm
-id: https://ktl-curator.example/knowledge/glossary/diataxis-genre
+id: https://w3id.org/ktl/curator/knowledge/glossary/diataxis-genre
 title: Diátaxis genre
 abbreviation: genre
 definition: An optional LOKF facet (tutorial | how-to | reference | explanation) tagging how a concept's prose serves the reader - orthogonal to type, one mode per concept.
 relatedTo:
-  - https://ktl-curator.example/knowledge/glossary/lokf
+  - https://w3id.org/ktl/curator/knowledge/glossary/lokf
 generated:
   by: process:ktl-librarian
   at: "2026-09-10T00:00:00Z"

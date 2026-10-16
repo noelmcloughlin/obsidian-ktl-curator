@@ -8,7 +8,8 @@ exclude = [
   # LOKF's published JSON-LD context; upstream's identifier, not this repo's,
   # currently 404s. Drop once the w3id.org redirect is registered.
   '^https://w3id\.org/lokf/context\.jsonld$',
-  # This repo's own placeholder base_iri (RFC 2606 reserved domain) - see
+  # This repo's own base_iri, under KTL's w3id.org namespace; a concept id is an
+  # identifier, valid at 404, and the w3id rule for ktl/curator/ is pending - see
   # FIXES.md F5. Drop once a real namespace is registered.
   '^https://ktl-curator\.example/',
   # conventionalcommits.org (Netlify) answers CI runners with 503 on every
