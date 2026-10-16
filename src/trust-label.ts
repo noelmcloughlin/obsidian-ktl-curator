@@ -17,17 +17,18 @@ export interface TrustLabel {
   icon: string;
 }
 
-/** A concept's trust tier as a label. A retired or draft status takes
- *  precedence over the check tier - a draft is work-in-progress whatever its
- *  verified events say, and a retired concept is out of the trust ladder - then
- *  the confirmed-by-a-human / automation-only / unchecked ladder. */
+/** A concept's trust tier as a label. A retired status takes precedence over
+ *  the check tier, since a retired concept is out of the trust ladder. A draft
+ *  status does so only while no person has confirmed the concept: once a
+ *  person has, a question or a send-back that sets `status: draft` reopens it,
+ *  which the handoff hint says, and the rung the confirmation earned stays. */
 export function trustLabel(
   record: Pick<TrustRecord, "status" | "humanConfirmed" | "automationOnly">
 ): TrustLabel {
   if (record.status === "deprecated") {
     return { tone: "retired", short: "Retired", long: "Retired (deprecated)", icon: "archive" };
   }
-  if (record.status === "draft") {
+  if (record.status === "draft" && !record.humanConfirmed) {
     return { tone: "draft", short: "Draft", long: "Draft - not yet curated", icon: "pencil" };
   }
   if (record.humanConfirmed) {
@@ -65,7 +66,10 @@ export function handoffLabel(
   >
 ): HandoffHint | null {
   if (record.status === "deprecated") return null;
-  if (record.hasOpenQuestions) return { kind: "open-questions", text: "Has open questions - for the curator" };
+  if (record.hasOpenQuestions) {
+    const text = record.humanConfirmed ? "Reopened - a question waits for the curator" : "Has open questions - for the curator";
+    return { kind: "open-questions", text };
+  }
   if (record.editedSinceConfirmed === true) return { kind: "edited-since", text: "Edited since a person last confirmed it" };
   if (record.pastReview) return { kind: "past-review", text: "Past its review date" };
   if (record.status === "draft" && record.generatedBy === "process:ktl-librarian") {

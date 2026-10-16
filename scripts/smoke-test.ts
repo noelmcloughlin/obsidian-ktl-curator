@@ -762,7 +762,8 @@ section("trust-label.ts - the shared trust-tier vocabulary", () => {
   expect("a human-confirmed stable concept reads Confirmed", label({ status: "stable", humanConfirmed: true, automationOnly: false }).tone === "confirmed", "");
   expect("verified by automation only reads Automation", label({ status: "stable", humanConfirmed: false, automationOnly: true }).tone === "automation", "");
   expect("no verified key reads Unchecked", label({ status: "stable", humanConfirmed: false, automationOnly: false }).tone === "unchecked", "");
-  expect("a draft reads Draft whatever its verified events", label({ status: "draft", humanConfirmed: true, automationOnly: false }).tone === "draft", "");
+  expect("a draft nobody confirmed reads Draft", label({ status: "draft", humanConfirmed: false, automationOnly: true }).tone === "draft", "");
+  expect("a confirmed concept a question reopened keeps Confirmed", label({ status: "draft", humanConfirmed: true, automationOnly: false }).tone === "confirmed", "");
   expect("a deprecated concept reads Retired", label({ status: "deprecated", humanConfirmed: true, automationOnly: false }).tone === "retired", "");
   const confirmed = label({ status: "stable", humanConfirmed: true, automationOnly: false });
   expect("a label carries a short form, a sentence, and an icon", !!confirmed.short && !!confirmed.long && !!confirmed.icon, JSON.stringify(confirmed));
@@ -802,6 +803,8 @@ section("trust-label.ts - the handoff hint (whose turn in the loop)", () => {
     unchecked: true,
   };
   expect("open questions take priority - for the curator", handoffLabel({ ...base, hasOpenQuestions: true })?.kind === "open-questions", "");
+  const reopened = handoffLabel({ ...base, status: "draft", hasOpenQuestions: true, unchecked: false, humanConfirmed: true, confirmedBy: "human:alice", confirmedAt: "2026-01-15" });
+  expect("a confirmed concept with a question reads reopened", reopened?.kind === "open-questions" && reopened.text.startsWith("Reopened"), JSON.stringify(reopened));
   expect("edited since a confirmation is flagged", handoffLabel({ ...base, editedSinceConfirmed: true })?.kind === "edited-since", "");
   expect("past its review date is flagged", handoffLabel({ ...base, pastReview: true })?.kind === "past-review", "");
   expect("a librarian draft awaits a curator", handoffLabel({ ...base, status: "draft", unchecked: false, generatedBy: "process:ktl-librarian" })?.kind === "drafted", "");

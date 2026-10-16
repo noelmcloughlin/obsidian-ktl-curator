@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **A confirmed concept that a question put back to draft reads Confirmed, with the handoff "Reopened - a question waits for the curator".** It read "Draft - not yet curated", as if no person had ever checked it. The review card and the queue say "reopened" too, the words ktl-curator's report uses from Knowledge Trust Ladder 0.45.0.
+
 ## [1.5.1] - 2026-10-16
 
 ### Security

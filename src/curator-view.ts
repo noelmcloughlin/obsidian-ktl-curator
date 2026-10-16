@@ -29,7 +29,7 @@ function labelFor(record: TrustRecord): string {
     if (record.humanConfirmed) bits.push("confirmed by a person");
     else if (record.automationOnly) bits.push("checked by automation only");
     else if (record.unchecked) bits.push("nobody has checked this yet");
-    if (record.status === "draft") bits.push("draft");
+    if (record.status === "draft") bits.push(record.humanConfirmed ? "reopened" : "draft");
     if (record.pastReview) bits.push("past its review date");
     else if (record.dueSoon) bits.push("due soon");
     if (record.editedSinceConfirmed) bits.push("edited since confirmed");
@@ -42,7 +42,7 @@ function labelFor(record: TrustRecord): string {
 function whyInQueue(record: TrustRecord): string {
   if (record.pastReview) return "past its review date";
   if (record.editedSinceConfirmed) return "edited since a person last confirmed it";
-  if (record.status === "draft" && record.hasOpenQuestions) return "a draft with open questions";
+  if (record.status === "draft" && record.hasOpenQuestions) return record.humanConfirmed ? "reopened, with open questions" : "a draft with open questions";
   if (record.unchecked) return "nobody has checked it";
   return "a draft checked by automation only";
 }
