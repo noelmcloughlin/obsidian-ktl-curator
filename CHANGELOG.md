@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-10-16
+
 ### Fixed
 
 - **The website's link check reads an address in a code span without its closing backtick.** A concept that named the site's address in backticks failed the build with a broken link in `llms.txt`. The script matches ktl-website's fixed template. No plugin change.
