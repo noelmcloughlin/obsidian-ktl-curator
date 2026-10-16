@@ -14,7 +14,4 @@ verified:
   at: "2026-10-15T23:54:07Z"
 ---
 
-Defines `generated`, `verified`, `sources`, `usage_window`, `status`, and
-`stale_after` - the fields `trust-engine.md` (`src/trust.ts`) reads to
-compute every trust label. This plugin does not validate OKF or LOKF schema
-conformance itself (that is `ktl-registrar`); it only reads these fields.
+The specification defines `generated`, `verified`, `sources`, `usage_window`, `status`, and `stale_after`. `trust-engine.md` (`src/trust.ts`) reads these fields to compute every trust label. This plugin does not validate OKF or LOKF schema conformance itself (that is `ktl-registrar`); it only reads these fields.

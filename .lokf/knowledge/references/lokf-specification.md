@@ -16,8 +16,6 @@ verified:
     at: "2026-09-12T22:00:00Z"
 ---
 
-Canonical source for what LOKF means: the Golden Rules, the 15-class
-vocabulary, the ten typed-relation fields, and the OKF v0.2 §5.4
-provenance/trust/lifecycle field families this plugin computes trust labels
-from (`trust-engine.md`). Authority external to this repository - cite this
-page, not a paraphrase, when a claim about the spec itself is in question.
+This page is the canonical source for what LOKF means. It holds the Golden Rules, the 15-class vocabulary, the ten typed-relation fields, and the OKF v0.2 §5.4 provenance/trust/lifecycle field families that this plugin computes trust labels from (`trust-engine.md`).
+
+Its authority lies outside this repository. When a claim about the spec itself is in question, cite this page, not a paraphrase.

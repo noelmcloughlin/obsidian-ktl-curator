@@ -16,8 +16,6 @@ verified:
     at: "2026-09-12T22:00:00Z"
 ---
 
-Declared in `.lokf/pyproject.toml`; `just lokf-validate` (from `.lokf/`) runs
-its generated JSON Schema and SHACL checks against this bundle. Unrelated to
-the plugin's own build (`npm run build`) - the plugin never imports Python
-or calls into this toolkit; it is this repository's own documentation
-tooling only.
+`.lokf/pyproject.toml` declares the toolkit. `just lokf-validate` (from `.lokf/`) runs its generated JSON Schema and SHACL checks against this bundle.
+
+The toolkit is unrelated to the plugin's own build (`npm run build`). The plugin never imports Python or calls into this toolkit; it is this repository's own documentation tooling only.

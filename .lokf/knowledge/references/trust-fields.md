@@ -16,15 +16,13 @@ verified:
     at: "2026-09-17T23:55:35Z"
 ---
 
-Maps each human-facing label ("confirmed by a person", "past its review
-date", ...) onto its OKF v0.2 §5 / LOKF Golden Rule 6 field, including the
-parsing edge cases `src/trust.ts` handles: a bare `verified` mapping read as
-a one-element list, an exact `## Open questions` heading (never a substring
-match), and cross-bundle relation-target resolution. Installed locally at
-`.agents/skills/ktl-curator/references/trust-fields.md` (gitignored, per
-`.gitignore`'s "installed agent skills are runtime state" note) - not part
-of the plugin's own source, but the plugin's implementation must not drift
-from it.
+This reference maps each human-facing label ("confirmed by a person", "past its review date", ...) onto its OKF v0.2 §5 / LOKF Golden Rule 6 field. It includes the parsing edge cases `src/trust.ts` handles:
+
+- a bare `verified` mapping, read as a one-element list;
+- an exact `## Open questions` heading, never a substring match;
+- cross-bundle relation-target resolution.
+
+A local install puts it at `.agents/skills/ktl-curator/references/trust-fields.md`. That path is gitignored, per `.gitignore`'s "installed agent skills are runtime state" note. The reference is not part of the plugin's own source, but the plugin's implementation must not drift from it.
 
 ## Open questions
 

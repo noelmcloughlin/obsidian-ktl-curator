@@ -1,5 +1,9 @@
 # Change Log
 
+## 2026-10-16
+
+* **Prose**: reworded 12 concept bodies in plain English. No fact, link, number or frontmatter changed.
+
 ## 2026-10-15
 
 * **Changed**: the OKF specification moved to `GoogleCloudPlatform/open-knowledge-format`, which still serves v0.2; the `knowledge-catalog/okf/` copy is frozen.
