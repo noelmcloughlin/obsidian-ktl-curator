@@ -7,151 +7,54 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-09-14T15:30:00Z"
+  at: "2026-10-15T23:54:07Z"
 status: draft
+verified:
+- by: process:ktl-librarian
+  at: "2026-10-15T23:47:44Z"
 ---
 
 # Knowledge sources
 
-Bootstrap discovery pass (first real run of `ktl-librarian` against this
-repository - the two `services/example-*.md` placeholders from
-`ktl-sidecar` are removed as part of this run). Re-check each row by
-re-reading the paths listed; if a path no longer exists, remove the concepts
-it fed and log the removal.
+This map lists where the bundle's concepts come from, and how a later librarian run re-checks each source. Re-check each row by re-reading the paths it lists. When a path no longer exists, remove the concepts it fed and log the removal.
 
 | Source | Yields | Class(es) | Re-check by |
 | --- | --- | --- | --- |
-| `package.json`, `manifest.json` | plugin identity, id, version, dependencies | `Service` | reading `name`/`version`/`description`/`devDependencies` |
-| `src/main.ts` | plugin lifecycle, commands, the review session, the five verbs' write paths | `Service` | reading exported class `KtlCuratorPlugin` and its public methods |
-| `src/bundle.ts`, `src/trust.ts`, `src/settings-model.ts` | bundle-root resolution, the trust-record model, health counts, the ranked queue, and the settings shape/defaults/merge rule | `Service` | reading the exported functions and their doc comments |
-| `src/edits.ts` | the five verbs' exact frontmatter/body transforms, the `log.md` upsert | `Service` | reading the exported `apply*`/`upsert*` functions |
-| `src/curator-view.ts` | the "Curate" side panel: report + review card, and the "no bundle" message | `Service` | reading the `KtlCuratorView` class |
-| `src/settings.ts` | the declarative settings tab, including the break-glass "Treat the vault root as the bundle" toggle and, since 2026-09-14, the Type vocabulary group (*Known LOKF types*) | `Service` | reading `KtlCuratorSettingTab.getSettingDefinitions()`; the known-types list must stay the same shape and rule as `ktl-registrar`'s |
-| `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`, `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` | the in-editor aids: field lookup, the inline trust badge, and frontmatter autocomplete | `Service` | reading the exported classes/functions in each file against `services/in-editor-aids.md` |
-| `.agents/skills/ktl-curator/SKILL.md` and `references/trust-fields.md`, `references/review-session.md` | the spec of record this plugin implements | `Reference` | re-reading the skill's SKILL.md and references/ for drift against `src/trust.ts` / `src/edits.ts` |
-| `SECURITY.md` | the plugin's privacy/write-surface guarantees, reporting, supported versions, and a surface table (slimmed 2026-09-14; the hardening/attribution/prompt-injection design moved to the skills repository's `docs/threat-model.md`, linked rather than restated) | `Policy` | re-reading for a changed write surface, and diffing the surface table's links |
-| `.github/workflows/knowledge-registrar.yaml` | the gate a new `human:` confirmation must pass before it merges | `Playbook` | diff the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; the copy is meant to differ only by `persist-credentials: false` and a top-level `permissions: {}`, and any other difference is drift to report, not fix |
-| `.github/workflows/knowledge-librarian.yaml`, `.lokf/scripts/knowledge-librarian.sh` | the scheduled librarian automation - no concept of its own here, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | - | diff both against their templates the same way |
-| `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`), and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module list against `scripts/smoke-test.ts`'s own imports and its drift-guard section |
-| `.github/workflows/build.yml`, `.github/workflows/lint-and-docs.yaml` | CI's mirror of `npm run check`, plus shell/workflow lint, the pinned-action-SHA check, and Markdown/link lint | `Playbook` (`contributing.md`) | diffing each job's steps against `playbooks/contributing.md`'s description |
-| `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml` | the release pipeline - version computed from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading both workflow files; `CONTRIBUTING.md`'s own "Releasing" section is now only a pointer to the skills repository's `docs/releasing.md`, so it is no longer this row's resource |
-| `.github/pull_request_template.md` | the PR checklist - `CONTRIBUTING.md`'s own text calls it "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` doesn't already cover |
-| `docs/for-the-curious.md` (moved out of `README.md`'s former "For the curious" section) | the four-tier trust model and where this plugin sits on it | `Explanation` | re-reading for a changed relationship to `ktl-registrar` |
-| `.assets/*.svg` | the README's card and two-vaults pictures, and the shared logo mark | - | decorative, consciously excluded as concepts; re-check only that the row still applies if an image starts carrying a claim the README does not |
+| `package.json`, `manifest.json`, `versions.json` | plugin identity, id, version, dependencies | `Service` | reading `name`, `version`, `description` and `devDependencies` |
+| `src/main.ts` | plugin lifecycle, commands, the review session, the five verbs' write paths | `Service` | reading the exported class `KtlCuratorPlugin` and its public methods |
+| `src/bundle.ts`, `src/trust.ts`, `src/settings-model.ts` | bundle-root resolution, the trust-record model, health counts, the ranked queue, and the settings shape, defaults and merge rule | `Service` | reading the exported functions and their doc comments |
+| `src/edits.ts` | the five verbs' exact frontmatter and body transforms, the `log.md` upsert | `Service` | reading the exported functions |
+| `src/curator-view.ts` | the "Curate" side panel: report, review card, the "no bundle" message and the panel icon | `Service` | reading the `KtlCuratorView` class |
+| `src/settings.ts` | the declarative settings tab, its groups, and the break-glass "Treat the vault root as the bundle" toggle | `Service` | reading `KtlCuratorSettingTab.getSettingDefinitions()`; the known-types list keeps the same shape and rule as KTL Registrar's |
+| `src/fields.ts`, `src/field-modal.ts`, `src/inline.ts`, `src/suggest.ts`, `src/suggest-context.ts`, `src/trust-label.ts`, `src/lokf-vocab.json` | the in-editor aids: field lookup, the inline trust badge, and frontmatter autocomplete | `Service` | reading the exported classes and functions in each file against `services/in-editor-aids.md` |
+| the `ktl-curator` skill's `references/trust-fields.md` and `references/review-session.md`, published under <https://github.com/noelmcloughlin/knowledge-trust-ladder/tree/main/skills/ktl-curator/references> | the spec of record this plugin implements | `Reference` | re-reading both pages for drift against `src/trust.ts` and `src/edits.ts` |
+| `SECURITY.md` | the plugin's promises (no network, writes only on request), reporting, supported versions, and the table of what holds each automation surface; the design lives in the skills repository's `docs/threat-model.md` | `Policy` (`no-telemetry.md`), `Playbook` (`knowledge-registrar-gate.md`) | re-reading "The plugin" section for a changed write surface, and the table for a changed workflow |
+| `docs/architecture.md` | what a bundle is, the plugin's role, the two-vaults layout, the Privacy section and the `src/` layout | `Policy` (`no-telemetry.md`) | re-reading Privacy for a changed write surface |
+| `docs/for-the-curious.md` | the trust labels and their fields, the four-tier trust model and where this plugin sits on it, and what it leaves to others | `Explanation` | re-reading for a changed relationship to KTL Registrar |
+| `README.md`, `docs/install.md`, `docs/using.md` | the doorway and the user guide: install, the panel, the review card, the in-editor aids, the commands and the settings | covered by the `services/` concepts | re-reading for a feature no service concept describes |
+| `.github/workflows/knowledge-registrar.yaml`, `.lokf/curators/` | the gate a `human:` confirmation must pass before it merges, and the curator keys its second signature check reads | `Playbook` (`knowledge-registrar-gate.md`) | diffing the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; `SECURITY.md` says the copy keeps the template's jobs unchanged, so any other difference is drift to report, not fix |
+| `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.lokf/scripts/`, `.lokf/m365/` | the scheduled librarian, the bundle release and the sidecar's scripts; no concept of their own, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | none | diffing each against its template the same way |
+| `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`) and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module sentence against `scripts/smoke-test.ts`'s own imports |
+| `.github/workflows/build.yml`, `.github/workflows/lint-and-docs.yaml`, `eslint.config.mts` | CI's mirror of `npm run check`, shell and workflow lint, the pinned-action check, Markdown and link lint, and the lint rules raised to errors | `Playbook` (`contributing.md`) | diffing each job's steps against `playbooks/contributing.md` |
+| `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml`, `.releaserc.json`, `.github/scripts/changelog-release.mjs` | the release pipeline: the version from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading the workflows and the release config |
+| `.github/pull_request_template.md` | the PR checklist, which `CONTRIBUTING.md` calls "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` does not cover |
+| `.assets/*.svg` | the card and two-vaults pictures, and the shared logo mark | none | decorative and left out as concepts on purpose; re-check only if an image starts carrying a claim the docs do not |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
-| <https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
-| <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uv pip index versions lokf` |
-| Obsidian's own plugin developer docs (<https://docs.obsidian.md/Plugins>) | the platform API surface (`processFrontMatter`, `metadataCache`, declarative settings) this plugin is built against | `Reference` | re-reading for a breaking API change |
-| glossary terms recurring across `src/`, the skill, and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
+| <https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
+| <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uvx --from pip pip index versions lokf` |
+| Obsidian's plugin developer docs (<https://docs.obsidian.md/Plugins>) | the platform API this plugin is built against (`processFrontMatter`, `metadataCache`, declarative settings) | `Reference` | re-reading for a breaking API change |
+| glossary terms recurring across `src/`, the skill and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
 
-## Re-check notes
+## How to re-check
 
-**2026-09-14 (fourth pass)**, against the now-committed `96cf5fe` ("docs(security):
-improved layout"): `SECURITY.md` shrank from ~1,700 to ~800 words, moving its
-hardening/`human:`-attribution/prompt-injection design to the skills
-repository's new `docs/threat-model.md`, and gained a `Surface | What holds
-it` table plus a word-budget check (`scripts/smoke-test.ts`, extended to
-check `SECURITY.md` at 900 words alongside `CONTRIBUTING.md`'s 1000).
-`policies/no-telemetry.md` re-verified unchanged (its cited "The plugin"
-section survives the rewrite). `playbooks/knowledge-registrar-gate.md`
-corrected: two sentences said the design "is documented once, in that
-repository's `SECURITY.md`" and "`SECURITY.md` links to the skills repository
-for that design" - both now point at the skills repository's threat model by
-name, since that is where the design actually lives; `SECURITY.md` here only
-links to it. This repository has no `policies/security.md` concept of its
-own (unlike `knowledge-trust-ladder`, which does) - `SECURITY.md` has always been
-covered only as a `sources` entry on `no-telemetry.md` and
-`knowledge-registrar-gate.md`, so no new concept was needed. `lokf` on PyPI
-is still `0.7.0`, matching the floor; `.lokf/feedback.md` has no entries.
+Start from `bash .lokf/scripts/knowledge-report.sh worklist`, which names the concepts whose sources moved since they were derived or last checked.
 
-**2026-09-14 (third pass)**, steady-state refresh against an uncommitted
-working-tree change (`CONTRIBUTING.md` rewritten to a checklist under a
-1000-word budget and pointing at the skills repository's `docs/` for the
-release/signing detail it used to carry; `npm run check` added to
-`package.json`; four `eslint-plugin-obsidianmd` rules raised from warn to
-error; `scripts/smoke-test.ts` gained a drift guard checking its own import
-list against `CONTRIBUTING.md`'s sentence and the word-budget itself;
-`build.yml`/`lint-and-docs.yaml` scoped their `push` trigger to `main`,
-added a concurrency group, and `lint-and-docs.yaml` gained an
-every-action-is-pinned check; `pull_request_template.md` and `CHANGELOG.md`
-reworded to match). `playbooks/contributing.md` re-derived from the new
-`CONTRIBUTING.md` (the pure-module list grew from four to seven).
-`playbooks/releasing.md`'s `resource` moved from `CONTRIBUTING.md` to the
-workflow files themselves, since the prose it was derived from no longer
-exists there. Four source-map rows added above (`CONTRIBUTING.md`,
-`build.yml`/`lint-and-docs.yaml`, `semantic-release.yml`/`release.yml`,
-`pull_request_template.md`) - these files existed before this pass but were
-never in this table. `playbooks/index.md`'s own TOC was missing
-`knowledge-registrar-gate.md`; added. **Re-verified against the actual
-pinned resource, not the skill repository's live checkout:** the prior
-pass's claim that `references/trust-fields.md`'s open question was
-"closed" does not hold - the installed copy is still pinned to `v0.9.0`
-(`LOKF_SKILLS_REF`, unchanged this run) and lacks the domain-schema-aware
-"known vocabulary" wording `src/curator-view.ts` already uses; reopened as
-an open question there rather than left silently settled. `src/main.ts`,
-`src/bundle.ts`, `src/trust.ts`, `src/edits.ts`, `src/settings.ts`,
-`src/settings-model.ts`, `src/curator-view.ts`, `SECURITY.md`,
-`docs/for-the-curious.md`, and the six `references/*`/`glossary/*` sources
-were unchanged since the same-day second pass and were not re-opened.
-`lokf` on PyPI is still `0.7.0` (`uv pip index versions` has no `index`
-subcommand in this environment's `uv`; checked directly against
-`pypi.org/pypi/lokf/json` instead), matching the floor - no bump.
+When a `src/` module is added or its testability changes, check `CONTRIBUTING.md`'s module sentence and checklist against `scripts/smoke-test.ts`, not only against the concept. A concept written ahead of its source hides the drift instead of showing it.
 
-**2026-09-14 (second pass)**, whole repository. `CONTRIBUTING.md` had not
-been updated when `settings-model.ts` was added, so it still named three pure
-modules; corrected at the source and `playbooks/contributing.md` re-derived
-from it. For the next run: when a `src/` module is added or its testability
-changes, check `CONTRIBUTING.md`'s table and pre-PR checklist against
-`scripts/smoke-test.ts`, not only against the concept - a concept written
-ahead of its source hides the drift instead of showing it.
-
-**2026-09-14**, against the uncommitted `feat/known-types-setting` branch
-(no feedback pending): swept `src/bundle.ts`, `src/trust.ts`, `src/main.ts`,
-`src/settings.ts`, `src/curator-view.ts`, `scripts/smoke-test.ts`,
-`README.md`, `docs/for-the-curious.md`, `CHANGELOG.md`. Corrected
-`services/trust-engine.md` (the class check was still described as
-"14-class"; it is the manifest's fifteen, or the list handed in) and
-extended it, `services/ktl-curator-plugin.md`, `services/settings-tab.md`
-and `services/curator-view.md` (with an open question on the vocabulary
-line's wording versus the skill's `trust-fields.md`). Re-verified, no
-change: `explanation/why-ktl-curator.md`. PyPI's `lokf` is still `0.7.0`.
-
-Later the same day, a coverage pass on the same branch added
-`src/settings-model.ts` and took the suite from 165 to 245 expectations,
-surfacing the two defects `log.md` records. Updated this map's `src/` row,
-`playbooks/contributing.md` (the import-free rule now names
-`settings-model.ts`), `services/trust-engine.md` and
-`services/ktl-curator-plugin.md`. The import-free modules are at 98.7% of
-statements, 85.5% of branches; the Obsidian-bound half still has no
-automated test, as `playbooks/contributing.md` says.
-
-**2026-09-13 (night)**, after a `ktl-sidecar` repair pass on this
-repository: `.lokf/.gitignore` regained the template's `.obsidian/` rule, so
-opening the bundle as a vault no longer leaves workspace state for git to
-see; the `knowledge_bundle` doorway link was laid at the root and excluded
-from markdownlint and lychee; Step 3 found no placeholder. Swept the commit
-since the prior pass (the README rewrite and its images, now committed) and
-re-verified `playbooks/knowledge-registrar-gate.md` against the committed
-workflow, with one correction: the copy also words two comments its own
-way, not only `persist-credentials: false` and `permissions: {}`. Added the
-`.assets/` row. Drift still reported, not fixed: `knowledge-librarian.yaml`
-differs from its template in comments beyond `persist-credentials: false`.
-PyPI's `lokf` is still `0.7.0`; no floor bump.
-
-**2026-09-13 (evening)**: swept the commits since the prior pass
-(`knowledge-registrar.yaml` gaining the template's `provenance` and
-`attestation` jobs, `SECURITY.md` restructured to inherit the guard design
-from `knowledge-trust-ladder`, two README images) and the session's uncommitted
-README rewrite around usage. Added the two workflow rows above and
-`playbooks/knowledge-registrar-gate.md`; removed the `CUR.md` row - that
-file was deleted in the fork parent's 0.2.0 and this repository has never
-had it. The installed `.agents/skills/ktl-curator/references/` copies were
-byte-identical to the source skill this run. Audit fixes and the drift
-findings are in `log.md`. PyPI's `lokf` is still `0.7.0`; no floor bump.
+Check a sidecar copy (a `knowledge-*.yaml` workflow, or a file under `.lokf/scripts/` or `.lokf/m365/`) against the `ktl-sidecar` templates at the release `TRUST_LADDER_SKILLS_REF` names. `knowledge-preflight.sh` reports drift on its `copies` line.
 
 ## Not yet a concept
 
-`edits.ts`'s five verb transforms and `trust.ts`'s label rules are covered at
-the module level (`services/trust-engine.md`, `services/edits-engine.md`)
-rather than one concept per function - revisit only if a single function
-becomes independently significant (e.g. gains its own external consumers).
+- `edits.ts`'s verb transforms and `trust.ts`'s label rules are covered at module level (`services/trust-engine.md`, `services/edits-engine.md`), not one concept per function. Revisit only if a single function becomes independently significant, for example by gaining its own external consumers.
+- `docs/install.md` and `docs/using.md`, the user guide, are covered through the service concepts they describe.
+- `AI_COVENANT.md`, the rules for AI-assisted contributions, has no concept yet.

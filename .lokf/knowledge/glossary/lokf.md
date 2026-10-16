@@ -17,7 +17,4 @@ verified:
     at: "2026-09-12T22:00:00Z"
 ---
 
-This plugin's trust labels and the ten typed-relation fields (`isPartOf`,
-`dependsOn`, etc.) are the LOKF-specific surface `trust-engine.md` computes
-over - schema validation of the LOKF layer itself is `ktl-registrar`'s job,
-not this plugin's.
+`trust-engine.md` computes over the LOKF-specific surface: this plugin's trust labels and the ten typed-relation fields (`isPartOf`, `dependsOn` and the others). Schema validation of the LOKF layer itself is `ktl-registrar`'s job, not this plugin's.
