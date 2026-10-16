@@ -1,13 +1,13 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/curator-view
+id: https://w3id.org/ktl/curator/knowledge/services/curator-view
 title: Curator side panel
 description: "The \"Curate\" ItemView - the read-only trust report (health chips, ranked queue, open questions, active-note card) and the one-concept-at-a-time review card (evidence-first: source, claim, current trust, then the question)."
 resource: src/curator-view.ts
 isPartOf:
-- https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://ktl-curator.example/knowledge/services/trust-engine
+- https://w3id.org/ktl/curator/knowledge/services/trust-engine
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

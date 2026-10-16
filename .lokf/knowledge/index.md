@@ -1,14 +1,14 @@
 ---
 lokf_version: "0.2"
 okf_version: "0.2"
-base_iri: https://ktl-curator.example/knowledge/
+base_iri: https://w3id.org/ktl/curator/knowledge/
 context: https://w3id.org/lokf/context.jsonld
 title: KTL Curator Knowledge Bundle
 description: "Help a person judge what a LOKF knowledge bundle claims: a trust report computed from frontmatter, and a review session that records confirm, send back, and retire verdicts in the bundle itself"
 license: https://creativecommons.org/licenses/by/4.0/
 publisher:
   type: Person
-  id: https://ktl-curator.example/knowledge/person/noel-mcloughlin
+  id: https://w3id.org/ktl/curator/knowledge/person/noel-mcloughlin
   name: Noel McLoughlin
 ---
 

@@ -1,12 +1,12 @@
 ---
 type: Playbook
-id: https://ktl-curator.example/knowledge/playbooks/contributing
+id: https://w3id.org/ktl/curator/knowledge/playbooks/contributing
 title: Contributing to the plugin
 description: "Development setup, npm run check (build, lint and smoke test, the same three steps CI's build.yml runs), the seven pure modules the smoke test covers, and the pull-request checklist: verb write limits, the changelog line, sibling links, the vocab refresh, the skills pin sync and releasing pull request titles."
 genre: how-to
 resource: CONTRIBUTING.md
 isPartOf:
-- https://ktl-curator.example/knowledge/playbooks/knowledge-sources
+- https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

@@ -1,6 +1,6 @@
 ---
 type: Reference
-id: https://ktl-curator.example/knowledge/references/okf-specification
+id: https://w3id.org/ktl/curator/knowledge/references/okf-specification
 title: OKF v0.2 specification
 description: The Open Knowledge Format specification LOKF profiles - one concept per Markdown file, provenance/trust/lifecycle fields, permissive consumption.
 genre: reference

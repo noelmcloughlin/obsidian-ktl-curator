@@ -1,6 +1,6 @@
 ---
 type: Playbook
-id: https://ktl-curator.example/knowledge/playbooks/releasing
+id: https://w3id.org/ktl/curator/knowledge/playbooks/releasing
 title: Releasing a new version
 description: Semantic-release computes the version and promotes CHANGELOG.md on a merge to main, behind the release Environment; release.yml then builds, attests and opens a draft release, from semantic-release's call, a hand-pushed tag, or a hand-run dispatch.
 genre: how-to
@@ -10,7 +10,7 @@ sources:
 - resource: .github/workflows/release.yml
 - resource: .releaserc.json
 isPartOf:
-- https://ktl-curator.example/knowledge/playbooks/knowledge-sources
+- https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"

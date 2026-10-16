@@ -1,16 +1,16 @@
 ---
 type: Service
-id: https://ktl-curator.example/knowledge/services/ktl-curator-plugin
+id: https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 title: KTL Curator plugin
 description: The Obsidian plugin entry point - scans configured bundle roots via metadataCache, computes and caches a trust report per bundle, owns the one-concept-at-a-time review session (curator-id modal, the five verdict verbs, the mtime guard on "corrected"), and exposes the Step 3 commands. With no bundle root configured or detected, and the break-glass "treat vault root as bundle" setting off, the vault has no bundle at all - no report, no queue, nothing written.
 resource: src/main.ts
 derivedFrom:
-- https://ktl-curator.example/knowledge/services/trust-engine
-- https://ktl-curator.example/knowledge/services/edits-engine
+- https://w3id.org/ktl/curator/knowledge/services/trust-engine
+- https://w3id.org/ktl/curator/knowledge/services/edits-engine
 hasPart:
-- https://ktl-curator.example/knowledge/services/curator-view
-- https://ktl-curator.example/knowledge/services/settings-tab
-- https://ktl-curator.example/knowledge/services/in-editor-aids
+- https://w3id.org/ktl/curator/knowledge/services/curator-view
+- https://w3id.org/ktl/curator/knowledge/services/settings-tab
+- https://w3id.org/ktl/curator/knowledge/services/in-editor-aids
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"
