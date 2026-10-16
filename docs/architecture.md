@@ -4,7 +4,7 @@ This page says what a knowledge bundle is, which role KTL Curator plays in keepi
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../.assets/ktl-obsidian-plugins-card-dimmed.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="../.assets/ktl-obsidian-plugins-card-dark.svg">
     <img src="../.assets/ktl-obsidian-plugins-card.svg" alt="The five LOKF roles, and which two are Obsidian plugins" width="720" />
   </picture>
 </p>
@@ -23,7 +23,7 @@ Your everyday Obsidian vault is the **workshop**. The bundle is the **exhibition
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../.assets/ktl-two-vaults-dimmed.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="../.assets/ktl-two-vaults-dark.svg">
     <img src="../.assets/ktl-two-vaults.svg" alt="Workshop vault and exhibition vault, one folder, no shared index" width="720" />
   </picture>
 </p>
