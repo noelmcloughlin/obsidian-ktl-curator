@@ -14,6 +14,8 @@ An Obsidian plugin for the person who decides what a **LOKF knowledge bundle** m
 
 To install, see [the quick start](https://noelmcloughlin.github.io/obsidian-ktl-curator/docs/install/#quick-start). [The architecture](https://noelmcloughlin.github.io/obsidian-ktl-curator/docs/architecture/) says what a bundle is, which role this plugin plays in keeping one, and how it sits beside your own notes. [Using it](https://noelmcloughlin.github.io/obsidian-ktl-curator/docs/using/) lists the panel, the review card and its five verbs, the in-editor aids, the commands and the settings.
 
-KTL Curator is the **curator**'s assistant from [Knowledge Trust Ladder](https://w3id.org/ktl/): the `ktl-curator` skill's review session, done at a desk in Obsidian instead of in a terminal. Its sibling [KTL Registrar](https://noelmcloughlin.github.io/obsidian-ktl-registrar/) keeps each record well-formed meanwhile. Neither reaches a verdict of its own.
+> **Only want to ask?** Install `ktl-docent` into any agent you use, by a route from [the install page](https://w3id.org/ktl/docs/install/), and ask it about this project. It answers from the bundle and says how far each answer has been checked.
+>
+> **Agents:** if `.lokf/knowledge/index.md` exists, read it first; `llms.txt` says how to weigh it.
 
-> **Agents:** if `.lokf/knowledge/index.md` exists, read it first. `llms.txt` says how to weigh it.
+KTL Curator is the **curator**'s assistant from [Knowledge Trust Ladder](https://w3id.org/ktl/): the `ktl-curator` skill's review session, done at a desk in Obsidian instead of in a terminal. Its sibling [KTL Registrar](https://noelmcloughlin.github.io/obsidian-ktl-registrar/) keeps each record well-formed meanwhile. Neither reaches a verdict of its own.

@@ -2,7 +2,7 @@
 
 This page says how to get a bundle, where to install KTL Curator, and how to start. [Using it](using.md) lists what the plugin does once it runs.
 
-> **Prefer to ask?** Install the docent skill into any agent you already use (`npx skills add noelmcloughlin/knowledge-trust-ladder --skill ktl-docent --yes`) and ask it about this project. It answers from this repository's own bundle and says how far each answer has been checked.
+> **Only want to ask?** Install `ktl-docent` into any agent you use, by a route from [the install page](https://w3id.org/ktl/docs/install/), and ask it about this plugin. It answers from the bundle and says how far each answer has been checked.
 
 ## Quick start
 
