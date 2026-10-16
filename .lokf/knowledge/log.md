@@ -2,6 +2,8 @@
 
 ## 2026-10-16
 
+* **Added**: Knowledge website, from `website/README.md` and `.github/workflows/knowledge-website.yaml`, which the ktl-website skill added in a259ac0.
+* **Changed**: the source map gains the knowledge website (`website/` and `knowledge-website.yaml`, added in a259ac0), and the README row says the doorway now links the website's pages.
 * **Prose**: reworded 12 concept bodies in plain English. No fact, link, number or frontmatter changed.
 
 ## 2026-10-15

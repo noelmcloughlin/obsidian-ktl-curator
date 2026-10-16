@@ -7,11 +7,11 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:54:07Z"
+  at: "2026-10-16T00:37:38Z"
 status: draft
 verified:
 - by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-16T00:37:38Z"
 ---
 
 # Knowledge sources
@@ -31,7 +31,8 @@ This map lists where the bundle's concepts come from, and how a later librarian 
 | `SECURITY.md` | the plugin's promises (no network, writes only on request), reporting, supported versions, and the table of what holds each automation surface; the design lives in the skills repository's `docs/threat-model.md` | `Policy` (`no-telemetry.md`), `Playbook` (`knowledge-registrar-gate.md`) | re-reading "The plugin" section for a changed write surface, and the table for a changed workflow |
 | `docs/architecture.md` | what a bundle is, the plugin's role, the two-vaults layout, the Privacy section and the `src/` layout | `Policy` (`no-telemetry.md`) | re-reading Privacy for a changed write surface |
 | `docs/for-the-curious.md` | the trust labels and their fields, the four-tier trust model and where this plugin sits on it, and what it leaves to others | `Explanation` | re-reading for a changed relationship to KTL Registrar |
-| `README.md`, `docs/install.md`, `docs/using.md` | the doorway and the user guide: install, the panel, the review card, the in-editor aids, the commands and the settings | covered by the `services/` concepts | re-reading for a feature no service concept describes |
+| `README.md`, `docs/install.md`, `docs/using.md` | the doorway, whose links now lead to the user guide's pages on the website, and the user guide: install, the panel, the review card, the in-editor aids, the commands and the settings | covered by the `services/` concepts | re-reading for a feature no service concept describes |
+| `website/README.md`, `website/site.config.mjs`, `.github/workflows/knowledge-website.yaml` | the knowledge website: what each page is built from, the site's settings, and the build and GitHub Pages deployment | `Playbook` (`knowledge-website.md`) | re-reading the README's page list and "What to edit", and diffing the workflow's jobs and their `if:` conditions against `playbooks/knowledge-website.md`; the rest of `website/` is the `ktl-website` skill's code and has no concept of its own |
 | `.github/workflows/knowledge-registrar.yaml`, `.lokf/curators/` | the gate a `human:` confirmation must pass before it merges, and the curator keys its second signature check reads | `Playbook` (`knowledge-registrar-gate.md`) | diffing the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; `SECURITY.md` says the copy keeps the template's jobs unchanged, so any other difference is drift to report, not fix |
 | `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.lokf/scripts/`, `.lokf/m365/` | the scheduled librarian, the bundle release and the sidecar's scripts; no concept of their own, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | none | diffing each against its template the same way |
 | `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`) and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module sentence against `scripts/smoke-test.ts`'s own imports |
