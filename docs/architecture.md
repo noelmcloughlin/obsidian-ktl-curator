@@ -13,7 +13,7 @@ A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](htt
 
 That person is the **curator**, always a human, and often not the person who runs agents or terminals. This plugin is the curator's assistant: the `ktl-curator` skill's review session, done at a desk in Obsidian instead of in a terminal, with the same five verbs and the same fields written.
 
-Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The skills' [architecture page](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#four-skills-three-lines-of-the-poem) sets out all the roles, and [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#the-fifth-role-which-is-not-a-skill) covers the two plugins. For anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
+Its sibling [KTL Registrar](https://w3id.org/ktl/registrar/) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The skills' [architecture page](https://w3id.org/ktl/docs/architecture/#four-skills-three-lines-of-the-poem) sets out all the roles, and [the fifth role](https://w3id.org/ktl/docs/architecture/#the-fifth-role-which-is-not-a-skill) covers the two plugins. For anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://w3id.org/ktl/docs/three-lines/) says where the rest sit.
 
 Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
 
@@ -28,7 +28,7 @@ Your everyday Obsidian vault is the **workshop**. The bundle is the **exhibition
   </picture>
 </p>
 
-The skills' playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md) records how the `knowledge_bundle` doorway behaves on each host. If the link is missing, make it with `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows), or open `.lokf/knowledge` by path.
+The skills' playbook [Open the knowledge bundle in Obsidian](https://w3id.org/ktl/knowledge/playbooks/open-bundle-in-obsidian) records how the `knowledge_bundle` doorway behaves on each host. If the link is missing, make it with `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows), or open `.lokf/knowledge` by path.
 
 ## Which folder is the bundle
 
@@ -42,7 +42,7 @@ Inside a bundle, a note without trust fields is simply *nobody has checked this 
 
 Two settings widen that under *Settings → Scope*:
 
-- **Bundle root folders**: for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue, and *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions. The skills install the bundle as a separate vault instead, and the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why.
+- **Bundle root folders**: for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue, and *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions. The skills install the bundle as a separate vault instead, and the playbook's [last section](https://w3id.org/ktl/knowledge/playbooks/open-bundle-in-obsidian#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why.
 - **Treat the vault root as the bundle**: a break-glass switch for a vault that really is a bundle but whose root `index.md` has no header yet.
 
 A folder inside a dot-folder is accepted, but it is read only if something has put it in Obsidian's index. The community plugin *Hidden Folders Access* does that. Otherwise the report says so, rather than showing an empty bundle.
@@ -85,7 +85,7 @@ This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained b
 | How to get a bundle, where to install the plugin, and the quick start | [install.md](install.md) |
 | The panel, the review card and its five verbs, the in-editor aids, the commands and the settings | [using.md](using.md) |
 | How each label is computed and from which fields, what is left to KTL Registrar and the librarian, where the plugin sits on the four-tier trust model, what each host layout means for the review card, and the feedback file | [for-the-curious.md](for-the-curious.md) |
-| The roles, the trust ladder and the two plugins, on the skills' own pages | [architecture](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md), [the bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/obsidian.md) |
+| The roles, the trust ladder and the two plugins, on the skills' own pages | [architecture](https://w3id.org/ktl/docs/architecture/), [the bundle in Obsidian](https://w3id.org/ktl/docs/obsidian/) |
 | Contributing, the code of conduct and the AI covenant; reporting a security issue | [CONTRIBUTING.md](../CONTRIBUTING.md), [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md), [AI_COVENANT.md](../AI_COVENANT.md), [SECURITY.md](../SECURITY.md) |
 
 ## Credits
