@@ -13,7 +13,7 @@ A bundle is a folder of Markdown notes in the [Linked Open Knowledge Format](htt
 
 That person is the **curator**, always a human, and often not the person who runs agents or terminals. This plugin is the curator's assistant: the `ktl-curator` skill's review session, done at a desk in Obsidian instead of in a terminal, with the same five verbs and the same fields written.
 
-Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. All the roles are on the skills' [architecture page](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#four-skills-three-lines-of-the-poem), and the two plugins under [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#the-fifth-role-which-is-not-a-skill). For anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
+Its sibling [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar) keeps each record well-formed meanwhile. Neither reaches a verdict of its own. The skills' [architecture page](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#four-skills-three-lines-of-the-poem) sets out all the roles, and [the fifth role](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#the-fifth-role-which-is-not-a-skill) covers the two plugins. For anyone who works under the **three lines of defence**, this plugin records the person's own first-line sign-off, and [docs/three-lines.md](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/three-lines.md) says where the rest sit.
 
 Obsidian is optional in both directions: the skills rely on `lokf validate`, not on this plugin, and the plugin works on any LOKF bundle however it was made. The format is all they share.
 
@@ -28,7 +28,7 @@ Your everyday Obsidian vault is the **workshop**. The bundle is the **exhibition
   </picture>
 </p>
 
-How the `knowledge_bundle` doorway behaves on each host is recorded once in the skills' playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md). If it is missing, `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows) makes it, or open `.lokf/knowledge` by path.
+The skills' playbook [Open the knowledge bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md) records how the `knowledge_bundle` doorway behaves on each host. If the link is missing, make it with `ln -s .lokf/knowledge knowledge_bundle` (or `mklink /J knowledge_bundle .lokf\knowledge` on Windows), or open `.lokf/knowledge` by path.
 
 ## Which folder is the bundle
 
@@ -36,24 +36,24 @@ With nothing configured, the vault decides:
 
 1. A root `index.md` with a LOKF header means **the whole vault is the bundle**, which is the case whenever you open `knowledge_bundle` as a vault. That header is what gives each concept its id.
 2. Otherwise a top-level `knowledge_bundle/` folder with its own `index.md` is the bundle, and notes outside it are left alone.
-3. Otherwise there is **no bundle**. No report, no queue, nothing written, and the panel says why.
+3. Otherwise there is **no bundle**. The plugin shows no report and no queue, writes nothing, and says why in the panel.
 
-Inside a bundle, a note without trust fields is simply *nobody has checked this yet*; a note with no frontmatter at all is not a concept and is not counted.
+Inside a bundle, a note without trust fields is simply *nobody has checked this yet*. A note with no frontmatter at all is not a concept and is not counted.
 
 Two settings widen that under *Settings → Scope*:
 
-- **Bundle root folders**: for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue; *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions, so the skills install the bundle as a separate vault instead (the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why).
+- **Bundle root folders**: for a bundle that sits as a folder inside a larger vault, or several of them (`bird-watching, projects/art-portfolio`). Each gets its own health line and queue, and *N other concepts rely on this* is counted across all of them. Obsidian indexes such a folder like any other, so exhibits mix with your notes in search, graph and link suggestions. The skills install the bundle as a separate vault instead, and the playbook's [last section](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/.lokf/knowledge/playbooks/open-bundle-in-obsidian.md#why-the-bundle-is-never-a-real-folder-inside-a-vault) says why.
 - **Treat the vault root as the bundle**: a break-glass switch for a vault that really is a bundle but whose root `index.md` has no header yet.
 
-A folder inside a dot-folder is accepted but only read if something has put it in Obsidian's index (the community plugin *Hidden Folders Access* does that); otherwise the report says so rather than showing an empty bundle.
+A folder inside a dot-folder is accepted, but it is read only if something has put it in Obsidian's index. The community plugin *Hidden Folders Access* does that. Otherwise the report says so, rather than showing an empty bundle.
 
 ## Privacy
 
-No network requests, no telemetry, no external services. The plugin reads the Markdown in the open vault and writes only through the five review verbs and the two file-creating commands (**Create curation policy**, **Record something missing**); every write is one you asked for by pressing a button. Settings, including the curator id, live in the vault's own plugin data.
+The plugin makes no network requests, sends no telemetry and uses no external services. It reads the Markdown in the open vault and writes only through the five review verbs and the two file-creating commands (**Create curation policy**, **Record something missing**). Every write is one you asked for by pressing a button. Settings, including the curator id, live in the vault's own plugin data.
 
 ## Development
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md). The layout follows the upstream [obsidian-sample-plugin](https://github.com/obsidianmd/obsidian-sample-plugin); `npm run lint` runs Obsidian's own `eslint-plugin-obsidianmd` ruleset.
+See [CONTRIBUTING.md](../CONTRIBUTING.md). The layout follows the upstream [obsidian-sample-plugin](https://github.com/obsidianmd/obsidian-sample-plugin). `npm run lint` runs Obsidian's own `eslint-plugin-obsidianmd` ruleset.
 
 ```text
 src/
@@ -76,7 +76,7 @@ docs/               the reasoning behind the labels
 
 ## This repository's own bundle
 
-This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained by the `knowledge-trust-ladder`, which a scheduled [workflow](../.github/workflows/knowledge-librarian.yaml) installs at run time. It is what the docent answers from, and none of it is part of the plugin. To contribute to it, [CONTRIBUTING.md](../CONTRIBUTING.md#development-setup) says which skills that takes.
+This repository keeps a bundle of its own under `.lokf/knowledge/`, maintained by the `knowledge-trust-ladder` skills, which a scheduled [workflow](../.github/workflows/knowledge-librarian.yaml) installs at run time. It is what the docent answers from, and none of it is part of the plugin. [CONTRIBUTING.md](../CONTRIBUTING.md#development-setup) says which skills you need to contribute to it.
 
 ## Read on
 

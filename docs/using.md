@@ -6,8 +6,8 @@ This page lists the panel, the review card and its five verbs, the in-editor aid
 
 **The panel** opens from the status bar, the ribbon, or **Open curator panel**:
 
-- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. What each label rests on is on the skills' architecture page under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#trust-stays-visible), and the exact rule per label in [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from).
-- **Worth ten minutes today**: up to five concepts, ranked by what most needs a person: past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each, most-relied-upon first.
+- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. The skills' architecture page says what each label rests on, under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#trust-stays-visible), and [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from) gives the exact rule per label.
+- **Worth ten minutes today**: up to five concepts, ranked by what most needs a person: past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each group, the most-relied-upon concept comes first.
 - **Open questions the librarian left**: what a previous pass flagged and could not settle alone.
 - The **active note**, pinned, with its labels and a *Review this note* button.
 
@@ -23,7 +23,7 @@ This page lists the panel, the review card and its five verbs, the in-editor aid
 | **Retire** | `status: deprecated`, plus its own dated line in the bundle's `log.md` |
 | **Later** | keeps it a draft; a review date only if you type one |
 
-Everything but **Later** also keeps one running `**Curation**` line under today's date in the bundle's `log.md`. Beyond that the plugin writes nothing: not `type`, not a relation, not a word of body text outside `## Open questions`, and never an existing `verified` event. One concept, one verb, one person's answer; there is no *confirm all*. In a repository the skills' CI gate, `knowledge-registrar.yaml`, checks each pull request that a new confirmation is backed by that person's approval of the pull request or their verified signature on the commit that recorded it.
+Everything but **Later** also keeps one running `**Curation**` line under today's date in the bundle's `log.md`. Beyond that the plugin writes nothing: not `type`, not a relation, not a word of body text outside `## Open questions`, and never an existing `verified` event. Each verb takes one concept and one person's answer. There is no *confirm all*. In a repository, the skills' CI gate, `knowledge-registrar.yaml`, checks on each pull request that a new confirmation is backed by that person's approval of the pull request, or by their verified signature on the commit that recorded it.
 
 ## In the editor
 
@@ -31,7 +31,7 @@ Everything but **Later** also keeps one running `**Curation**` line under today'
 
 ## Commands
 
-**Commands.** Open the command palette and search for **KTL Curator**:
+Open the command palette and search for **KTL Curator**:
 
 | Command | What it does |
 | --- | --- |
@@ -46,12 +46,12 @@ The confirmed count is meant to rise slowly, a handful of concepts in a sitting.
 
 ## Settings
 
-Under **Settings → KTL Curator**; every setting is also reachable through Obsidian's settings search.
+The settings are under **Settings → KTL Curator**. Obsidian's settings search also finds every setting.
 
 - **Who is curating**: the curator id.
 - **In-editor**: the tier badge and the autocomplete, both on by default.
 - **Scope**: the bundle-root settings above, and excluded folders.
-- **Type vocabulary**: the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. A bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-librarian/references/domain-schema.md)) lists that schema's classes here too, since the plugin cannot read the schema, which sits outside the vault. Listed, they stop counting against *Vocabulary fit* and `policies/knowledge-curation.md` can set a review interval for them. Keep it the same list as KTL Registrar's *Known LOKF types*.
+- **Type vocabulary**: the classes a concept's `type` may name, defaulting to the pinned LOKF schema's fifteen. For a bundle validated against a domain schema (`lokf validate --schema <file>`, [recipe](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-librarian/references/domain-schema.md)), list that schema's classes here too. The plugin cannot read the schema, which sits outside the vault. A listed class stops counting against *Vocabulary fit*, and `policies/knowledge-curation.md` can set a review interval for it. Keep it the same list as KTL Registrar's *Known LOKF types*.
 - **Review intervals**: months before a person should re-confirm each of three groups of concept (services and data; policies and documents; glossary terms and explanations), and whether a bundle's own `policies/knowledge-curation.md` wins over them when it exists.
 - **Queue**: how many concepts *Worth ten minutes today* shows, and how far ahead *due soon* looks.
 - **Feedback**: an optional path to `.lokf/feedback.md`, for the rare vault layout where it is reachable at all ([why it usually is not](for-the-curious.md#on-the-feedback-file)).
