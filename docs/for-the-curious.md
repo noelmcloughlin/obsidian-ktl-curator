@@ -22,7 +22,7 @@ The rules, with every parsing edge case, are in `references/trust-fields.md` in 
 
 ## What this plugin leaves to others
 
-Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below: a concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed, so keep it schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks, and proposes no correction.
+Three things are left to others. Schema validation is [KTL Registrar](https://github.com/noelmcloughlin/obsidian-ktl-registrar)'s, at the tier below. A concept's tier and its *N rely on this* count are only as accurate as the bundle is well-formed. So keep the bundle schema-valid with KTL Registrar in the editor, or with `lokf validate` or the **librarian** in CI. Deriving concepts from a repository is the **librarian**'s. Checking a claim against its source is yours: the plugin puts the two side by side and asks, and proposes no correction.
 
 ## Where this fits: the "human-confirmed" tier
 
@@ -39,7 +39,7 @@ This plugin never loads or calls a skill, an agent or another plugin, and KTL Re
 
 ## Where the bundle lives, host by host
 
-The skills' page [The bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/obsidian.md#where-the-bundle-lives-host-by-host) walks through the layouts: a code repository, a vault kept in git, a shared drive, and many hosts in one vault. The layout decides whether the review card can open a source. In a code repository the sources sit above the bundle's vault, so the card shows them as a path with a copy button. With several repositories' bundles linked into one vault and listed under *Bundle root folders*, the sources sit inside the vault and the card opens them side by side. Obsidian Sync does not carry such links.
+The skills' page [The bundle in Obsidian](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/obsidian.md#where-the-bundle-lives-host-by-host) describes the layouts: a code repository, a vault kept in git, a shared drive, and many hosts in one vault. The layout decides whether the review card can open a source. In a code repository the sources sit above the bundle's vault, so the card shows them as a path with a copy button. With several repositories' bundles linked into one vault and listed under *Bundle root folders*, the sources sit inside the vault and the card opens them side by side. Obsidian Sync does not carry such links.
 
 ## On the feedback file
 
