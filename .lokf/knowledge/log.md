@@ -1,7 +1,24 @@
 # Change Log
 
+## 2026-10-17
+
+* **Changed**: the edits engine names what each paired function does: `applyConfirm` appends the event and `applyStaleAfter` only sets `stale_after`, and `parseCurationTally` reads back the counts `upsertCurationLine` writes, as `src/edits.ts` shows.
+
 ## 2026-10-16
 
+* **Prose**: reworded 18 concept bodies in plain English. No fact, link, number or frontmatter changed.
+* **Changed**: The OKF glossary term gains a description, so its index bullet says what it defines.
+* **Changed**: The LOKF glossary term gains a description, so its index bullet says what it defines.
+* **Changed**: The Diátaxis genre glossary term gains a description, so its index bullet says what it defines.
+* **Changed**: Curator side panel says that a confirmed concept a question set back to draft reads "reopened" on the card and the active note, and gets the reopened hint in the queue, as `src/curator-view.ts` has done since faa8d93.
+* **Changed**: In-editor aids says that a confirmed concept a question reopened keeps the confirmed tone, as `src/trust-label.ts` has done since faa8d93. Its sources now list the seven files the source map names for it, so the work list sees `trust-label.ts` move.
+* **Changed**: The trust-fields description names `docs/using.md` for the health-line chips, which left the README when it became a doorway.
+* **Rewrite**: lokf toolkit follows what `lokf validate` does in 0.8.0, a JSON Schema check with no SHACL pass, and adds `scripts/build-vocab.mjs`, the one maintenance step that reads the toolkit's schema.
+* **Changed**: The lokf toolkit description drops the SHACL checks `lokf validate` does not run, and its sources add the sidecar's `pyproject.toml`, its justfile and `scripts/build-vocab.mjs`.
+* **Changed**: LOKF specification says what the page holds today: no Golden Rules, which are the librarian skill's, and a type table of fourteen classes, while the 0.8.0 schema adds `Role`.
+* **Changed**: The LOKF glossary term counts the thirteen relation fields `src/bundle.ts` reads, not ten, the count `services/trust-engine.md` already gives, and cites `src/bundle.ts` as its source.
+* **Changed**: Diátaxis genre now carries `genre: reference`, which its body already said it had.
+* **Changed**: the source map adds `scripts/build-vocab.mjs` to the lokf toolkit row, and names the repository files it leaves out on purpose. The reworded README and docs pages still match their rows.
 * **Changed**: the bundle's `base_iri` moved from the placeholder `https://ktl-curator.example/knowledge/` to `https://w3id.org/ktl/curator/knowledge/`, a namespace under Knowledge Trust Ladder's w3id.org authority, so the bundle can join a federation; every id and relation target moved with it, and no concept's text changed.
 * **Added**: Knowledge website, from `website/README.md` and `.github/workflows/knowledge-website.yaml`, which the ktl-website skill added in a259ac0.
 * **Changed**: the source map gains the knowledge website (`website/` and `knowledge-website.yaml`, added in a259ac0), and the README row says the doorway now links the website's pages.

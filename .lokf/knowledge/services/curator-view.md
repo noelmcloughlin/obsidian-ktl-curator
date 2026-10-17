@@ -10,11 +10,11 @@ dependsOn:
 - https://w3id.org/ktl/curator/knowledge/services/trust-engine
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-16T23:47:52Z"
 status: draft
 verified:
 - by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-16T23:47:52Z"
 ---
 
 # Overview
@@ -29,11 +29,13 @@ verified:
   - "Open questions the librarian left";
   - the feedback, vocabulary and remaining lines.
 
-  Since 2026-09-14 the vocabulary line reads "don't fit the known vocabulary", and says a domain schema's classes belong under *Settings → Type vocabulary*. It reads "fine" once every class is listed. The `ktl-curator` skill's `references/trust-fields.md` was reworded to match the same day; there the skill reads a host's schema from the justfile, which the plugin cannot see.
+  Since 2026-09-14 the vocabulary line reads "don't fit the known vocabulary", and says a domain schema's classes belong under *Settings → Type vocabulary*. It reads "fine" once every class is listed. The `ktl-curator` skill's `references/trust-fields.md` was reworded to match the same day. There the skill reads a host's schema from the justfile, which the plugin cannot see.
 
   When `plugin.hasNoBundle()` is true, an explanatory message replaces the report. It says there is no knowledge_bundle folder with an index.md and no LOKF header on the root index.md, so nothing is scanned. It points at KTL Registrar's header command, the `ktl-sidecar` skill, and the break-glass "Treat the vault root as the bundle" setting.
 
-- **Review card** (`renderReviewCard`) opens when a person clicks a queue card. It shows the source (resolved as a vault path, else "outside the vault" with a copy button), the claim (description + type-specific fields), the concept's current trust labels, and the fixed question "Does the source still say this?". Below them are the five verb buttons, with **Wrong - send back** focused by default.
+- **Review card** (`renderReviewCard`) opens when a person clicks a queue card. It shows the source (resolved as a vault path, else "outside the vault" with a copy button), the claim (the description and type-specific fields), the concept's current trust labels, and the fixed question "Does the source still say this?". Below them are the five verb buttons, with **Wrong - send back** focused by default.
+
+A concept that a person confirmed, and that a question has since set back to `status: draft`, reads "reopened" in place of "draft" among its trust labels, on the review card and beside the active note. While its question waits, its queue card shows the hint `handoffLabel` gives it, "Reopened - a question waits for the curator".
 
 The panel's tab and the plugin's ribbon carry the `ktl-trust-ladder-check` icon (`KTL_CURATOR_ICON`): the trust ladder drawn for a 16px ribbon, two rungs (a draft, then checked by automation) under the check mark a person puts on top. `currentColor` lets the theme colour it.
 

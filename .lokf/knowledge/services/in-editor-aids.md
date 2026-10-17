@@ -11,11 +11,19 @@ dependsOn:
 - https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
-  at: "2026-09-12T22:00:00Z"
+  at: "2026-10-16T23:47:52Z"
 status: draft
 verified:
 - by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-16T23:47:52Z"
+sources:
+- resource: src/fields.ts
+- resource: src/field-modal.ts
+- resource: src/inline.ts
+- resource: src/suggest.ts
+- resource: src/suggest-context.ts
+- resource: src/trust-label.ts
+- resource: src/lokf-vocab.json
 ---
 
 # Overview
@@ -24,5 +32,5 @@ The plugin entry point (`src/main.ts`) connects four small, mostly import-free m
 
 - **Field reference**: `src/fields.ts` builds a `FieldDoc[]` (`resolveFieldDocs`). It pairs a fixed, editorial `FIELD_ORDER` list with descriptions pulled from the pinned vocabulary manifest `src/lokf-vocab.json`, which `scripts/build-vocab.mjs` fills from the schema, so the wording never forks from the schema. `src/field-modal.ts`'s `FieldReferenceModal` (a read-only `SuggestModal`) is the "Look up a LOKF field" command's surface, because Obsidian's Properties widget has no per-property description API.
 - **Inline trust marker**: `src/inline.ts` is a CodeMirror 6 `ViewPlugin`. It decorates a concept's frontmatter with its trust tier as you edit, driven by a `TrustMarkerHost` the plugin implements. It works in Source mode only, because Live Preview renders frontmatter through Obsidian's own Properties widget instead.
-- **Frontmatter autocomplete**: `src/suggest.ts`'s `KtlCuratorSuggest` (an `EditorSuggest`) offers values, never key names, inside a concept's frontmatter. The pure, Node-tested `src/suggest-context.ts` (`detectSuggestContext`, `withinFrontmatter`) decides what kind of value is being typed (actor / status / date), so the Obsidian-facing half stays thin.
-- **Shared trust-tier vocabulary**: `src/trust-label.ts`'s `trustLabel`/`handoffLabel` (tones: `confirmed` | `automation` | `unchecked` | `draft` | `retired`) is the one wording that the status bar, the inline marker and the review card all render. It is derived from a `TrustRecord` (`trust-engine.md`) and never stored.
+- **Frontmatter autocomplete**: `src/suggest.ts`'s `KtlCuratorSuggest` (an `EditorSuggest`) offers values, never key names, inside a concept's frontmatter. The pure, Node-tested `src/suggest-context.ts` (`detectSuggestContext`, `withinFrontmatter`) decides what kind of value is being typed (an actor, a status or a date), so the Obsidian-facing half stays thin.
+- **Shared trust-tier vocabulary**: `src/trust-label.ts`'s `trustLabel`/`handoffLabel` (tones: `confirmed` | `automation` | `unchecked` | `draft` | `retired`) is the one wording that the status bar, the inline marker and the review card all render. It is derived from a `TrustRecord` (`trust-engine.md`) and never stored. A `draft` status gives the `draft` tone only while no person has confirmed the concept. A confirmed concept that a question set back to draft keeps the `confirmed` tone, and while the question waits its handoff hint reads "Reopened - a question waits for the curator".

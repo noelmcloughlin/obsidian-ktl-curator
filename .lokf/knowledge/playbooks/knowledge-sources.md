@@ -7,11 +7,11 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-10-16T00:37:38Z"
+  at: "2026-10-16T23:47:52Z"
 status: draft
 verified:
 - by: process:ktl-librarian
-  at: "2026-10-16T00:37:38Z"
+  at: "2026-10-16T23:47:52Z"
 ---
 
 # Knowledge sources
@@ -35,14 +35,14 @@ This map lists where the bundle's concepts come from, and how a later librarian 
 | `website/README.md`, `website/site.config.mjs`, `.github/workflows/knowledge-website.yaml` | the knowledge website: what each page is built from, the site's settings, and the build and GitHub Pages deployment | `Playbook` (`knowledge-website.md`) | re-reading the README's page list and "What to edit", and diffing the workflow's jobs and their `if:` conditions against `playbooks/knowledge-website.md`; the rest of `website/` is the `ktl-website` skill's code and has no concept of its own |
 | `.github/workflows/knowledge-registrar.yaml`, `.lokf/curators/` | the gate a `human:` confirmation must pass before it merges, and the curator keys its second signature check reads | `Playbook` (`knowledge-registrar-gate.md`) | diffing the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; `SECURITY.md` says the copy keeps the template's jobs unchanged, so any other difference is drift to report, not fix |
 | `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.lokf/scripts/`, `.lokf/m365/` | the scheduled librarian, the bundle release and the sidecar's scripts; no concept of their own, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | none | diffing each against its template the same way |
-| `CONTRIBUTING.md` | development setup, the pre-PR checklist (`npm run check`) and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module sentence against `scripts/smoke-test.ts`'s own imports |
+| `CONTRIBUTING.md` | development setup, the checklist before a pull request (`npm run check`) and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module sentence against `scripts/smoke-test.ts`'s own imports |
 | `.github/workflows/build.yml`, `.github/workflows/lint-and-docs.yaml`, `eslint.config.mts` | CI's mirror of `npm run check`, shell and workflow lint, the pinned-action check, Markdown and link lint, and the lint rules raised to errors | `Playbook` (`contributing.md`) | diffing each job's steps against `playbooks/contributing.md` |
 | `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml`, `.releaserc.json`, `.github/scripts/changelog-release.mjs` | the release pipeline: the version from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading the workflows and the release config |
-| `.github/pull_request_template.md` | the PR checklist, which `CONTRIBUTING.md` calls "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` does not cover |
+| `.github/pull_request_template.md` | the pull request checklist, which `CONTRIBUTING.md` calls "the short form of this list" | `Playbook` (`contributing.md`) | re-reading for a checklist item `playbooks/contributing.md` does not cover |
 | `.assets/*.svg` | the card and two-vaults pictures, and the shared logo mark | none | decorative and left out as concepts on purpose; re-check only if an image starts carrying a claim the docs do not |
 | <https://lokf.nolan-nichols.com/specification/> | the LOKF specification itself | `Reference` | re-fetching the spec page for a version bump |
 | <https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md> | the OKF v0.2 specification LOKF profiles | `Reference` | re-fetching for a version bump |
-| <https://pypi.org/project/lokf/> | the `lokf` toolkit this bundle's `pyproject.toml` depends on | `Reference` | `uvx --from pip pip index versions lokf` |
+| <https://pypi.org/project/lokf/>, `scripts/build-vocab.mjs` | the `lokf` toolkit this bundle's `pyproject.toml` depends on, and the maintenance step that reads its schema into `src/lokf-vocab.json` | `Reference` (`lokf-toolkit.md`) | `uvx --from pip pip index versions lokf`, and re-reading the header of `build-vocab.mjs` |
 | Obsidian's plugin developer docs (<https://docs.obsidian.md/Plugins>) | the platform API this plugin is built against (`processFrontMatter`, `metadataCache`, declarative settings) | `Reference` | re-reading for a breaking API change |
 | glossary terms recurring across `src/`, the skill and the specs (`OKF`, `LOKF`, Diátaxis `genre`) | vocabulary | `GlossaryTerm` | re-reading their defining source |
 
@@ -59,3 +59,4 @@ Check a sidecar copy (a `knowledge-*.yaml` workflow, or a file under `.lokf/scri
 - `edits.ts`'s verb transforms and `trust.ts`'s label rules are covered at module level (`services/trust-engine.md`, `services/edits-engine.md`), not one concept per function. Revisit only if a single function becomes independently significant, for example by gaining its own external consumers.
 - `docs/install.md` and `docs/using.md`, the user guide, are covered through the service concepts they describe.
 - `AI_COVENANT.md`, the rules for AI-assisted contributions, has no concept yet.
+- Left out on purpose: the build and editor configuration (`esbuild.config.mjs`, `tsconfig.json`, `.editorconfig`, `.npmrc`, `.gitignore`, `styles.css`, `version-bump.mjs`, `.github/dependabot.yml`), the community files (`CODE_OF_CONDUCT.md`, `LICENSE`, `NOTICE`, `.github/ISSUE_TEMPLATE/`), `community-plugin-entry.json`, `CHANGELOG.md`, `llms.txt`, the smoke test's fixtures under `scripts/fixtures/`, and the sidecar's `.lokf/README.md` and `.lokf/queries.http`. Add a concept for one of them only when it carries a claim that no mapped source makes.

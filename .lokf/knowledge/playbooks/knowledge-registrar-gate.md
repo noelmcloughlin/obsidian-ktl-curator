@@ -27,7 +27,7 @@ verified:
 
 # Overview
 
-`.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI. It keeps the knowledge bundle's records well-formed and provenanced, and never judges whether their content is true; that is the curator's job. It is a copy of the `ktl-sidecar` template in `knowledge-trust-ladder`, and `SECURITY.md` says the copy keeps the template's jobs unchanged. The skills repository's `docs/three-lines.md` places this workflow as the second line of defence and says what remains open.
+`.github/workflows/knowledge-registrar.yaml` is the registrar's job in CI. It keeps the knowledge bundle's records well-formed and provenanced, and never judges whether their content is true. That is the curator's job. It is a copy of the `ktl-sidecar` template in `knowledge-trust-ladder`, and `SECURITY.md` says the copy keeps the template's jobs unchanged. The skills repository's `docs/three-lines.md` places this workflow as the second line of defence and says what remains open.
 
 The workflow runs on a pull request that touches `.lokf/**`, `knowledge_bundle/**` or the workflow itself, on a Monday 06:00 UTC schedule, and on demand. A top-level `permissions: {}` gives no token scope unless a job opts in. None of its three jobs can write to the repository: each runs with a read-only token, keeps no credential on disk, and runs no LLM or agent.
 
@@ -60,4 +60,4 @@ The curator id this plugin asks for (`human:<id>`) has to be the GitHub login of
 
 # What it does not do
 
-The workflow never runs on the librarian's own review pull request. `knowledge-librarian.yaml`'s `publish` job opens that pull request with the default `GITHUB_TOKEN`, and GitHub does not start `pull_request` workflows for a pull request that token opened. So `publish` carries its own checks: it confines the patch to `.lokf/knowledge/`, `knowledge_bundle/`, `.lokf/feedback.md` and `.lokf/questions.md`, and refuses a change to a person's record (`SECURITY.md`). The gate is no merge requirement either: `SECURITY.md` says `main` blocks deletion and force-pushes and requires linear history, deliberately nothing more.
+The workflow never runs on the librarian's own review pull request. `knowledge-librarian.yaml`'s `publish` job opens that pull request with the default `GITHUB_TOKEN`, and GitHub does not start `pull_request` workflows for a pull request that token opened. So `publish` carries its own checks: it confines the patch to `.lokf/knowledge/`, `knowledge_bundle/`, `.lokf/feedback.md` and `.lokf/questions.md`, and refuses a change to a person's record (`SECURITY.md`). The gate is no merge requirement either: `SECURITY.md` says `main` blocks deletion and force-pushes and requires linear history, and nothing more.

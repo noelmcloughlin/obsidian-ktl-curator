@@ -15,7 +15,7 @@ generated:
 status: draft
 verified:
 - by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-16T23:47:52Z"
 ---
 
 The companion `knowledge-trust-ladder` project describes four levels of trust a claim in a bundle can earn: schema-valid, source-consistent, human-confirmed and proven-in-use. Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind.
@@ -26,4 +26,4 @@ The plugin checks no claim against its source itself. It puts the source beside 
 
 This plugin never loads or calls a skill, an agent or another plugin. KTL Registrar is equally independent: neither plugin detects whether the other is installed.
 
-`docs/for-the-curious.md` says this under "Where this fits: the human-confirmed tier" and "What this plugin leaves to others". `docs/architecture.md` links to that page; `README.md` no longer does.
+`docs/for-the-curious.md` says this under "Where this fits: the human-confirmed tier" and "What this plugin leaves to others". `docs/architecture.md` links to that page, and `README.md` does not.

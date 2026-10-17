@@ -20,7 +20,7 @@ Development needs Node 20 or later, and CI builds on 20, 22 and 24. `npm install
 
 Before a pull request, run `npm run check`. It runs the build (type-check and bundle), the lint and the smoke test, the same three steps `.github/workflows/build.yml` runs. The lint is `eslint-plugin-obsidianmd`, Obsidian's guidelines as rules: fix a finding in the code rather than widen the exceptions in `eslint.config.mts`.
 
-The smoke test (`npm run smoke-test`) runs seven pure modules (`bundle.ts`, `trust.ts`, `edits.ts`, `settings-model.ts`, `trust-label.ts`, `suggest-context.ts` and `fields.ts`) against `scripts/fixtures/curation-bundle/` under plain Node. The suite checks that `CONTRIBUTING.md`'s sentence names exactly what it imports. Everything that needs a real Obsidian `App` (`main.ts` with the scan, the review session and its writes, the curator view, the settings tab and the modals) has no automated test and is checked by hand in a vault. That boundary is why logic worth testing moves out of `main.ts` rather than being tested through it.
+The smoke test (`npm run smoke-test`) runs seven pure modules (`bundle.ts`, `trust.ts`, `edits.ts`, `settings-model.ts`, `trust-label.ts`, `suggest-context.ts` and `fields.ts`) against `scripts/fixtures/curation-bundle/` under plain Node. The suite checks that `CONTRIBUTING.md`'s sentence names exactly what it imports. Everything that needs a real Obsidian `App` has no automated test and is checked by hand in a vault: `main.ts` with the scan, the review session and its writes, the curator view, the settings tab and the modals. That boundary is why logic worth testing moves out of `main.ts` rather than being tested through it.
 
 The checklist also asks for these:
 

@@ -2,21 +2,21 @@
 type: Reference
 id: https://w3id.org/ktl/curator/knowledge/references/trust-fields
 title: Trust fields (ktl-curator skill)
-description: The exact rule for each plain-language trust label - the spec of record trust-engine.md implements, and the source the README's health-line chips and docs/for-the-curious.md's label table summarize.
+description: "The exact rule for each plain-language trust label: the spec of record that trust-engine.md implements, and the source that the health-line chips in docs/using.md and the label table in docs/for-the-curious.md summarize."
 genre: reference
 resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-curator/references/trust-fields.md
 about:
-  - https://w3id.org/ktl/curator/knowledge/references/lokf-specification
+- https://w3id.org/ktl/curator/knowledge/references/lokf-specification
 generated:
   by: process:ktl-librarian
-  at: "2026-09-17T23:55:35Z"
+  at: "2026-10-16T23:47:52Z"
 status: draft
 verified:
-  - by: process:ktl-librarian
-    at: "2026-09-17T23:55:35Z"
+- by: process:ktl-librarian
+  at: "2026-10-16T23:47:52Z"
 ---
 
-This reference maps each human-facing label ("confirmed by a person", "past its review date", ...) onto its OKF v0.2 §5 / LOKF Golden Rule 6 field. It includes the parsing edge cases `src/trust.ts` handles:
+This reference maps each human-facing label ("confirmed by a person", "past its review date", ...) onto its field in OKF v0.2 §5 and LOKF Golden Rule 6. It includes the parsing edge cases `src/trust.ts` handles:
 
 - a bare `verified` mapping, read as a one-element list;
 - an exact `## Open questions` heading, never a substring match;
