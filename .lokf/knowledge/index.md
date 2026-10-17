@@ -27,18 +27,18 @@ A [LOKF](https://lokf.nolan-nichols.com) knowledge base for KTL Curator. Every M
 
 # References
 
-* [LOKF specification](references/lokf-specification.md)
+* [LOKF specification](references/lokf-specification.md) - The Linked Open Knowledge Format specification - the semantic profile of OKF this plugin's trust labels and typed relations are defined against.
 * [OKF v0.2 specification](references/okf-specification.md) - The Open Knowledge Format specification LOKF profiles - one concept per Markdown file, provenance/trust/lifecycle fields, permissive consumption.
-* [lokf toolkit (PyPI)](references/lokf-toolkit.md)
+* [lokf toolkit (PyPI)](references/lokf-toolkit.md) - The Python package that this repository's own .lokf/ sidecar uses to validate the bundle, check its relation targets and convert it to RDF. The plugin never uses it at runtime, and only the scripts/build-vocab.mjs maintenance step reads its schema.
 * [Obsidian plugin developer guidelines](references/obsidian-plugin-guidelines.md)
-* [Trust fields (ktl-curator skill)](references/trust-fields.md)
+* [Trust fields (ktl-curator skill)](references/trust-fields.md) - The exact rule for each plain-language trust label: the spec of record that trust-engine.md implements, and the source that the health-line chips in docs/using.md and the label table in docs/for-the-curious.md summarize.
 * [Review session (ktl-curator skill)](references/review-session.md)
 
 # Glossary
 
-* [OKF](glossary/okf.md)
-* [LOKF](glossary/lokf.md)
-* [Diátaxis genre](glossary/diataxis-genre.md)
+* [OKF](glossary/okf.md) - What OKF, the Open Knowledge Format, means: a folder of Markdown files, one concept to a file, each with YAML frontmatter whose only required key is type. LOKF profiles it.
+* [LOKF](glossary/lokf.md) - What LOKF, the Linked Open Knowledge Format, means: a semantic profile of OKF that binds every field and relationship to a public vocabulary, so a bundle turns into a knowledge graph that SPARQL can query.
+* [Diátaxis genre](glossary/diataxis-genre.md) - What the optional LOKF genre field means: the Diátaxis mode (tutorial, how-to, reference or explanation) that says how a concept's body serves the reader, separate from its type.
 
 # Policies
 
