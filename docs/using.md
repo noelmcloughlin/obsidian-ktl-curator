@@ -6,7 +6,7 @@ This page lists the panel, the review card and its five verbs, the in-editor aid
 
 **The panel** opens from the status bar, the ribbon, or **Open curator panel**:
 
-- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. The skills' architecture page says what each label rests on, under [Trust stays visible](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/docs/architecture.md#trust-stays-visible), and [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from) gives the exact rule per label.
+- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. The skills' architecture page says what each label rests on, under [Trust stays visible](https://w3id.org/ktl/docs/architecture/#trust-stays-visible), and [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from) gives the exact rule per label.
 - **Worth ten minutes today**: up to five concepts, ranked by what most needs a person: past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each group, the most-relied-upon concept comes first.
 - **Open questions the librarian left**: what a previous pass flagged and could not settle alone.
 - The **active note**, pinned, with its labels and a *Review this note* button.
