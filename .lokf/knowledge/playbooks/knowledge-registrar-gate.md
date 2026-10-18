@@ -6,23 +6,23 @@ description: "The knowledge-registrar.yaml workflow: validates the bundle and it
 genre: how-to
 resource: .github/workflows/knowledge-registrar.yaml
 sources:
-- resource: .github/workflows/knowledge-registrar.yaml
-- resource: .lokf/scripts/knowledge-conventions.sh
-- resource: .lokf/scripts/knowledge-provenance.sh
-- resource: .lokf/justfile
-- resource: SECURITY.md
+  - resource: .github/workflows/knowledge-registrar.yaml
+  - resource: .lokf/scripts/knowledge-conventions.sh
+  - resource: .lokf/scripts/knowledge-provenance.sh
+  - resource: .lokf/justfile
+  - resource: SECURITY.md
 relatedTo:
-- https://w3id.org/ktl/curator/knowledge/services/edits-engine
-- https://w3id.org/ktl/curator/knowledge/references/review-session
+  - https://w3id.org/ktl/curator/knowledge/services/edits-engine
+  - https://w3id.org/ktl/curator/knowledge/references/review-session
 dependsOn:
-- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  - by: process:ktl-librarian
+    at: "2026-10-18T00:10:24Z"
 ---
 
 # Overview

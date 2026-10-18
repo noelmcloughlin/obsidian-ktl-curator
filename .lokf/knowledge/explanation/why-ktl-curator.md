@@ -6,19 +6,19 @@ description: Where this plugin sits on the four-tier trust model, and why it is 
 genre: explanation
 resource: docs/for-the-curious.md
 about:
-- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
+  - https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 relatedTo:
-- https://w3id.org/ktl/curator/knowledge/policies/no-telemetry
+  - https://w3id.org/ktl/curator/knowledge/policies/no-telemetry
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-18T00:10:24Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-10-18T00:10:24Z"
 ---
 
-The companion `knowledge-trust-ladder` project describes four levels of trust a claim in a bundle can earn: schema-valid, source-consistent, human-confirmed and proven-in-use. Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind.
+The companion Knowledge Trust Ladder (KTL) project describes four levels of trust a claim in a bundle can earn: schema-valid, source-consistent, human-confirmed and proven-in-use. Each proves less than its name suggests, and only the third yields a claim someone has agreed to stand behind.
 
 Schema validation is KTL Registrar's, a separate plugin at the tier below. This plugin is the human-confirmed tier in the editor: the `ktl-curator` skill's review session, available without an agent in the loop.
 
