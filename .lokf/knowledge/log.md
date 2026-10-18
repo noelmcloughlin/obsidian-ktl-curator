@@ -2,6 +2,8 @@
 
 ## 2026-10-18
 
+* **Changed**: Trust fields names the ktl-curator skill in Knowledge Trust Ladder's bundle as the whole it is part of, since its resource is `skills/ktl-curator/references/trust-fields.md` in that skill; the first link from this bundle into another member of the KTL federation.
+* **Changed**: Review session names the ktl-curator skill in Knowledge Trust Ladder's bundle as the whole it is part of, since its resource is `skills/ktl-curator/references/review-session.md` in that skill.
 * **Changed**: the trust-model page names its companion project as Knowledge Trust Ladder (KTL), as `docs/for-the-curious.md` now does, so the later KTL Registrar reads as defined.
 * **Question**: the contributing playbook's pin rule counts three sidecar workflows, and the sync script now copies whatever the release's manifest lists, `knowledge-sync.yaml` among them.
 * **Changed**: the source map names `knowledge-sync.yaml` and its pull request template, which the sidecar syncs added, and lists `package-lock.json` among the build files left out.

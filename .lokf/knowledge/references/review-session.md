@@ -6,14 +6,16 @@ description: The exact frontmatter/body edit for each of the five verbs, the log
 genre: reference
 resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-curator/references/review-session.md
 about:
-- https://w3id.org/ktl/curator/knowledge/references/lokf-specification
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-specification
 generated:
   by: process:ktl-librarian
-  at: "2026-09-17T23:55:35Z"
+  at: "2026-10-18T13:38:52Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-10-16T23:47:52Z"
+isPartOf:
+  - https://w3id.org/ktl/knowledge/playbooks/ktl-curator-skill
 ---
 
 This reference specifies who records (`human:<id>`, never an email), the five verbs' exact writes (Confirm, Wrong-send back, Wrong-corrected, Retire and Later), the `log.md` line format, the curation-policy concept template, and the missing-placeholder template. `src/edits.ts`'s functions and `scripts/smoke-test.ts`'s fixtures are checked against this document verbatim, not restated from memory.

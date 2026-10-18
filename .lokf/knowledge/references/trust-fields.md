@@ -6,14 +6,16 @@ description: "The exact rule for each plain-language trust label: the spec of re
 genre: reference
 resource: https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/main/skills/ktl-curator/references/trust-fields.md
 about:
-- https://w3id.org/ktl/curator/knowledge/references/lokf-specification
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-specification
 generated:
   by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  at: "2026-10-18T13:38:52Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-10-16T23:47:52Z"
+isPartOf:
+  - https://w3id.org/ktl/knowledge/playbooks/ktl-curator-skill
 ---
 
 This reference maps each human-facing label ("confirmed by a person", "past its review date", ...) onto its field in OKF v0.2 §5 and LOKF Golden Rule 6. It includes the parsing edge cases `src/trust.ts` handles:
