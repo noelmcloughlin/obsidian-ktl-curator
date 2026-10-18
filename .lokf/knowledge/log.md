@@ -1,5 +1,11 @@
 # Change Log
 
+## 2026-10-18
+
+* **Changed**: the trust-model page names its companion project as Knowledge Trust Ladder (KTL), as `docs/for-the-curious.md` now does, so the later KTL Registrar reads as defined.
+* **Question**: the contributing playbook's pin rule counts three sidecar workflows, and the sync script now copies whatever the release's manifest lists, `knowledge-sync.yaml` among them.
+* **Changed**: the source map names `knowledge-sync.yaml` and its pull request template, which the sidecar syncs added, and lists `package-lock.json` among the build files left out.
+
 ## 2026-10-17
 
 * **Changed**: the edits engine names what each paired function does: `applyConfirm` appends the event and `applyStaleAfter` only sets `stale_after`, and `parseCurationTally` reads back the counts `upsertCurationLine` writes, as `src/edits.ts` shows.

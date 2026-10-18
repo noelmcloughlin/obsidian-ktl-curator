@@ -6,14 +6,14 @@ description: "Development setup, npm run check (build, lint and smoke test, the 
 genre: how-to
 resource: CONTRIBUTING.md
 isPartOf:
-- https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
+  - https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
   at: "2026-10-15T23:47:44Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  - by: process:ktl-librarian
+    at: "2026-10-18T00:10:24Z"
 ---
 
 Development needs Node 20 or later, and CI builds on 20, 22 and 24. `npm install` and then `npm run dev` start esbuild in watch mode, which rebuilds `src/main.ts` into `main.js`. `main.js` is generated and git-ignored, so a fresh clone has none until you build.
@@ -31,3 +31,7 @@ The checklist also asks for these:
 - Moving `TRUST_LADDER_SKILLS_REF` sets `TRUST_LADDER_SKILLS_SHA` beside it, and copies the three `knowledge-*.yaml` workflows and the files under `.lokf/scripts/` and `.lokf/m365/` from that release's templates in the same pull request.
 - A pull request whose commits would release carries the releasing type in its title (`feat:`, `fix:`, `security:`), because a squash merge takes its subject from the title and the `plan` job refuses a mismatch.
 - CI fails an action that is not pinned to a commit. Dependabot bumps the pinned action SHAs and the npm devDependencies.
+
+## Open questions
+
+- 2026-10-18, process:ktl-librarian: `CONTRIBUTING.md` says a pin move copies the three `knowledge-*.yaml` workflows, and the repository now also carries `.github/workflows/knowledge-sync.yaml`, while `.lokf/scripts/knowledge-sync.sh` copies every template the release's `knowledge-sync.manifest` lists; which should this playbook describe?

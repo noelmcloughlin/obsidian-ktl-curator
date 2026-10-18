@@ -6,22 +6,22 @@ description: "The website/ folder and the knowledge-website.yaml workflow: an As
 genre: how-to
 resource: website/README.md
 sources:
-- resource: website/README.md
-- resource: website/site.config.mjs
-- resource: website/package.json
-- resource: .github/workflows/knowledge-website.yaml
-- resource: eslint.config.mts
-- resource: .markdownlint-cli2.jsonc
-- resource: lychee.toml
+  - resource: website/README.md
+  - resource: website/site.config.mjs
+  - resource: website/package.json
+  - resource: .github/workflows/knowledge-website.yaml
+  - resource: eslint.config.mts
+  - resource: .markdownlint-cli2.jsonc
+  - resource: lychee.toml
 dependsOn:
-- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-10-16T00:37:38Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-10-18T00:10:24Z"
 ---
 
 # Overview
