@@ -5,4 +5,4 @@
 * [lokf toolkit (PyPI)](lokf-toolkit.md) - The Python package that this repository's own .lokf/ sidecar uses to validate the bundle, check its relation targets and convert it to RDF. The plugin never uses it at runtime, and only the scripts/build-vocab.mjs maintenance step reads its schema.
 * [Obsidian plugin developer guidelines](obsidian-plugin-guidelines.md)
 * [Trust fields (ktl-curator skill)](trust-fields.md) - The exact rule for each plain-language trust label: the spec of record that trust-engine.md implements, and the source that the health-line chips in docs/using.md and the label table in docs/for-the-curious.md summarize.
-* [Review session (ktl-curator skill)](review-session.md)
+* [Review session (ktl-curator skill)](review-session.md) - The exact frontmatter/body edit for each of the five verbs, the log.md line format, and the curation-policy and missing-placeholder templates - the spec of record edits-engine.md implements.
