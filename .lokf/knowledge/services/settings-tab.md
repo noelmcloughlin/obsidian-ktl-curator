@@ -5,14 +5,16 @@ title: Settings tab
 description: "The declarative Obsidian settings tab (1.13+): curator id, the two in-editor toggles, bundle scope, the known type vocabulary, review intervals, queue size, and the feedback file path."
 resource: src/settings.ts
 isPartOf:
-- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
+  - https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-10-19T10:40:36Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  - by: process:ktl-librarian
+    at: "2026-10-15T23:47:44Z"
+sources:
+  - resource: src/settings-model.ts
 ---
 
 # Overview
