@@ -1,5 +1,9 @@
 # Change Log
 
+## 2026-10-19
+
+* **Changed**: Settings tab adds `src/settings-model.ts` as a source: the `knownTypes` defaults and the upgrade-merge rule its description already describes live there, not in `src/settings.ts`, and the coverage sweep found the file named in no concept.
+
 ## 2026-10-18
 
 * **Changed**: Trust fields names the ktl-curator skill in Knowledge Trust Ladder's bundle as the whole it is part of, since its resource is `skills/ktl-curator/references/trust-fields.md` in that skill; the first link from this bundle into another member of the KTL federation.

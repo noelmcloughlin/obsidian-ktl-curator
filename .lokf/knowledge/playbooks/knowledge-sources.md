@@ -11,7 +11,7 @@ generated:
 status: draft
 verified:
   - by: process:ktl-librarian
-    at: "2026-10-18T00:10:24Z"
+    at: "2026-10-19T10:40:36Z"
 ---
 
 # Knowledge sources
