@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.55.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.53.0...v0.55.0).** The release changed `.github/workflows/knowledge-registrar.yaml`, `.github/workflows/knowledge-release.yaml`, `.github/workflows/knowledge-sync.yaml`, `.lokf/scripts/knowledge-librarian.sh`, `.lokf/scripts/knowledge-conventions.sh`, `.lokf/scripts/knowledge-conventions.py`, `.lokf/scripts/knowledge-preflight.sh`, `.lokf/scripts/knowledge-provenance.sh`, `.lokf/scripts/knowledge-feedback.sh`, `.lokf/scripts/knowledge-apply.sh`, `.lokf/scripts/knowledge-apply.py`, `.lokf/scripts/knowledge-report.sh`, `.lokf/scripts/knowledge-sync.sh`, `.lokf/.gitignore`, `.lokf/justfile` and `website/src/components/KnowledgeGraph.astro` here. No plugin change.
+
 ## [1.6.6] - 2026-10-19
 
 ### Security
