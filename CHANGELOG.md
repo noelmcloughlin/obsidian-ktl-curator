@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.6.8] - 2026-10-23
+
 ### Security
 
 - **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.55.2](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.55.0...v0.55.2).** The release changed `.lokf/scripts/knowledge-preflight.sh` and `.lokf/scripts/knowledge-sync.sh` here.
