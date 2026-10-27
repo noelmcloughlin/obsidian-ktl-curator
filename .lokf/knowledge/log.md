@@ -1,5 +1,11 @@
 # Change Log
 
+## 2026-10-27
+
+* **Changed**: Contributing describes the skills pin moving through `knowledge-sync.yaml` and `knowledge-sync.sh`, which copy every template the release's `knowledge-sync.manifest` lists, as `CONTRIBUTING.md` has said since #104, in place of the three-workflow copy step.
+* **Resolved**: `knowledge-sync.sh` reads the manifest out of the release tag and copies every listed template the repository carries, so the playbook describes that sync; `CONTRIBUTING.md` says the same since #104.
+* **Changed**: the source map's sync row names `.lokf/scripts/knowledge-sync.sh` and feeds the contributing playbook, which now says what a pin move copies.
+
 ## 2026-10-19
 
 * **Changed**: Settings tab adds `src/settings-model.ts` as a source: the `knownTypes` defaults and the upgrade-merge rule its description already describes live there, not in `src/settings.ts`, and the coverage sweep found the file named in no concept.
