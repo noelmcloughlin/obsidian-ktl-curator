@@ -7,7 +7,7 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-10-18T00:10:24Z"
+  at: "2026-10-27T01:33:35Z"
 status: draft
 verified:
   - by: process:ktl-librarian
@@ -35,7 +35,7 @@ This map lists where the bundle's concepts come from, and how a later librarian 
 | `website/README.md`, `website/site.config.mjs`, `.github/workflows/knowledge-website.yaml` | the knowledge website: what each page is built from, the site's settings, and the build and GitHub Pages deployment | `Playbook` (`knowledge-website.md`) | re-reading the README's page list and "What to edit", and diffing the workflow's jobs and their `if:` conditions against `playbooks/knowledge-website.md`; the rest of `website/` is the `ktl-website` skill's code and has no concept of its own |
 | `.github/workflows/knowledge-registrar.yaml`, `.lokf/curators/` | the gate a `human:` confirmation must pass before it merges, and the curator keys its second signature check reads | `Playbook` (`knowledge-registrar-gate.md`) | diffing the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; `SECURITY.md` says the copy keeps the template's jobs unchanged, so any other difference is drift to report, not fix |
 | `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.lokf/scripts/`, `.lokf/m365/` | the scheduled librarian, the bundle release and the sidecar's scripts; no concept of their own, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | none | diffing each against its template the same way |
-| `.github/workflows/knowledge-sync.yaml`, `.github/PULL_REQUEST_TEMPLATE/knowledge-sync.md` | the weekly sync that keeps the sidecar's copies and the skills pin at the newest release of Knowledge Trust Ladder, and the template for the pull request it opens; no concept of their own, since the design is the `ktl-sidecar` template's | none | diffing each against its template the same way |
+| `.github/workflows/knowledge-sync.yaml`, `.github/PULL_REQUEST_TEMPLATE/knowledge-sync.md`, `.lokf/scripts/knowledge-sync.sh` | the weekly sync that keeps the sidecar's copies and the skills pin at the newest release of Knowledge Trust Ladder, and the template for the pull request it opens; the design is the `ktl-sidecar` template's, so the concept says only what a pin move copies | `Playbook` (`contributing.md`) | diffing each against its template the same way, and re-reading the sync script's header and the workflow's against `playbooks/contributing.md` |
 | `CONTRIBUTING.md` | development setup, the checklist before a pull request (`npm run check`) and the pure-module rule | `Playbook` (`contributing.md`) | re-reading the module sentence against `scripts/smoke-test.ts`'s own imports |
 | `.github/workflows/build.yml`, `.github/workflows/lint-and-docs.yaml`, `eslint.config.mts` | CI's mirror of `npm run check`, shell and workflow lint, the pinned-action check, Markdown and link lint, and the lint rules raised to errors | `Playbook` (`contributing.md`) | diffing each job's steps against `playbooks/contributing.md` |
 | `.github/workflows/semantic-release.yml`, `.github/workflows/release.yml`, `.releaserc.json`, `.github/scripts/changelog-release.mjs` | the release pipeline: the version from Conventional Commits, `CHANGELOG.md` promoted, the draft GitHub release built and attested | `Playbook` (`releasing.md`) | reading the workflows and the release config |
