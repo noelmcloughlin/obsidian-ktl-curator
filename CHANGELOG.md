@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.6.11] - 2026-10-27
+
 ### Fixed
 
 - **A `!` after the type marks a breaking change.** `.releaserc.json` names the Conventional Commits preset, so a `feat!:` commit releases a new major version instead of nothing. No plugin change.
