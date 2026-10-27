@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.6.10] - 2026-10-27
+
 ### Security
 
 - **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.56.2](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.56.1...v0.56.2).** The release changed `.lokf/.gitignore` here. No plugin change.
