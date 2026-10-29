@@ -2,6 +2,7 @@
 type: GlossaryTerm
 id: https://w3id.org/ktl/curator/knowledge/glossary/okf
 title: OKF
+resource: https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md
 abbreviation: OKF
 definition: Open Knowledge Format - a folder of Markdown files, one idea per file, each starting with a small YAML frontmatter block whose only strict requirement is a type. Permissive by design; missing optional fields never cause rejection.
 definedBy:
