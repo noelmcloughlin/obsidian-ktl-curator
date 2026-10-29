@@ -1,5 +1,9 @@
 # Change Log
 
+## 2026-10-29
+
+* **Changed**: lokf toolkit gives the `>=0.9.0` floor that `.lokf/pyproject.toml` now declares; LOKF and Trust engine count fourteen relation fields, with `isReplacedBy`.
+
 ## 2026-10-27
 
 * **Changed**: Contributing describes the skills pin moving through `knowledge-sync.yaml` and `knowledge-sync.sh`, which copy every template the release's `knowledge-sync.manifest` lists, as `CONTRIBUTING.md` has said since #104, in place of the three-workflow copy step.
