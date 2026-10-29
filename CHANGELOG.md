@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-10-29
+
 ### Changed
 
 - **"N other concepts rely on this" counts `isReplacedBy`, the relation field lokf 0.9.0 adds.** The plugin's schema manifest is lokf 0.9.0's, and the `.lokf` sidecar's floor is lokf 0.9.0 too.
