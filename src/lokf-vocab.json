@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.8.0",
+  "schemaVersion": "0.9.0",
   "generatedFrom": "lokf.yaml",
   "classes": [
     {
@@ -71,6 +71,8 @@
     "references",
     "dependsOn",
     "derivedFrom",
+    "isReplacedBy",
+    "wasRevisionOf",
     "about",
     "sameAs",
     "relatedTo",
@@ -252,6 +254,12 @@
       "multivalued": true
     },
     {
+      "name": "isReplacedBy",
+      "description": "A concept that supersedes this one, without asserting equivalence.",
+      "range": "Concept",
+      "multivalued": true
+    },
+    {
       "name": "about",
       "description": "The subject matter this concept is about.",
       "range": "Concept",
@@ -348,6 +356,26 @@
       "description": "The media (MIME) type of a distribution."
     },
     {
+      "name": "checksum",
+      "description": "A digest of the distribution's bytes, for checking a download.",
+      "range": "Checksum"
+    },
+    {
+      "name": "byte_size",
+      "description": "The size of the distribution in bytes.",
+      "range": "NonNegativeInteger"
+    },
+    {
+      "name": "algorithm",
+      "description": "The algorithm that computed a checksum.",
+      "range": "ChecksumAlgorithm"
+    },
+    {
+      "name": "checksum_value",
+      "description": "The checksum as lowercase hexadecimal digits, as many as the algorithm's digest has: 32 (md5), 40 (sha1), 56 (sha224), 64 (the 256-bit digests), 96 (the 384-bit ones) or 128 (the 512-bit ones).",
+      "range": "HexBinary"
+    },
+    {
       "name": "formula",
       "description": "The calculation or definition expression for a metric."
     },
@@ -410,8 +438,42 @@
       "range": "uriorcurie"
     },
     {
-      "name": "supporting_text",
-      "description": "Exact excerpt/quote from the referenced source.",
+      "name": "excerpt",
+      "description": "A verbatim copy of the passage in `resource` that the concept relies on, taken as retrieved. Lets a claim be re-checked against its source without re-reading the whole of it.",
+      "range": "string"
+    },
+    {
+      "name": "additionalType",
+      "description": "The producer's own `type` string when it names no LOKF class.",
+      "range": "string"
+    },
+    {
+      "name": "audience",
+      "description": "The readers this concept is written for, such as readers aged 13 to 18, as an inlined Audience. Absent means the bundle's own readers.",
+      "range": "Audience"
+    },
+    {
+      "name": "audienceType",
+      "description": "The kind of reader, in words, such as `students` or `dyslexic readers`."
+    },
+    {
+      "name": "suggestedMinAge",
+      "description": "The youngest age, in years, the concept is written for.",
+      "range": "integer"
+    },
+    {
+      "name": "suggestedMaxAge",
+      "description": "The oldest age, in years, the concept is written for.",
+      "range": "integer"
+    },
+    {
+      "name": "typicalAgeRange",
+      "description": "The typical age range of the concept's readers, as schema.org writes it: `8-12`, or `13-` for 13 and over.",
+      "range": "string"
+    },
+    {
+      "name": "educationalLevel",
+      "description": "The level of education the concept is written for, in words or as the IRI of a level in a published framework, such as a level of ISCED 2011.",
       "range": "string"
     },
     {
@@ -439,19 +501,30 @@
       "multivalued": true
     },
     {
+      "name": "exclusions",
+      "description": "The materials this concept's author considered and left out on purpose, each with its reason. A sibling of `sources`: a material listed here was not derived from, and a material used by one concept may be left out by another.",
+      "range": "Exclusion",
+      "multivalued": true
+    },
+    {
+      "name": "reason",
+      "description": "The grounds for a decision, in a sentence a reviewer can check: why a material was left out, or what a refutation found wrong.",
+      "range": "string"
+    },
+    {
       "name": "usage_window",
       "description": "The `{ from, to }` date range framing every `usage_count`. Attached both to Concept (the shared window, sibling of `sources`) and to Source (a per-entry override).",
       "range": "UsageWindow"
     },
     {
       "name": "from",
-      "description": "Start date (inclusive, YYYY-MM-DD) of a usage window.",
-      "range": "date"
+      "description": "Start (inclusive) of a usage window, an ISO 8601 datetime. A bare YYYY-MM-DD is read as that day at 00:00:00Z.",
+      "range": "datetime"
     },
     {
       "name": "to",
-      "description": "End date (inclusive, YYYY-MM-DD) of a usage window.",
-      "range": "date"
+      "description": "End (inclusive) of a usage window, an ISO 8601 datetime. A bare YYYY-MM-DD is read as that day at 00:00:00Z.",
+      "range": "datetime"
     },
     {
       "name": "usage_count",
@@ -460,13 +533,18 @@
     },
     {
       "name": "last_modified",
-      "description": "When the SOURCE itself last changed (YYYY-MM-DD). A recency signal about the source, distinct from `generated.at`, which records when this concept's content was produced. Same predicate as the deprecated `timestamp`, on a different subject node (source vs concept).",
-      "range": "date"
+      "description": "When the SOURCE itself last changed, an ISO 8601 datetime (a bare YYYY-MM-DD is read as that day at 00:00:00Z). A recency signal about the source, distinct from `generated.at`, which records when this concept's content was produced. Same predicate as the deprecated `timestamp`, on a different subject node (source vs concept).",
+      "range": "datetime"
     },
     {
       "name": "generated",
       "description": "How and when the current content was produced: `by` (REQUIRED actor) and `at` (ISO 8601 datetime). Supersedes the v0.1 `timestamp` field; consumers MAY fall back to `timestamp` when `generated` is absent.",
       "range": "Generation"
+    },
+    {
+      "name": "revised",
+      "description": "The latest in-place edit of the content, as `{by, at}`, kept apart from `generated`, which then stays the production event and is never rewritten. A single mapping; a later edit overwrites it. The last meaningful change a consumer reads is the later of `revised.at` and `generated.at`, so a bundle that restamps `generated.at` on each edit instead, as 0.8.0 bundles do, reads as before.",
+      "range": "Revision"
     },
     {
       "name": "verified",
@@ -475,8 +553,14 @@
       "multivalued": true
     },
     {
+      "name": "refuted",
+      "description": "Refutation events: an actor found the content wrong against its sources or resource, with the reason. The negative counterpart of `verified`, accumulated the same way. A refutation is active while it is not older than the last meaningful change (`generated.at` or `revised.at`); it never changes the trust tier, which OKF derives from `verified` alone, and a consumer surfaces it beside the tier.",
+      "range": "Refutation",
+      "multivalued": true
+    },
+    {
       "name": "by",
-      "description": "The actor that performed the event, as a plain OKF §7 actor string (`<producer>/<version>`, `human:<id>`, `process:<id>`) — a literal, never an IRI. Trust tiers derive from the `human:` prefix via string inspection (SPARQL STRSTARTS).",
+      "description": "The actor that performed the event, as a plain OKF §7 actor string (`<producer>/<version>`, `human:<id>`, `process:<id>`) — a literal, never an IRI. Trust tiers derive from the `human:` prefix via string inspection (SPARQL STRSTARTS). Required on a generation, revision, verification or refutation event, optional on an exclusion.",
       "range": "string"
     },
     {
@@ -485,14 +569,19 @@
       "range": "datetime"
     },
     {
+      "name": "revision",
+      "description": "The state of the resource this event refers to: a commit id, an ETag or version label, or a content digest of the resource as retrieved (`<algorithm>:<hex>`). Absent means unrecorded, never unchanged.",
+      "range": "string"
+    },
+    {
       "name": "status",
       "description": "Lifecycle status of the concept: draft | stable | deprecated. Absent means stable. Advisory, never access control.",
       "range": "ConceptStatus"
     },
     {
       "name": "stale_after",
-      "description": "Absolute date (YYYY-MM-DD) on or after which the concept is stale (stale when today >= stale_after).",
-      "range": "date"
+      "description": "The absolute instant on or after which the concept is stale (OKF §5.5: stale when now >= stale_after), an ISO 8601 datetime. A bare YYYY-MM-DD is read as that day at 00:00:00Z.",
+      "range": "datetime"
     },
     {
       "name": "runtime",

@@ -61,8 +61,8 @@ function manifestRelationFields(): string[] | null {
 }
 
 export const HARDCODED_RELATION_FIELDS: readonly string[] = [
-  "isPartOf", "hasPart", "references", "dependsOn", "derivedFrom", "about", "sameAs",
-  "relatedTo", "definedBy", "source", "measures", "memberOf", "holder",
+  "isPartOf", "hasPart", "references", "dependsOn", "derivedFrom", "isReplacedBy", "about",
+  "sameAs", "relatedTo", "definedBy", "source", "measures", "memberOf", "holder",
 ];
 
 export const RELATION_FIELDS: readonly string[] = manifestRelationFields() ?? HARDCODED_RELATION_FIELDS;
