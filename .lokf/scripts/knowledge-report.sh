@@ -17,6 +17,7 @@
 #   knowledge-report.sh changes            what the working tree does to the record, against HEAD
 #   knowledge-report.sh retrieval --prompt the index-only question an agent is asked
 #   knowledge-report.sh retrieval <reply>  that agent's reply, scored
+#   knowledge-report.sh isolated           the concepts no relation joins to the rest of the bundle
 #   knowledge-report.sh coverage [<dir>..] the tracked files no concept names: a count per folder, or the list under <dir>
 #   knowledge-report.sh coverage --why <path>..  which concept names each path, or a folder above it
 #
@@ -78,15 +79,45 @@
 # changed no fact still counts, and only reading the source says which it
 # was.
 #
+# A concept's own body counts as a source too. The pen stamps every edit it
+# writes, so a body that differs from the one the stamp's commit held was changed
+# by something else: a ktl-prose pass, which leaves the stamp alone on purpose,
+# or a hand edit. Nothing has compared that text with its sources, so it goes to
+# the librarian as "its own body", and a `patch` or a `recheck` clears it. Spaces
+# and line breaks do not count, so a paragraph laid out afresh is no change. Nor
+# do the lokf:related block and `## Open questions`, which a plugin and the
+# notes write. A change made in the commit that recorded the stamp is not seen,
+# as with a source, so a rewording squashed into the librarian's change is
+# missed. An open question a process asked since covers it, as it covers a
+# source, except that it need name no path, since the body has none.
+#
 # An open question is "answered" here when a person confirmed the concept on
 # or after the day the question is dated, and the concept is no longer a
 # draft. The person looked again after it was asked. ktl-curator clears a
 # person's note on that person's word, and ktl-librarian withdraws its own
 # with the pen's `resolve`.
 #
+# `isolated` reads the bundle as a graph, the way its knowledge graph page
+# draws it: which concepts no relation joins to another, and which small
+# groups join only each other. Direction does not matter, a retired concept
+# joins nothing, and a relation to another bundle joins nothing here. An
+# Organization or a Person is left out, since only `author` and `publisher`
+# reach one, and neither is a relation. So is the sources map, which describes
+# the bundle and has no source to state a relation from. A concept that stands
+# apart is a gap to look at and not a defect, since its source may state no
+# relation, so it fails no check and makes no run busy.
+#
+# The work list shows ten and says how many more wait, so a run reads ten
+# sources however large the bundle is. The ten take turns by month, since the
+# monthly run is the one that always goes ahead, and a window moved by its own
+# size reaches every concept. No record says whose turn it is, because a stamp
+# for each concept left alone would open a pull request every month that
+# changes nothing a reader sees. The work list also leaves out a concept a
+# person declined by closing a pull request that touched it, until it changes.
+#
 # `quiet` says whether a scheduled run has anything to do, so the wrapper can
 # skip the agent in a week when nothing happened. Work waits when:
-#   - a source moved after its concept's stamp;
+#   - a source moved after its concept's stamp, or its own body changed;
 #   - a person left a note after the librarian last wrote or checked that
 #     concept;
 #   - reader feedback waits;
@@ -199,7 +230,7 @@ set -u
 export LC_ALL=C
 
 usage() {
-  echo "usage: ${0##*/} [--root <dir>] [health | labels [<path>...] | worklist | quiet | changes | retrieval --prompt | retrieval <reply-file> | coverage [--strict] [<dir>...] | coverage --why <path>...]" >&2
+  echo "usage: ${0##*/} [--root <dir>] [health | labels [<path>...] | worklist | quiet | changes | retrieval --prompt | retrieval <reply-file> | isolated | coverage [--strict] [<dir>...] | coverage --why <path>...]" >&2
   exit 2
 }
 
@@ -324,13 +355,18 @@ function rkv(l,  k, v) { k = l; sub(/:.*/, "", k); sub(/^[ \t]+/, "", k); v = l;
   if (k == "predicate") rp = unq(v); else if (k == "target") rt = v }
 function rflow(s,  n, parts, i) { rflush(); gsub(/[{}]/, "", s); n = split(s, parts, ","); for (i = 1; i <= n; i++) rkv(parts[i]); rflush() }
 function relend() { if (inrels) rflush(); inrels = 0; rel = "" }
-BEGIN { split("isPartOf hasPart references dependsOn derivedFrom about sameAs relatedTo definedBy source measures memberOf holder isReplacedBy", relnames, " "); for (j in relnames) RELF[relnames[j]] = 1; BOM = sprintf("%c%c%c", 239, 187, 191) }
+function mention(f, l,  n, items, i, w) { sub(/^[ \t]*(-[ \t]+)*/, "", l)
+  if (l ~ /^[A-Za-z_][A-Za-z0-9_-]*:$/) return
+  if (l ~ /^[A-Za-z_][A-Za-z0-9_-]*:[ \t]/) sub(/^[^:]*:[ \t]*/, "", l)
+  if (l ~ /^\[/) { sub(/^\[/, "", l); sub(/\][^]]*$/, "", l); n = split(l, items, ",") } else { n = 1; items[1] = l }
+  for (i = 1; i <= n; i++) { w = unq(items[i]); if (w ~ /^[A-Za-z][A-Za-z0-9+.-]*:[^ \t]+$/) link(f, w) } }
+BEGIN { split("isPartOf hasPart references dependsOn derivedFrom about sameAs relatedTo definedBy source measures memberOf holder isReplacedBy", relnames, " "); split("id type title description resource sources exclusions distribution endpoint documentation license author publisher generated verified status base_iri context stale_after timestamp genre definition version", notlink, " "); for (j in notlink) NOTLINK[notlink[j]] = 1; for (j in relnames) RELF[relnames[j]] = 1; BOM = sprintf("%c%c%c", 239, 187, 191) }
 { sub(/\r$/, "") }
 NR == 1 { if (substr($0, 1, 3) == BOM) $0 = substr($0, 4); if ($0 == "---") { fm = 1; started = 1; next } else exit }
 fm && $0 == "---" { if (inflow) flushflow(); emit(); relend(); inv = 0; fm = 0; body = 1; next }
 fm {
   if (inflow) { flowbuf = flowbuf " " $0; if (index($0, flowseq ? "]" : "}")) flushflow(); next }
-  if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*:/) { top = $0; sub(/:.*/, "", top) }
+  if ($0 ~ /^[A-Za-z_][A-Za-z0-9_-]*:/) { top = $0; sub(/:.*/, "", top) }
   if ($0 ~ /^title:/) title = val($0)
   else if ($0 ~ /^status:/) status = val($0)
   else if ($0 ~ /^stale_after:/) stale = val($0)
@@ -355,7 +391,7 @@ fm {
   # each a block list, a one-line flow list or a bare value, and `relations`,
   # a list of { predicate, target } mappings, block or one-line flow. The
   # contract in the skills repository holds the list of fields to the schema.
-  # Out comes one L line per target.
+  # Out comes one L line per target, naming the field and the value as written.
   if (!inv) {
     if ($0 ~ /^[^ \t-]/) relend()
     if ($0 ~ /^[A-Za-z]+:/) {
@@ -376,7 +412,15 @@ fm {
     if (inrels && $0 ~ /^[ \t]*-[ \t]*\{/) { rest = $0; sub(/^[ \t]*-[ \t]*/, "", rest); rflow(rest); next }
     if (inrels && $0 ~ /^[ \t]*-[ \t]+/) { rflush(); rest = $0; sub(/^[ \t]*-[ \t]+/, "", rest); rkv(rest); next }
     if (inrels && $0 ~ /^[ \t]+[A-Za-z_]+:/) { rkv($0); next }
+    # The slots of a domain schema hold concepts too, and no list here can name
+    # them, since each host writes its own. So a value that is a whole IRI,
+    # under any field not read as something else, comes out as an L line, and
+    # `ranked` keeps it only when it names a concept. A prefixed name or a
+    # relative path in such a slot cannot be told from a plain value, and
+    # stays unread.
+    if (top != "" && rel == "" && !inrels && !(top in NOTLINK) && !(top in RELF) && top != "relations") mention(top, $0)
   }
+  if (inv && $0 ~ /^[ \t]*-[ \t]*(#.*)?$/) { emit(); inev = 1; next }
   if (inv && $0 ~ /^[ \t]*-[ \t]*\{/) { rest = $0; sub(/^[ \t]*-[ \t]*/, "", rest); flow(rest); next }
   if (inv && $0 ~ /^[ \t]*-[ \t]+/) { emit(); inev = 1; rest = $0; sub(/^[ \t]*-[ \t]+/, "", rest); kv(rest); next }
   if (inv && $0 ~ /^[ \t]+[a-z_]+:/) { inev = 1; kv($0); next }
@@ -449,6 +493,15 @@ declined_for() {  # <concept path> -> "<base> <number> <day>" of the closed pull
   [ -s "$tmp/touched" ] || return 0
   awk -F'\t' -v p="$1" '$1 == p { print $2, $3, $4; exit }' "$tmp/touched"
 }
+declined_held() {  # each concept a closed pull request touched, unchanged since -> one K line
+  local path base num day last
+  [ -s "$tmp/touched" ] || return 0
+  while IFS=$'\t' read -r path base num day; do
+    last="$(git -C "$kdir" log -1 --format=%H -- "$path" 2>/dev/null || true)"
+    [ -z "$(git -C "$kdir" status --porcelain -- "$path" 2>/dev/null | head -1)" ] || continue
+    if at_or_before "$last" "$base"; then printf 'K\t%s\n' "$path"; fi
+  done < "$tmp/touched"
+}
 at_or_before() {  # <commit> <base>: the commit is the base, or an ancestor of it
   [ -n "$1" ] && { [ "$1" = "$2" ] || git -C "$root" merge-base --is-ancestor "$1" "$2" 2>/dev/null; }
 }
@@ -460,6 +513,44 @@ left() {  # <kind> <what was left> <"base number day"> [<count>] -> one D line f
 # The open questions a process asked on a concept, one to a line: the commit
 # that first held it, or "new" for one not yet committed, then the unit
 # separator, then the question's text.
+# What a concept says, for comparing two versions of it: the body, with each run
+# of spaces and each line break as one space, and without the two regions the
+# header leaves out.
+said_by() {
+  awk '
+  { sub(/\r$/, "") }
+  NR == 1 { sub(/^\357\273\277/, ""); if ($0 == "---") { fm = 1; next } }
+  fm { if ($0 == "---") fm = 0; next }
+  /^[ \t]*<!-- lokf:related -->[ \t]*$/ { related = 1; next }
+  related { if ($0 ~ /^[ \t]*<!-- \/lokf:related -->[ \t]*$/) related = 0; next }
+  /^(```|~~~)/ { fence = !fence }
+  !fence && /^#+ / { inq = ($0 ~ /^## Open questions[ \t]*$/); if (inq) next }
+  inq { next }
+  { gsub(/[ \t]+/, " "); sub(/^ /, ""); sub(/ $/, ""); if ($0 != "") printf "%s ", $0 }
+  END { print "" }'
+}
+body_moved() {  # <the commit that recorded the event> <concept path> <1 for an edit not yet committed> -> "<hash> <day>" or "edited"; fails when it says the same
+  local last
+  git -C "$kdir" cat-file -e "$1:./$2" 2>/dev/null || return 1
+  if [ "$3" != 1 ]; then
+    last="$(TZ=UTC git -C "$kdir" log -1 --format='%H %cd' --date=format-local:%Y-%m-%d -- "$2" 2>/dev/null || true)"
+    [ -n "$last" ] && [ "${last%% *}" != "$1" ] && git -C "$root" merge-base --is-ancestor "$1" "${last%% *}" 2>/dev/null || return 1
+  fi
+  [ "$(git -C "$kdir" show "$1:./$2" 2>/dev/null | said_by)" != "$(said_by < "$kdir/$2")" ] || return 1
+  if [ "$3" = 1 ]; then echo edited; else printf '%s\n' "$last"; fi
+}
+asked_after() {  # <the commit that changed the body, or empty> <the questions>: a question a process asked at or after it
+  local us c text
+  us="$(printf '\037')"
+  while IFS="$us" read -r c text; do
+    case "$c" in
+      "") ;;
+      new) return 0 ;;
+      *)   if [ -n "$1" ] && { [ "$1" = "$c" ] || git -C "$root" merge-base --is-ancestor "$1" "$c" 2>/dev/null; }; then return 0; fi ;;
+    esac
+  done <<< "$2"
+  return 1
+}
 question_commits() {  # <concept path>
   local us day actor text c
   us="$(printf '\037')"
@@ -560,6 +651,17 @@ moved() {
         fi
         out="${out}${out:+, }$entry"
       done < <(printf '%s\n' "$all" | awk -F'\t' -v p="$path" '$1 == "R" && $2 == p { print $3 }' | LC_ALL=C sort -u)
+      if [ -n "$rec" ] && line="$(body_moved "$rec" "$path" "$cdirty")"; then
+        hash=""; entry="its own body (edited, not yet committed)"
+        if [ "$line" != edited ]; then hash="${line%% *}"; entry="its own body (${line##* })"; fi
+        if [ "$which" = c ]; then out="${out}${out:+, }$entry"
+        elif [ -n "$dec" ] && [ -n "$hash" ] && at_or_before "$hash" "${dec%% *}"; then aside="${aside}${aside:+, }$entry"
+        else
+          [ "$qdone" = 1 ] || { qc="$(question_commits "$path")"; qdone=1; }
+          if [ -n "$qc" ] && asked_after "$hash" "$qc"; then asked="${asked}${asked:+, }$entry"
+          else out="${out}${out:+, }$entry"; fi
+        fi
+      fi
       [ -z "$out" ] || printf 'M\t%s\t%s\t%s\n' "$which" "$path" "$out"
       [ -z "$asked" ] || printf 'M\ta\t%s\t%s\n' "$path" "$asked"
       [ -z "$aside" ] || left source "$path: $aside" "$dec"
@@ -767,11 +869,13 @@ repeats() {  # concepts the ledger names more than once: readers keep asking abo
 #   - a relative path, from the bundle's root and then from the citing
 #     concept's folder.
 # A concept's id is its `id`, or base_iri and its path without `.md`.
-# Each concept that names another counts once for it, and a concept never
-# counts for itself. Retired concepts are left out of every list here.
-# `queue` prints Worth ten minutes today, in the order ktl-curator's
-# references/trust-fields.md gives; `lists` prints the rest.
-ranked() {  # queue | lists
+# A relation is one of the fourteen fields, `relations`, or a whole IRI in a
+# domain schema's own slot. Each concept that names another counts once for
+# it, and a concept never counts for itself. Retired concepts are left out of
+# every list here. `queue` prints Worth ten minutes today, in the order ktl-curator's
+# references/trust-fields.md gives; `lists` prints the rest; the `isolated`
+# forms print what stands apart, whole, as ten for the work list or as counts.
+ranked() {  # queue | lists | isolated | isolated-worklist | isolated-count
   local base
   base="$(awk -v SQ="'" '{ sub(/\r$/, "") } NR == 1 { sub(/^\357\273\277/, "") } NR == 1 { if ($0 != "---") exit; next } $0 == "---" { exit }
     /^base_iri:/ { v = $0; sub(/^base_iri:[ \t]*/, "", v); sub(/[ \t\r]+$/, "", v)
@@ -782,17 +886,20 @@ ranked() {  # queue | lists
   function cut(v,  i) { i = index(v, "#"); return i ? substr(v, 1, i - 1) : v }
   function find(id) { return (id in byid) ? byid[id] : "" }
   function resolve(v, from,  d, r) {
+    if (v in byid) return byid[v]
     if (v ~ /^[A-Za-z][A-Za-z0-9+.-]*:/) {
-      if (base != "" && index(v, base) == 1) return find(base cut(substr(v, length(base) + 1)))
-      return find(v)
+      if (base == "" || index(v, base) != 1) return ""
+      v = cut(substr(v, length(base) + 1)); sub(/\.md$/, "", v)
+      return find(base v)
     }
     if (base == "") return ""
-    v = cut(v); sub(/\.md$/, "", v)
+    v = cut(v); sub(/^\//, "", v); sub(/\.md$/, "", v)
     r = find(base v); if (r != "") return r
     d = from; if (sub(/\/[^\/]*$/, "", d)) return find(base d "/" v)
     return ""
   }
   function also(s, t) { return s == "" ? t : s "; " t }
+  function group(x) { while (up[x] != x) { up[x] = up[up[x]]; x = up[x] } return x }
   function relies(n) { return n == 1 ? "1 other concept relies on this" : n " other concepts rely on this" }
   function before(a, b) {  # a ranks ahead of b in the queue
     if (grp[a] != grp[b]) return grp[a] < grp[b]
@@ -805,17 +912,51 @@ ranked() {  # queue | lists
   $1 == "I" { cid[$2] = $3; ctype[$2] = $4; csrc[$2] = $5 }
   $1 == "L" { nl++; lp[nl] = $2; lf[nl] = $3; lt[nl] = $4 }
   $1 == "M" && $2 == "c" { cmoved[$3] = 1 }
+  $1 == "K" { held_back[$2] = 1 }
   END {
     for (i = 1; i <= nc; i++) { p = order[i]; id = cid[p]; if (id == "") { id = p; sub(/\.md$/, "", id); id = base id }; byid[id] = p }
     for (i = 1; i <= nc; i++) {
       p = order[i]; $0 = row[p]
       if ($4 == "deprecated") continue
       live[p] = 1; gat[p] = $7; hat[p] = $8; conf[p] = ($9 > 0 && !edited())
+      up[p] = p
     }
     for (k = 1; k <= nl; k++) {
       t = resolve(lt[k], lp[k]); if (t == "" || t == lp[k] || !(t in live) || !(lp[k] in live)) continue
+      up[group(t)] = group(lp[k])
       if (!((t, lp[k]) in pair)) { pair[t, lp[k]] = 1; relied[t]++ }
       if (lf[k] == "derivedFrom" && !((lp[k], t) in dpair)) { dpair[lp[k], t] = 1; nd++; dfrom[nd] = lp[k]; dto[nd] = t }
+    }
+    if (mode ~ /^isolated/) {
+      if (base == "") { print "Concepts no relation joins to another: not computed, since the root index.md carries no base_iri"; exit }
+      for (i = 1; i <= nc; i++) { p = order[i]; if (p in live) size[group(p)]++ }
+      top = ""
+      for (i = 1; i <= nc; i++) { p = order[i]; if (!(p in live)) continue; g = group(p); if (size[g] > 1 && (top == "" || size[g] > size[top])) top = g }
+      m = 0; seen = 0
+      for (i = 1; i <= nc; i++) {
+        p = order[i]; if (!(p in live)) continue
+        if (ctype[p] == "Organization" || ctype[p] == "Person" || p == "playbooks/knowledge-sources.md") continue
+        seen++; g = group(p)
+        if (p in held_back) continue
+        if (size[g] == 1) lst[++m] = p
+        else if (g != top) {
+          if (!(g in held)) { gorder[++ng] = g; held[g] = p; gn[g] = 1 }
+          else if (mode != "isolated-worklist" || gn[g] < 5) { held[g] = held[g] ", " p; gn[g]++ }
+        }
+      }
+      if (seen < 2) { m = 0; ng = 0 }
+      if (mode == "isolated-count") { print "Concepts no relation joins to another: " (m ? m : "none") "; groups joined only to each other: " (ng ? ng : "none") "; the librarian takes these from its work list"; exit }
+      cap = (mode == "isolated-worklist" ? 10 : m + ng)
+      month = substr(today, 1, 4) * 12 + substr(today, 6, 2)
+      from = (m > cap ? month * 10 % m : 0)
+      for (i = 0; i < m && i < cap; i++) body = body "- " lst[(from + i) % m + 1] "\n"
+      if (m > cap) body = body "- and " (m - cap) " more, whose turn comes in a later month; `knowledge-report.sh isolated` lists them\n"
+      section("Concepts no relation joins to another", m, body)
+      from = (ng > cap ? month * 10 % ng : 0)
+      for (i = 0; i < ng && i < cap; i++) { g = gorder[(from + i) % ng + 1]; gbody = gbody "- " held[g] (size[g] > gn[g] ? ", and " (size[g] - gn[g]) " more" : "") "\n" }
+      if (ng > cap) gbody = gbody "- and " (ng - cap) " more, whose turn comes in a later month; `knowledge-report.sh isolated` lists them\n"
+      section("Groups of concepts joined only to each other", ng, gbody)
+      exit
     }
     if (mode == "lists") {
       td = jdn(today)
@@ -1281,6 +1422,7 @@ case "$cmd" in
   health)   [ $# -eq 0 ] || usage; health ;;
   labels)   labels "$@" ;;
   coverage) coverage "$@"; exit $? ;;
+  isolated) [ $# -eq 0 ] || usage; ranked isolated ;;
   worklist)
     [ $# -eq 0 ] || usage
     declined_load
@@ -1294,6 +1436,8 @@ case "$cmd" in
     lists worklist
     echo "Reader feedback waiting: $(waiting_feedback)"
     repeats
+    times="$times"$'\n'"$(declined_held)"
+    ranked isolated-worklist
     ;;
   quiet)
     [ $# -eq 0 ] || usage
@@ -1317,6 +1461,7 @@ case "$cmd" in
     lists confirmed-moved
     echo ""
     ranked lists
+    ranked isolated-count
     echo ""
     unconfirmed_successors
     echo ""
