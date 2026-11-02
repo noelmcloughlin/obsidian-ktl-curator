@@ -9,17 +9,19 @@ isPartOf:
   - https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
-  at: "2026-10-27T01:33:35Z"
+  at: "2026-11-02T13:23:24Z"
 status: draft
 verified:
   - by: process:ktl-librarian
-    at: "2026-10-27T01:33:35Z"
+    at: "2026-11-02T13:23:24Z"
 sources:
   - resource: CONTRIBUTING.md
   - resource: .lokf/scripts/knowledge-sync.sh
     title: what a sync reads, copies, adds and moves
   - resource: .github/workflows/knowledge-sync.yaml
     title: the weekly pull request and the workflow changes it holds back
+  - resource: scripts/smoke-test.ts
+    title: the seven pure modules the smoke test runs against the fixtures
 ---
 
 Development needs Node 20 or later, and CI builds on 20, 22 and 24. `npm install` and then `npm run dev` start esbuild in watch mode, which rebuilds `src/main.ts` into `main.js`. `main.js` is generated and git-ignored, so a fresh clone has none until you build.
@@ -35,7 +37,7 @@ The checklist also asks for these:
 - A link into a sibling repository already resolves on that repository's `main`, since the link check follows it.
 - `src/lokf-vocab.json` is refreshed with `npm run build-vocab`, and the result committed, only when the sidecar's pinned `lokf` moves.
 - The skills pin moves with the sidecar copies: each week `knowledge-sync.yaml` opens one pull request that moves `TRUST_LADDER_SKILLS_REF` and `TRUST_LADDER_SKILLS_SHA` to the newest release and copies every template that release lists over the copy here. To move sooner, run `.lokf/scripts/knowledge-sync.sh --branch <tag>`. Never move the pin alone: the install step installs nothing when the two disagree.
-- A pull request whose commits would release carries the releasing type in its title (`feat:`, `fix:`, `security:`), because a squash merge takes its subject from the title and the `plan` job refuses a mismatch.
+- A pull request whose commits would release carries the releasing type in its title (`feat:`, `fix:`, `security:`, or a breaking `!`), because a squash merge takes its subject from the title and the `plan` job refuses a mismatch.
 - CI fails an action that is not pinned to a commit. Dependabot bumps the pinned action SHAs and the npm devDependencies.
 
 `.lokf/scripts/knowledge-sync.sh` makes the copies, whether `knowledge-sync.yaml` or a person runs it:
