@@ -241,6 +241,21 @@ if have uv; then
   else
     info toolkit "uv $(uv --version 2>/dev/null | sed 's/^uv //') present; no .lokf/pyproject.toml yet"
   fi
+  # The recipes pass --check-excerpts, and --schema to convert and serve,
+  # which lokf 0.8.0 does not take.
+  case "${floor:-}" in
+    0.[0-8]|0.[0-8].*) warn toolkit "the floor is >=$floor and the justfile's recipes need lokf 0.9.0 - raise it to \"lokf[build]>=0.9.0\" in .lokf/pyproject.toml and run uv lock there" ;;
+  esac
+  # A domain schema imports the copy of LOKF core beside it, and the gate
+  # runs the lokf that uv.lock pins, which may be newer than the floor. A
+  # copy from another release can reject a concept that lokf reads: 0.9.0
+  # reads a bare-date stale_after as a datetime, which 0.8.0's copy rejects.
+  copy="$(sed -n 's/^version: *\([0-9.]*\).*/\1/p' "$root/.lokf/lokf.yaml" 2>/dev/null | head -n 1)"
+  pinned="$(awk '/^name = "lokf"$/ { hit = 1; next } hit { if (sub(/^version = "/, "")) { sub(/".*$/, ""); print } exit }' "$root/.lokf/uv.lock" 2>/dev/null)"
+  pinned="${pinned:-${installed:-}}"
+  if [ -n "$copy" ] && [ -n "$pinned" ] && [ "$copy" != "$pinned" ]; then
+    warn core ".lokf/lokf.yaml is lokf $copy's schema and the toolkit is lokf $pinned - copy the installed package's lokf.yaml over it, as step 1 of ktl-librarian's domain-schema recipe shows"
+  fi
   if have just; then ok just "just $(just --version 2>/dev/null | sed 's/^just //')"; else info just "just not installed - uvx --from rust-just just works the same"; fi
   # The workflows run the just uv.lock pins, checked by hash, where it pins one.
   if [ -f "$root/.lokf/uv.lock" ] && ! grep -qx 'name = "rust-just"' "$root/.lokf/uv.lock"; then
@@ -248,6 +263,26 @@ if have uv; then
   fi
 else
   miss toolkit "uv not installed - lokf validate, convert and query unavailable, and the conventions script skips its parser's half (rules 2, 3, 4, 7, 9, 10, 12, 13, 14, 15, 16, 17, 18); only the manual schema cross-check remains" "lokf validate and thirteen of the eighteen conventions (every skill's audit)"
+fi
+
+# A lokf command given no --schema reads `[tool.lokf] schema` in
+# pyproject.toml. The recipes pass the justfile's `schema :=` line when it is
+# set, and the release, the website and the librarian read only that line, so
+# the two must name one file.
+jschema="$(sed -n 's/^schema := "\([^"]*\)"$/\1/p' "$root/.lokf/justfile" 2>/dev/null | head -n 1)"
+tschema="$(awk -v q="'" '
+  /^[[:space:]]*\[/ { intool = ($0 ~ /^[[:space:]]*\[tool\.lokf\][[:space:]]*(#.*)?$/); next }
+  intool && /^[[:space:]]*schema[[:space:]]*=/ {
+    v = $0; sub(/^[^=]*=[[:space:]]*/, "", v)
+    if (match(v, /^"[^"]*"/) || match(v, "^" q "[^" q "]*" q)) print substr(v, 2, RLENGTH - 2)
+    exit
+  }' "$root/.lokf/pyproject.toml" 2>/dev/null)"
+jschema="${jschema#./}"
+tschema="${tschema#./}"
+if [ -n "$tschema" ] && [ -z "$jschema" ]; then
+  warn schema "[tool.lokf] schema in .lokf/pyproject.toml is $tschema and the justfile's schema line is empty - the recipes check against it, the release and the librarian do not; put the same path on the line"
+elif [ -n "$tschema" ] && [ "$tschema" != "$jschema" ]; then
+  warn schema "[tool.lokf] schema in .lokf/pyproject.toml is $tschema and the justfile's schema line is $jschema - the recipes check against the line, a bare lokf command against pyproject.toml; set both to one path"
 fi
 
 # The gate, the release and the scheduled librarian install the toolkit with
@@ -356,6 +391,68 @@ elif [ -n "$templates" ] && [ -d "$root/.lokf" ]; then
   fi
 elif [ -n "$script_gaps" ]; then
   warn copies "$script_gaps - the ktl-sidecar repair lays it down"
+fi
+
+# ---- scripts ---------------------------------------------------------------
+# The pen and the conventions script each run a Python half: on the
+# sidecar's .venv when it holds pyyaml on Python 3.9 or later, else through
+# uv after uv_ready, the same function as theirs. Nothing above runs either,
+# so a host whose index uv cannot install from would look ready while
+# ktl-librarian cannot write and the gate cannot check. uv keeps one
+# environment per script, so both are installed here, into uv's cache and
+# never into the repository. The pen alone falls back to python3.
+uvflags=(); uverr=""; uvhint="Run uv sync in .lokf/ to pin them by hash."
+uv_ready() {
+  local err names name again unpinned lifted=""
+  command -v uv >/dev/null 2>&1 || return 1
+  uv sync --offline --quiet --script "$1" >/dev/null 2>&1 && return 0
+  until err="$(uv sync --color never --script "$1" ${uvflags[@]+"${uvflags[@]}"} 2>&1 >/dev/null)"; do
+    names="$(printf '%s\n' "$err" | sed -n 's/^warning: \([^ ]*\) is missing an upload date.*/\1/p' | tr -d '\140' | sed 's/-[0-9].*//' | tr '[:upper:]' '[:lower:]' | tr '_.' '--' | sort -u)"
+    again=""; unpinned=""
+    for name in $names; do
+      case " $lifted " in *" $name "*) again=1 ;; esac
+      case "$name" in *[!a-z0-9-]*) unpinned="$unpinned $name"; continue ;; esac
+      grep -qiE "^# dependencies = .*\"${name//-/[-_.]}==" "$1" || unpinned="$unpinned $name"
+    done
+    if [ -z "$names" ] || [ -n "$again$unpinned" ]; then
+      uverr="$(printf '%s\n' "$err" | grep -v ' is missing an upload date' || true)"
+      [ -z "$unpinned" ] || uverr+=$'\n'"${0##*/}: the package index serves no upload times for$unpinned, which the script's header does not pin with ==, so exclude-newer stays."
+      return 1
+    fi
+    for name in $names; do uvflags+=(--exclude-newer-package "$name=false"); lifted="$lifted $name"; done
+  done
+  [ -z "$lifted" ] || echo "${0##*/}: the package index serves no upload times, so exclude-newer is lifted for$lifted. The versions stay pinned. $uvhint" >&2
+  return 0
+}
+if [ -d "$bundle" ] && [ -f "$root/.lokf/scripts/knowledge-apply.py" ] && [ -f "$root/.lokf/scripts/knowledge-conventions.py" ]; then
+  venv="$root/.lokf/.venv/bin/python"; [ -e "$venv" ] || venv="$root/.lokf/.venv/Scripts/python.exe"
+  if [ -x "$venv" ] && "$venv" -c 'import sys; assert sys.version_info >= (3, 9); import yaml' >/dev/null 2>&1; then
+    ok scripts "the pen and the conventions script run on .lokf/.venv"
+  elif have uv; then
+    unready=""; lost=""; pen=""
+    for s in apply conventions; do
+      uv_ready "$root/.lokf/scripts/knowledge-$s.py" 2>/dev/null && continue
+      if [ "$s" = apply ] && have python3 && python3 -c 'import sys; assert sys.version_info >= (3, 9); import yaml' >/dev/null 2>&1; then
+        pen="; the pen runs on python3's own pyyaml"; continue
+      fi
+      unready="${unready}${unready:+ and }knowledge-$s.py"
+      case "$s" in
+        apply) lost="the pen (ktl-librarian writes nothing)" ;;
+        *) lost="${lost}${lost:+ and }the conventions check (the gate fails)" ;;
+      esac
+    done
+    if [ -z "$unready" ]; then
+      ok scripts "uv installs the scripts' packages${uvflags[0]+; the index serves no upload times, so exclude-newer is lifted for the pinned ones}$pen"
+    else
+      # uv prints an informational line before its error, so the error line
+      # is named, or else the last line, which is the script's own reason.
+      why="$(printf '%s\n' "$uverr" | grep -E '^(error:|x |× )' | head -n 1)"
+      [ -n "$why" ] || why="$(printf '%s\n' "$uverr" | grep -v '^[[:space:]]*$' | tail -n 1)"
+      miss scripts "uv could not install the packages of $unready${why:+ ($why)}$pen - run uv sync in .lokf/, and both scripts use that .venv" "$lost"
+    fi
+  elif ! { have python3 && python3 -c 'import sys; assert sys.version_info >= (3, 9); import yaml' >/dev/null 2>&1; }; then
+    miss scripts "no .lokf/.venv, no uv, and no python3 3.9 or later with pyyaml - the pen cannot start; install uv, or run uv sync in .lokf/" "the pen (ktl-librarian writes nothing)"
+  fi
 fi
 
 # ---- ingest ----------------------------------------------------------------
