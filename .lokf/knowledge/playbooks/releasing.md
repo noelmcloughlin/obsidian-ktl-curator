@@ -6,24 +6,24 @@ description: Semantic-release computes the version and promotes CHANGELOG.md on 
 genre: how-to
 resource: .github/workflows/semantic-release.yml
 sources:
-- resource: .github/workflows/semantic-release.yml
-- resource: .github/workflows/release.yml
-- resource: .releaserc.json
+  - resource: .github/workflows/semantic-release.yml
+  - resource: .github/workflows/release.yml
+  - resource: .releaserc.json
 isPartOf:
-- https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
+  - https://w3id.org/ktl/curator/knowledge/playbooks/knowledge-sources
 generated:
   by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  at: "2026-11-02T13:23:24Z"
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-15T23:47:44Z"
+  - by: process:ktl-librarian
+    at: "2026-11-02T13:23:24Z"
 ---
 
 Nobody picks the version by hand. Commits typed with Conventional Commits decide it, and `CHANGELOG.md`'s `## [Unreleased]` section is the release note.
 
 `semantic-release.yml`'s `release` job runs on every push to `main`, behind the `release` GitHub Environment. Required reviewers on that environment are configured in the repository's own settings, not by the workflow file. The job installs semantic-release at exact pinned versions inside the workflow, never in `package.json`, and runs it with the plugins `.releaserc.json` names:
 
-- `@semantic-release/commit-analyzer` computes the next version. `.releaserc.json` adds a `security` type that releases a patch.
+- `@semantic-release/commit-analyzer` computes the next version with the `conventionalcommits` preset, so a breaking `!` is read; the default `angular` preset does not. `.releaserc.json` adds a `security` type that releases a patch.
 - `@semantic-release/exec` runs `.github/scripts/changelog-release.mjs` as its `verifyRelease`, `generateNotes` and `prepare` hooks. The script refuses an empty `## [Unreleased]` section, uses it as the release notes, and promotes it to a dated version heading.
 - `@semantic-release/npm` (`npmPublish: false`) bumps `package.json`, and the `version` script updates `manifest.json` and `versions.json`.
 - `@semantic-release/git` commits those files and `CHANGELOG.md` with the message `chore(release): <version> - version bump, changelog promoted [skip ci]`. semantic-release then creates and pushes the bare tag (`tagFormat` is `${version}`).

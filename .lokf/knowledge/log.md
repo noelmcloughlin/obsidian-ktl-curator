@@ -1,5 +1,12 @@
 # Change Log
 
+## 2026-11-02
+
+* **Changed**: Contributing's releasing-type bullet now names the breaking `!` title too, as `CONTRIBUTING.md` has since #109; its sources add `scripts/smoke-test.ts`, the coverage sweep's gap for the pure-module list it already describes.
+* **Changed**: Releasing names the `conventionalcommits` preset `@semantic-release/commit-analyzer` now runs with, since `semantic-release.yml`'s default `angular` preset skipped a breaking `!` commit (#109).
+* **Changed**: LOKF specification names the 0.9.0 toolkit, not 0.8.0, since `.lokf/pyproject.toml`'s floor moved there; `Role` is unchanged, still the fifteenth class.
+* **Changed**: Knowledge registrar gate says the validate step now runs `lokf-check-refs` through `uv run --locked just` at the locked `rust-just` 1.59.0, since `.lokf/pyproject.toml` names the dependency and the workflow's `uvx` fallback no longer applies here.
+
 ## 2026-10-29
 
 * **Changed**: lokf toolkit gives the `>=0.9.0` floor that `.lokf/pyproject.toml` now declares; LOKF and Trust engine count fourteen relation fields, with `isReplacedBy`.

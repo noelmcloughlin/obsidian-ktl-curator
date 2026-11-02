@@ -5,25 +5,25 @@ title: In-editor aids
 description: Three Settings → In-editor conveniences while a curator hand-edits a concept's raw frontmatter - a searchable "Look up a LOKF field" command, a live trust-tier badge on the frontmatter (Source mode only), and autocomplete for the values a curator hand-types (the human:<id> actor, status, and at/stale_after dates) - plus the shared trust-tier label vocabulary they and the status bar all render identically.
 resource: src/fields.ts
 isPartOf:
-- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
+  - https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://w3id.org/ktl/curator/knowledge/services/trust-engine
-- https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
+  - https://w3id.org/ktl/curator/knowledge/services/trust-engine
+  - https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
   at: "2026-10-16T23:47:52Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-11-02T13:23:24Z"
 sources:
-- resource: src/fields.ts
-- resource: src/field-modal.ts
-- resource: src/inline.ts
-- resource: src/suggest.ts
-- resource: src/suggest-context.ts
-- resource: src/trust-label.ts
-- resource: src/lokf-vocab.json
+  - resource: src/fields.ts
+  - resource: src/field-modal.ts
+  - resource: src/inline.ts
+  - resource: src/suggest.ts
+  - resource: src/suggest-context.ts
+  - resource: src/trust-label.ts
+  - resource: src/lokf-vocab.json
 ---
 
 # Overview
