@@ -33,7 +33,7 @@ concurrency:
 jobs:
   earlier:
     name: Read what became of the earlier pull requests (read-only, no agent)
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.KNOWLEDGE_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     permissions:
       pull-requests: read # list this workflow's pull requests and their files
@@ -43,7 +43,7 @@ jobs:
       record: ${{ steps.read.outputs.record }}
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
@@ -135,7 +135,7 @@ jobs:
     # for review. The default branch is where it was, so the agent would
     # propose that change again. A run a person starts goes ahead.
     if: github.event_name != 'schedule' || needs.earlier.outputs.open == ''
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.KNOWLEDGE_RUNNER || 'ubuntu-latest' }}
     # The agent sets no time limit of its own, so this stops a run that hangs.
     timeout-minutes: 60
     # AGENT_API_KEY and AGENT_CLI, when it is a secret, belong in this
@@ -161,7 +161,7 @@ jobs:
       # installs packages, installs a skill everywhere but the repository
       # that publishes it, and runs a third-party agent.
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
@@ -171,10 +171,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false # keep GITHUB_TOKEN off disk while the agent runs
 
+      # No uv cache. setup-uv saves it under a key that names no job, and uv
+      # trusts the wheels it unpacked there without hashing them again. So a
+      # cache this job saved after the agent ran could be what the release
+      # restores and packs.
       - name: Set up uv
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: "3.12"
+          enable-cache: false
 
       - name: Install the lokf sidecar
         id: install-lokf
@@ -182,38 +187,54 @@ jobs:
         run: uv sync --locked
         working-directory: .lokf
 
-      # ktl-librarian is runtime state here, not source (Step 5's own hygiene
-      # note: .agents/ and .claude/ are gitignored), so a scheduled run cannot
-      # rely on it already being present in the checkout. Install it fresh,
-      # pinned to one release, on every run. A plain clone of the tagged
-      # public repo needs no `gh` flags and no token. The install target must
-      # be gitignored, so that it is invisible both to "Enforce the agent's
-      # write scope" below and to "Detect changes", and the step stops before
-      # any agent runs when it is not.
+      # Install ktl-librarian fresh on every run, pinned to one release: it is
+      # runtime state, not source, so the checkout does not carry it. A plain
+      # clone of the public tag needs no token. A host that installs from a
+      # private copy of the skills repository names it in
+      # TRUST_LADDER_SKILLS_REPO, which a sync keeps, and stores a read-only
+      # token for it as the secret KNOWLEDGE_SKILLS_TOKEN.
       #
-      # The pin is a tag and the commit that tag named when the pin was set. A
-      # tag can be moved, and what it names here is the instructions an agent
-      # follows unattended. So the step installs nothing unless the tag still
-      # names that commit. Move the two together, as the skills repository's
+      # Hide the install from git, so that neither "Enforce the agent's write
+      # scope" nor "Detect changes" sees it. Use .git/info/exclude when the
+      # host's .gitignore does not cover it: that file is never committed, so a
+      # fork whose upstream owns the root .gitignore needs no edit there. Stop
+      # before any agent runs when git still sees the install: the host commits
+      # another copy, or a rule of its own brings the path back.
+      #
+      # Install nothing unless the tag still names the pinned commit. A tag can
+      # move, and it names the instructions an agent follows unattended. Move
+      # the two pins together, as the skills repository's
       # scripts/sync-sidecar.sh does.
       #
-      # The one repository that skips this step is the one it clones from,
-      # named again in the `if`. There the skill is source under bare skills/.
-      # An install would go to .agents/skills/, which the wrapper searches
-      # first, so the pinned release would run instead of the current one. Repository identity is
-      # the switch, not a file in the tree, so nothing a host commits can
-      # change which instructions its scheduled agent runs. A fork that
-      # develops the skills changes the name in both places.
+      # Skip this step in the repository the skill comes from, named again in
+      # the `if`. There the skill is source under bare skills/, and an install
+      # under .agents/skills/, which the wrapper searches first, would shadow
+      # it. The switch is the repository's name, not a file in the tree, so
+      # nothing a host commits changes what its scheduled agent runs. A fork
+      # that develops the skills changes the name in both places.
       - name: Install the pinned ktl-librarian skill
         if: github.repository != 'noelmcloughlin/knowledge-trust-ladder'
         env:
           TRUST_LADDER_SKILLS_REPO: https://github.com/noelmcloughlin/knowledge-trust-ladder
           TRUST_LADDER_SKILLS_REF: v0.63.0 # the one pin; point your docs here instead of repeating it
           TRUST_LADDER_SKILLS_SHA: 0f46b8c9158e37a1c0505766b2ea79e242bcc352 # the commit that tag names
+          KNOWLEDGE_SKILLS_TOKEN: ${{ secrets.KNOWLEDGE_SKILLS_TOKEN }}
         run: |
           set -euo pipefail
+          # git with the read token of a private skills repository, when one is
+          # given, sent as a header to that repository's address alone.
+          skills_git() {
+            local repo="$1"; shift
+            if [ -n "${KNOWLEDGE_SKILLS_TOKEN:-}" ]; then
+              local n="${GIT_CONFIG_COUNT:-0}" auth
+              auth="$(printf 'x-access-token:%s' "$KNOWLEDGE_SKILLS_TOKEN" | base64 | tr -d '\n')"
+              env GIT_CONFIG_COUNT="$((n + 1))" "GIT_CONFIG_KEY_$n=http.${repo%/}.extraheader" "GIT_CONFIG_VALUE_$n=AUTHORIZATION: basic $auth" git "$@"
+            else
+              git "$@"
+            fi
+          }
           tmp="$(mktemp -d)"
-          git -c advice.detachedHead=false clone --quiet --depth 1 --branch "$TRUST_LADDER_SKILLS_REF" "$TRUST_LADDER_SKILLS_REPO" "$tmp"
+          skills_git "$TRUST_LADDER_SKILLS_REPO" -c advice.detachedHead=false clone --quiet --depth 1 --branch "$TRUST_LADDER_SKILLS_REF" "$TRUST_LADDER_SKILLS_REPO" "$tmp"
           got="$(git -C "$tmp" rev-parse HEAD)"
           if [ "$got" != "$TRUST_LADDER_SKILLS_SHA" ]; then
             echo "::error::$TRUST_LADDER_SKILLS_REF names commit $got, and this workflow pins $TRUST_LADDER_SKILLS_SHA. Either the tag moved or one pin was edited without the other, so nothing was installed."
@@ -223,8 +244,19 @@ jobs:
           rm -rf .agents/skills/ktl-librarian
           cp -R "$tmp/skills/ktl-librarian" .agents/skills/
           test -f .agents/skills/ktl-librarian/SKILL.md
-          if ! git check-ignore -q .agents/skills/ktl-librarian/SKILL.md; then
-            echo "::error::git does not ignore .agents/, where the skill was installed, so the write-scope check would fail the run. Add .agents/, .claude/ and skills-lock.json to the root .gitignore, as ktl-sidecar's repo hygiene note says."
+          seen() { git status --porcelain --untracked-files=all -- .agents/skills/ktl-librarian; }
+          tracked="$(git ls-files -- .agents/skills/ktl-librarian)"
+          if [ -n "$(seen)" ] && [ -z "$tracked" ]; then
+            exclude="$(git rev-parse --git-path info/exclude)"
+            mkdir -p "$(dirname "$exclude")"
+            printf '%s\n' /.agents/skills/ktl-librarian/ >> "$exclude"
+            echo "::notice::The host's .gitignore does not cover .agents/skills/ktl-librarian/, so this checkout's .git/info/exclude does."
+          fi
+          if [ -n "$(seen)" ] && [ -n "$tracked" ]; then
+            echo "::error::The host commits .agents/skills/ktl-librarian/, and the pinned install changes it, so the write-scope check would fail the run. Untrack it with git rm -r --cached and keep it ignored."
+            exit 1
+          elif [ -n "$(seen)" ]; then
+            echo "::error::A rule in the host's .gitignore makes git see .agents/skills/ktl-librarian/, where the skill is installed, so the write-scope check would fail the run. Remove the rule that brings that path back."
             exit 1
           fi
           echo "Installed ktl-librarian@$TRUST_LADDER_SKILLS_REF ($TRUST_LADDER_SKILLS_SHA)"
@@ -233,11 +265,15 @@ jobs:
       # CLI needs Node 22 or newer, which a runner image does not promise. An
       # agent installed another way needs a step of its own here, before the
       # wrapper runs; the job already has git, bash, uv and Python.
+      # No npm cache either. setup-node turns one on by itself when the
+      # host's package.json names npm, and it would save the agent's npx
+      # folder for the next run to start from.
       - name: Set up Node for the agent
         if: vars.KNOWLEDGE_LIBRARIAN_ENABLED == 'true'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
+          package-manager-cache: false
 
       # Set this up under Settings -> Secrets and variables -> Actions: the
       # variables on the repository, and the secrets on the
@@ -316,10 +352,11 @@ jobs:
           bash .lokf/scripts/knowledge-librarian.sh
 
       # The wrapper enforces this same boundary itself, immediately after the
-      # agent returns. It also restores .git/config and .git/hooks around the
-      # call, from an EXIT trap, so a failing agent or a cancelled job restores
-      # too. That keeps a tampered core.fsmonitor or hooksPath from defeating
-      # either check (see the wrapper's own comments). This is the second,
+      # agent returns. It also restores .git/config, .git/hooks and .git/info
+      # around the call, from an EXIT trap, so a failing agent or a cancelled
+      # job restores too. That keeps a tampered core.fsmonitor or hooksPath, or
+      # an exclude rule the agent added, from defeating either check (see the
+      # wrapper's own comments). This is the second,
       # independent layer: it runs even when the wrapper did not get to (agent
       # disarmed, early exit), so no path outside the bundle can reach
       # `publish` in the patch.
@@ -408,7 +445,10 @@ jobs:
           # are kept.
           [ -e .lokf/feedback.md ] && git add -A -- .lokf/feedback.md || true
           [ -e .lokf/questions.md ] && git add -A -- .lokf/questions.md || true
-          git diff --cached --binary > "$RUNNER_TEMP/librarian.patch"
+          # No renames, so a file moved into the bundle shows its old path as
+          # a deletion, which `publish` refuses. `publish` refuses a rename
+          # line too, from a patch built some other way.
+          git diff --cached --binary --no-renames > "$RUNNER_TEMP/librarian.patch"
           # The lines the pen took from the patch file's `handoff`, or none.
           [ -f "$RUNNER_TEMP/handoff.txt" ] || : > "$RUNNER_TEMP/handoff.txt"
 
@@ -427,19 +467,24 @@ jobs:
     name: Open the review PR (privileged, no agent)
     needs: [earlier, refresh]
     if: needs.refresh.outputs.changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.KNOWLEDGE_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     permissions:
       contents: write # create/push the librarian branch
       pull-requests: write # open the review PR
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The repository's scripts run over files the agent wrote before
+          # anything is pushed, so the token stays off disk. The push step
+          # alone holds it, in the push address.
+          persist-credentials: false
 
       - name: Download the bundle patch
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -447,8 +492,10 @@ jobs:
           name: librarian-bundle-patch
           path: ${{ runner.temp }}
 
-      - name: Commit and push the librarian branch
-        id: push
+      # This step holds no token: the checkout kept none on disk, and the
+      # push below is a step of its own.
+      - name: Check and commit the bundle patch
+        id: check
         run: |
           set -euo pipefail
           # Trust nothing the `refresh` job decided on its own. It shared a
@@ -463,6 +510,19 @@ jobs:
           if [ -n "${bad//[$'\n\t ']/}" ]; then
             echo "::error::Patch touches paths outside the allowed bundle:"
             printf '%s\n' "$bad" | sed '/^$/d; s/^/  /'
+            exit 1
+          fi
+          # --numstat lists a rename or a copy by its new name alone, so a
+          # file moved into the bundle from outside it would pass the check
+          # above. A bundle change only adds, edits and deletes plain files, so
+          # a rename, a copy, a mode change, a link or a submodule is refused,
+          # as knowledge-sync.sh refuses them.
+          summary="$(git -c core.quotePath=false apply --summary "$RUNNER_TEMP/librarian.patch")"
+          bad="$(printf '%s\n' "$summary" | grep -E '^ (rename|copy|mode change) ' || true)"
+          bad+=$'\n'"$(printf '%s\n' "$summary" | grep -E '^ (create|delete) mode ' | grep -vE '^ (create|delete) mode 100(644|755) ' || true)"
+          if [ -n "${bad//[$'\n\t ']/}" ]; then
+            echo "::error::Patch does more than add, edit and delete plain files:"
+            printf '%s\n' "$bad" | sed '/^$/d; s/^ */  /'
             exit 1
           fi
           # This skill never writes a human: confirmation (see ktl-librarian's
@@ -485,8 +545,13 @@ jobs:
           # text a person wrote. knowledge-apply.sh refuses each of those before
           # it writes, in a job the agent shared. This job did not share it, and
           # the script comes from this checkout, which the path check above
-          # keeps the patch out of.
-          if [ -f .lokf/scripts/knowledge-provenance.sh ] && ! bash .lokf/scripts/knowledge-provenance.sh --unattended; then
+          # keeps the patch out of. A missing script fails the run, since
+          # nothing else here reads the events.
+          if [ ! -f .lokf/scripts/knowledge-provenance.sh ]; then
+            echo "::error::.lokf/scripts/knowledge-provenance.sh is missing, so nothing can check the patch against a person's record. Restore it with ktl-sidecar or the sync."
+            exit 1
+          fi
+          if ! bash .lokf/scripts/knowledge-provenance.sh --unattended; then
             echo "::error::Patch touches a person's record - the scheduled librarian must never do that."
             exit 1
           fi
@@ -505,18 +570,25 @@ jobs:
           git checkout -b "$branch"
           git commit -m "chore(lokf): scheduled librarian refresh of the knowledge bundle" \
                      -m "Automated Karpathy-rule pass. Review required - do not auto-merge."
-          git push --set-upstream origin "$branch"
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      # The job's token reaches this step alone, in the push address, as in
+      # knowledge-sync.yaml. It runs nothing the repository holds.
+      - name: Push the librarian branch
+        env:
+          PUSH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.check.outputs.branch }}
+        run: git push --quiet "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"
 
       - name: Open the review PR
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
-          BRANCH: ${{ steps.push.outputs.branch }}
+          BRANCH: ${{ steps.check.outputs.branch }}
           LOKF_OUTCOME: ${{ needs.refresh.outputs.validate_outcome }}
           CONVENTIONS_OUTCOME: ${{ needs.refresh.outputs.conventions_outcome }}
           RETRIEVAL: ${{ needs.refresh.outputs.retrieval }}
-          HEALTH: ${{ steps.push.outputs.health }}
-          CHANGES: ${{ steps.push.outputs.changes }}
+          HEALTH: ${{ steps.check.outputs.health }}
+          CHANGES: ${{ steps.check.outputs.changes }}
           HANDOFF_FILE: ${{ runner.temp }}/handoff.txt
           OPEN_PR: ${{ needs.earlier.outputs.open }}
           DECLINED_PR: ${{ needs.earlier.outputs.declined }}

@@ -66,7 +66,7 @@ jobs:
   pack:
     name: Validate and pack the bundle (read-only)
     if: github.event_name == 'workflow_dispatch' || vars.KNOWLEDGE_RELEASE_ENABLED == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.KNOWLEDGE_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: read
@@ -77,7 +77,7 @@ jobs:
       TAG: ${{ inputs.tag || github.event.release.tag_name }}
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
@@ -128,22 +128,28 @@ jobs:
             git show "refs/tags/$1:.lokf/justfile" 2>/dev/null | sed -n 's/^schema := "\([^"]*\)"$/\1/p' | head -n 1 || true
           }
           # The domain schema and the local files it imports in turn, as paths
-          # in the repository. lokf.yaml is left out, because the released copy
-          # imports it by name. Nothing is installed yet, so python3 reads the
-          # import lines as text, whether a block list or a flow list.
+          # in the repository. The copy of lokf.yaml, in .lokf/schema/ or at
+          # the root of .lokf/, is left out, since the released copy imports
+          # it by name.
+          # Nothing is installed yet, so python3 reads the import lines as
+          # text, whether a block list or a flow list.
           schema_files() {
             [ -n "$1" ] || return 0
+            if ! python3 -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null; then
+              echo "::error::Reading the imports of the domain schema needs python3 3.9 or later on the runner." >&2
+              return 1
+            fi
             python3 -I - "$1" <<'PY'
           import pathlib
           import re
           import sys
 
           repo = pathlib.Path.cwd().resolve()
-          core = (repo / ".lokf" / "lokf.yaml").resolve()
+          core = {(repo / ".lokf" / "schema" / "lokf.yaml").resolve(), (repo / ".lokf" / "lokf.yaml").resolve()}
           todo, seen = [(repo / ".lokf" / sys.argv[1]).resolve()], set()
           while todo:
               path = todo.pop()
-              if path in seen or path == core or not path.is_relative_to(repo) or not path.is_file():
+              if path in seen or path in core or not path.is_relative_to(repo) or not path.is_file():
                   continue
               seen.add(path)
               print(path.relative_to(repo))
@@ -173,8 +179,10 @@ jobs:
           }
           # Both tags are spelt in full, so a name is never read as an option
           # or as a branch of the same name.
-          gh release view "$TAG" --json tagName --jq .tagName >/dev/null \
-            || { echo "::error::No release exists for tag $TAG. Create the release first, then run this workflow again."; exit 1; }
+          if ! said="$(gh release view "$TAG" --json tagName --jq .tagName 2>&1 >/dev/null)"; then
+            echo "::error::The release for tag $TAG could not be read (${said:-gh said nothing}). If there is none, create it first, then run this workflow again."
+            exit 1
+          fi
           read -r tree path < <(bundle_tree "$TAG") || { echo "::error::No bundle folder at $TAG"; exit 1; }
           # A command substitution stops the step when schema_files fails,
           # where a process substitution would hide the failure.
@@ -215,11 +223,16 @@ jobs:
             echo "::notice::The bundle and domain schema at $TAG are identical to the ones released with $prev (tree ${tree:0:12}), so no zip is attached."
           fi
 
+      # No uv cache, so the zip is built from files checked against
+      # .lokf/uv.lock. A cache is shared by every job on the default branch,
+      # the librarian's agent job among them, and uv trusts the wheels it
+      # unpacked there without hashing them again.
       - name: Set up uv
         if: steps.compare.outputs.changed == 'true'
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: "3.12"
+          enable-cache: false
 
       # --locked, as the registrar's gate installs it: what .lokf/uv.lock
       # names, each file checked against its recorded hash.
@@ -294,14 +307,15 @@ jobs:
       # The domain schema, when the justfile names one: the file, under a name
       # that carries the tag and the host, and its checksum. The line is read
       # as text, relative to .lokf/ as the justfile's recipes read it. It may
-      # name a file beside the bundle, or one in a linkml-sidecar project
-      # elsewhere in the repository, never one outside it.
+      # name a copy in .lokf/schema/, or a file elsewhere in the repository,
+      # as an older linkml-sidecar names its project's schema, never one
+      # outside it.
       #
       # A domain that admits this bundle puts the released schema beside the
       # bundle with LOKF's own lokf.yaml, so the released copy must import
-      # LOKF core by the name `lokf`. A linkml-sidecar schema imports it by a
-      # relative path to .lokf/lokf.yaml, and the step rewrites that one import
-      # in the copy.
+      # LOKF core by the name `lokf`. An older linkml-sidecar schema imports
+      # it by a relative path to .lokf/lokf.yaml, and the step rewrites that
+      # one import in the copy, as it does an import of .lokf/schema/lokf.yaml.
       #
       # Any other local file would not resolve beside the bundle, so a schema
       # that imports one, such as a host's composite of two `lokf adapt`
@@ -332,7 +346,7 @@ jobs:
             *) echo "::error::.lokf/justfile names the schema $schema, which is outside this repository"; exit 1 ;;
           esac
           asset="schema-${TAG//\//-}-$NAME.yaml"
-          .lokf/.venv/bin/python -I - "$path" "$repo/.lokf/lokf.yaml" "$RUNNER_TEMP/release/$asset" <<'PY'
+          .lokf/.venv/bin/python -I - "$path" "$RUNNER_TEMP/release/$asset" <<'PY'
           import copy
           import pathlib
           import re
@@ -340,8 +354,13 @@ jobs:
 
           import yaml
 
-          source, core, target = (pathlib.Path(p) for p in sys.argv[1:])
-          core, repo = core.resolve(), pathlib.Path.cwd().resolve()
+          source, target = (pathlib.Path(p) for p in sys.argv[1:])
+          repo = pathlib.Path.cwd().resolve()
+          # The copy of LOKF core is in .lokf/schema/, or at the root of .lokf/,
+          # where an older sidecar or linkml-sidecar keeps it. An import of
+          # either one is an import of `lokf`, as the compare step reads it.
+          cores = [(repo / ".lokf" / folder / "lokf.yaml").resolve() for folder in ("schema", ".")]
+          core = next((path for path in cores if path.is_file()), cores[0])
           text = source.read_text(encoding="utf-8")
           doc = yaml.safe_load(text)
           imports = (doc.get("imports") or []) if isinstance(doc, dict) else []
@@ -405,7 +424,7 @@ jobs:
               path = local(source, entry)
               if path is None:
                   continue
-              if path != core:
+              if path not in cores:
                   parts.append(path)
                   continue
               line = re.compile(r"^(\s*-\s*)([\"']?)" + re.escape(entry) + r"\2(\s*(#.*)?)$", re.M)
@@ -421,13 +440,13 @@ jobs:
           prefixes, settings = dict(doc.get("prefixes") or {}), dict(doc.get("settings") or {})
           curi_maps = list(doc.get("default_curi_maps") or [])
           core_doc = load(core, source)
-          kept, seen = [], {source.resolve(), core}
+          kept, seen = [], {source.resolve(), *cores}
           queue = [(source, entry) for entry in doc.get("imports") or []]
           while queue:
               base, entry = queue.pop(0)
               path = local(base, entry)
-              if path is None or path == core:
-                  name = "lokf" if path == core else entry
+              if path is None or path in cores:
+                  name = "lokf" if path in cores else entry
                   if name not in kept:
                       kept.append(name)
                   continue
@@ -511,7 +530,7 @@ jobs:
     name: Attach the zip to the release (privileged)
     needs: pack
     if: needs.pack.outputs.changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.KNOWLEDGE_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     permissions:
       contents: write # upload release assets
@@ -521,7 +540,7 @@ jobs:
       TAG: ${{ inputs.tag || github.event.release.tag_name }}
     steps:
       - name: Harden the runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
@@ -541,9 +560,11 @@ jobs:
       # each zip. Anyone can check one with `gh attestation verify <file> -R
       # <owner>/<repo>`. GitHub stores attestations for public repositories on
       # every plan; a private repository needs GitHub Enterprise Cloud, so the
-      # step skips itself there.
+      # step skips itself there unless the repository variable
+      # KNOWLEDGE_ATTEST_PRIVATE is "true". A domain's build verifies a
+      # member's attestation, so a private member needs it.
       - name: Attest build provenance
-        if: ${{ !github.event.repository.private }}
+        if: ${{ !github.event.repository.private || vars.KNOWLEDGE_ATTEST_PRIVATE == 'true' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           # A line that matches nothing is skipped; the zip always matches.
