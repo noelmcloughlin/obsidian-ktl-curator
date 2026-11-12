@@ -258,7 +258,7 @@ const normalizedTypeSets = new WeakMap<string[], Set<string>>();
 
 /** Whether `type` names a class in `knownTypes`: the pinned schema's classes by
  *  default, or the vault's own list once Settings → Type vocabulary has added
- *  a domain schema's classes to it. */
+ *  a domain vocabulary's classes to it. */
 export function classify(type: string | null, knownTypes: string[] = KNOWN_LOKF_TYPES): "known" | "unknown" {
   if (!type) return "unknown";
   let set = normalizedTypeSets.get(knownTypes);

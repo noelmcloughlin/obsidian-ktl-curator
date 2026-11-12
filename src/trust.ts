@@ -436,7 +436,7 @@ function policyRowForms(cls: string): string[] {
  *  cell matches "(\d+)\s*months" overrides that class; anything unparseable
  *  leaves the setting in force. Returns a map keyed by normalized class name.
  *  `knownTypes` is the vocabulary a row may name - the vault's Settings →
- *  Type vocabulary list, so a domain schema's classes can carry an interval
+ *  Type vocabulary list, so a domain vocabulary's classes can carry an interval
  *  of their own; omitted, the pinned schema's classes apply. */
 export function parseCurationPolicyTable(body: string, knownTypes: string[] = KNOWN_LOKF_TYPES): Map<string, number> {
   const overrides = new Map<string, number>();

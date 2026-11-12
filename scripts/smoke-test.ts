@@ -144,7 +144,7 @@ section("bundle.ts - frontmatter / classify / relations", () => {
   expect("known types come from the pinned schema (Role present)", KNOWN_LOKF_TYPES.includes("Role"), KNOWN_LOKF_TYPES.join(", "));
   expect("hard-coded baseline predates Role", !HARDCODED_LOKF_TYPES.includes("Role"), HARDCODED_LOKF_TYPES.join(", "));
   expect("manifest carries a schema version", SCHEMA_VERSION.length > 0, SCHEMA_VERSION);
-  // A domain schema's class is unknown by default and known once listed -
+  // A domain vocabulary's class is unknown by default and known once listed -
   // the Settings → Type vocabulary case for a bundle validated with --schema.
   const withDomain = [...KNOWN_LOKF_TYPES, "Module"];
   expect("classify domain class unknown by default", classify("Module") === "unknown", classify("Module"));
@@ -525,7 +525,7 @@ section("trust.ts - stale_after proposal and policy table", () => {
   expect("policy override applies to matching class", overrides.get("service") === 3, JSON.stringify([...overrides]));
   expect("malformed row (no number of months) leaves no override", !overrides.has("policy"), JSON.stringify([...overrides]));
 
-  // A row naming a domain schema's class is honoured only once that class is
+  // A row naming a domain vocabulary's class is honoured only once that class is
   // in the vocabulary handed in - the Settings → Type vocabulary list.
   const domainRow = "| Module | 6 months |\n| Service | 3 months |";
   const defaultVocab = parseCurationPolicyTable(domainRow);
@@ -988,13 +988,13 @@ section("settings-model.ts - mergeSavedSettings", () => {
   expect("a setting the plugin no longer has is dropped", stray["removedSetting"] === undefined, JSON.stringify(stray["removedSetting"]));
 
   // The upgrade rule, both ways round: an untouched list gains Role, an edited
-  // one (a domain schema's classes, typically) is left exactly as written.
+  // one (a domain vocabulary's classes, typically) is left exactly as written.
   const untouched = mergeSavedSettings({ knownTypes: [...HARDCODED_LOKF_TYPES] });
   expect("a list still at the pre-schema default is refreshed", untouched.knownTypes.includes("Role"), untouched.knownTypes.join());
 
   const domain = [...KNOWN_LOKF_TYPES, "Module", "Programme"];
   const customised = mergeSavedSettings({ knownTypes: domain });
-  expect("a domain-schema list is preserved verbatim", customised.knownTypes.join() === domain.join(), customised.knownTypes.join());
+  expect("a domain-vocabulary list is preserved verbatim", customised.knownTypes.join() === domain.join(), customised.knownTypes.join());
 
   const shortened = mergeSavedSettings({ knownTypes: ["Dataset"] });
   expect("a deliberately narrowed list is preserved too", shortened.knownTypes.join() === "Dataset", shortened.knownTypes.join());

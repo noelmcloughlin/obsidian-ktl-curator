@@ -31,7 +31,7 @@ export interface CuratorSettings {
   /** The classes a concept's `type` may name without the report counting it
    *  as outside the vocabulary, and that `policies/knowledge-curation.md` may
    *  set an interval for. Defaults to the pinned schema's classes; a bundle
-   *  validated against a domain schema (`lokf validate --schema`) lists that
+   *  validated against a domain vocabulary (`lokf validate --schema`) lists that
    *  schema's classes here too, since the schema itself sits outside the
    *  vault and cannot be read. The same list as KTL Registrar's *Known LOKF
    *  types*. */

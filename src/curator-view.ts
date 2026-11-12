@@ -228,7 +228,7 @@ export class KtlCuratorView extends ItemView {
     } else {
       const types = [...new Set(report.vocabularyIssues.map((v) => v.message))].join("; ");
       vocab.setText(
-        `Vocabulary fit: ${report.vocabularyIssues.length} concept(s) don't fit the known vocabulary (${types}). A domain schema's classes belong under Settings → Type vocabulary.`
+        `Vocabulary fit: ${report.vocabularyIssues.length} concept(s) don't fit the known vocabulary (${types}). A domain vocabulary's classes belong under Settings → Type vocabulary.`
       );
     }
 
