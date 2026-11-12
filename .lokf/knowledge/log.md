@@ -1,5 +1,9 @@
 # Change Log
 
+## 2026-11-12
+
+* **Changed**: concepts call the bundle's file in `.lokf/schema/` a domain vocabulary, and keep *domain schema* for a LinkML project's model of a domain.
+
 ## 2026-11-02
 
 * **Changed**: Contributing's releasing-type bullet now names the breaking `!` title too, as `CONTRIBUTING.md` has since #109; its sources add `scripts/smoke-test.ts`, the coverage sweep's gap for the pure-module list it already describes.

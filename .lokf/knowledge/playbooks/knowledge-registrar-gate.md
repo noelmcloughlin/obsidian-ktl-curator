@@ -18,7 +18,7 @@ dependsOn:
   - https://w3id.org/ktl/curator/knowledge/references/lokf-toolkit
 generated:
   by: process:ktl-librarian
-  at: "2026-11-02T13:23:24Z"
+  at: "2026-11-12T14:52:03Z"
 status: draft
 verified:
   - by: process:ktl-librarian
@@ -33,7 +33,7 @@ The workflow runs on a pull request that touches `.lokf/**`, `knowledge_bundle/*
 
 ## validate: "Validate the LOKF bundle"
 
-This job runs on every trigger. It checks out the full history with `persist-credentials: false`, and installs the toolkit with `uv sync --locked`, so it runs the toolkit `.lokf/uv.lock` names, each file checked against its recorded hash. This repository's `.lokf/pyproject.toml` names `rust-just`, so it then runs the justfile's `lokf-check-refs` recipe through `uv run --locked just`, at the version `.lokf/uv.lock` pins (`1.59.0`); a host whose lock holds no such pin falls back to `uvx --from rust-just==1.47.0 just`. That recipe runs `lokf validate --check-refs`: schema validation, plus a check that every typed-relation target in the bundle's own namespace resolves to a concept. A host with a domain schema names it as `schema :=` in `.lokf/justfile` and the recipe passes it, so no host edits the workflow. This repository's `schema` is empty.
+This job runs on every trigger. It checks out the full history with `persist-credentials: false`, and installs the toolkit with `uv sync --locked`, so it runs the toolkit `.lokf/uv.lock` names, each file checked against its recorded hash. This repository's `.lokf/pyproject.toml` names `rust-just`, so it then runs the justfile's `lokf-check-refs` recipe through `uv run --locked just`, at the version `.lokf/uv.lock` pins (`1.59.0`); a host whose lock holds no such pin falls back to `uvx --from rust-just==1.47.0 just`. That recipe runs `lokf validate --check-refs`: schema validation, plus a check that every typed-relation target in the bundle's own namespace resolves to a concept. A host with a domain vocabulary names it as `schema :=` in `.lokf/justfile` and the recipe passes it, so no host edits the workflow. This repository's `schema` is empty.
 
 The last step runs `bash scripts/knowledge-conventions.sh knowledge`, which checks what `lokf validate` cannot see: one ISO-date heading per day in `log.md`, quoted timestamps, `verified` as a list with one librarian event, and open questions in the shape the curator reads. On a pull request the step passes the merge base as `--since`, so rule 14 reads each of the pull request's commits: a commit that records a person's confirmation changes only the verdict. A scheduled run has no base and skips rule 14.
 

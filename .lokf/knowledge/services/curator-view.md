@@ -5,16 +5,16 @@ title: Curator side panel
 description: "The \"Curate\" ItemView - the read-only trust report (health chips, ranked queue, open questions, active-note card) and the one-concept-at-a-time review card (evidence-first: source, claim, current trust, then the question)."
 resource: src/curator-view.ts
 isPartOf:
-- https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
+  - https://w3id.org/ktl/curator/knowledge/services/ktl-curator-plugin
 dependsOn:
-- https://w3id.org/ktl/curator/knowledge/services/trust-engine
+  - https://w3id.org/ktl/curator/knowledge/services/trust-engine
 generated:
   by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  at: "2026-11-12T14:52:03Z"
 status: draft
 verified:
-- by: process:ktl-librarian
-  at: "2026-10-16T23:47:52Z"
+  - by: process:ktl-librarian
+    at: "2026-10-16T23:47:52Z"
 ---
 
 # Overview
@@ -29,7 +29,7 @@ verified:
   - "Open questions the librarian left";
   - the feedback, vocabulary and remaining lines.
 
-  Since 2026-09-14 the vocabulary line reads "don't fit the known vocabulary", and says a domain schema's classes belong under *Settings → Type vocabulary*. It reads "fine" once every class is listed. The `ktl-curator` skill's `references/trust-fields.md` was reworded to match the same day. There the skill reads a host's schema from the justfile, which the plugin cannot see.
+  Since 2026-09-14 the vocabulary line reads "don't fit the known vocabulary", and says a domain vocabulary's classes belong under *Settings → Type vocabulary*. It reads "fine" once every class is listed. The `ktl-curator` skill's `references/trust-fields.md` was reworded to match the same day. There the skill reads a host's schema from the justfile, which the plugin cannot see.
 
   When `plugin.hasNoBundle()` is true, an explanatory message replaces the report. It says there is no knowledge_bundle folder with an index.md and no LOKF header on the root index.md, so nothing is scanned. It points at KTL Registrar's header command, the `ktl-sidecar` skill, and the break-glass "Treat the vault root as the bundle" setting.
 
