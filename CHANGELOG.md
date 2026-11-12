@@ -10,6 +10,12 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 - **The file a bundle's `schema :=` line names is called its *domain vocabulary*, as Knowledge Trust Ladder now calls it.** The settings text, the docs and the link to the librarian's recipe, `domain-vocabulary.md`, follow. The setting still answers a search for "domain schema".
 
+## [1.7.2] - 2026-11-12
+
+### Security
+
+- **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.63.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.61.0...v0.63.0).** The release changed `.github/workflows/knowledge-registrar.yaml`, `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.github/workflows/knowledge-sync.yaml`, `.lokf/scripts/knowledge-librarian.sh`, `.lokf/scripts/knowledge-preflight.sh`, `.lokf/scripts/knowledge-sync.sh`, `.lokf/justfile`, `website/astro.config.mjs`, `website/package-lock.json`, `website/package.json`, `website/scripts/markdown-ktl.mjs`, `website/scripts/sync.mjs` and `.github/workflows/knowledge-website.yaml` here. No plugin change.
+
 ## [1.7.1] - 2026-11-02
 
 ### Security
