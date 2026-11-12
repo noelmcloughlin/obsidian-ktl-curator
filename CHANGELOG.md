@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The file a bundle's `schema :=` line names is called its *domain vocabulary*, as Knowledge Trust Ladder now calls it.** The settings text, the docs and the link to the librarian's recipe, `domain-vocabulary.md`, follow. The setting still answers a search for "domain schema".
+
 ## [1.7.2] - 2026-11-12
 
 ### Security

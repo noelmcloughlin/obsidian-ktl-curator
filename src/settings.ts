@@ -140,8 +140,8 @@ export class KtlCuratorSettingTab extends PluginSettingTab {
               SCHEMA_VERSION
                 ? `Comma-separated classes a concept's type may name. Defaults track the pinned LOKF schema ${SCHEMA_VERSION}; an untouched list is refreshed automatically on upgrade.`
                 : "Comma-separated classes a concept's type may name."
-            } A bundle validated against a domain schema (lokf validate --schema <file>) lists that schema's classes here too - the plugin cannot read the schema, which sits outside the vault - so they stop counting against Vocabulary fit and can carry a review interval. Keep the list the same as KTL Registrar's.`,
-            aliases: ["vocabulary", "classes", "domain schema", "custom type", "knownTypes", "vocabulary fit"],
+            } A bundle validated against a domain vocabulary (lokf validate --schema <file>) lists its classes here too - the plugin cannot read that file, which sits outside the vault - so they stop counting against Vocabulary fit and can carry a review interval. Keep the list the same as KTL Registrar's.`,
+            aliases: ["vocabulary", "classes", "domain vocabulary", "domain schema", "custom type", "knownTypes", "vocabulary fit"],
             control: { type: "textarea", key: "knownTypes", rows: 3 },
           },
         ],
