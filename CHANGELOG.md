@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.7.4] - 2026-11-15
+
 ### Added
 
 - **`scorecard.yml` publishes this repository's OpenSSF Scorecard.**
