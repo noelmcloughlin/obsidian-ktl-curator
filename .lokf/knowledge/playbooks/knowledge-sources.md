@@ -7,7 +7,7 @@ genre: how-to
 resource: .
 generated:
   by: process:ktl-librarian
-  at: "2026-10-27T01:33:35Z"
+  at: "2026-11-15T03:15:58Z"
 status: draft
 verified:
   - by: process:ktl-librarian
@@ -32,7 +32,7 @@ This map lists where the bundle's concepts come from, and how a later librarian 
 | `docs/architecture.md` | what a bundle is, the plugin's role, the two-vaults layout, the Privacy section and the `src/` layout | `Policy` (`no-telemetry.md`) | re-reading Privacy for a changed write surface |
 | `docs/for-the-curious.md` | the trust labels and their fields, the four-tier trust model and where this plugin sits on it, and what it leaves to others | `Explanation` | re-reading for a changed relationship to KTL Registrar |
 | `README.md`, `docs/install.md`, `docs/using.md` | the doorway, whose links now lead to the user guide's pages on the website, and the user guide: install, the panel, the review card, the in-editor aids, the commands and the settings | covered by the `services/` concepts | re-reading for a feature no service concept describes |
-| `website/README.md`, `website/site.config.mjs`, `.github/workflows/knowledge-website.yaml` | the knowledge website: what each page is built from, the site's settings, and the build and GitHub Pages deployment | `Playbook` (`knowledge-website.md`) | re-reading the README's page list and "What to edit", and diffing the workflow's jobs and their `if:` conditions against `playbooks/knowledge-website.md`; the rest of `website/` is the `ktl-website` skill's code and has no concept of its own |
+| `website/README.md`, `website/site.toml`, `.github/workflows/knowledge-website.yaml` | the knowledge website: what each page is built from, the site's settings, and the build and GitHub Pages deployment | `Playbook` (`knowledge-website.md`) | re-reading the README's page list and "What to edit", and diffing the workflow's jobs and their `if:` conditions against `playbooks/knowledge-website.md`; the rest of `website/` is the `ktl-website` skill's code and has no concept of its own |
 | `.github/workflows/knowledge-registrar.yaml`, `.lokf/curators/` | the gate a `human:` confirmation must pass before it merges, and the curator keys its second signature check reads | `Playbook` (`knowledge-registrar-gate.md`) | diffing the three jobs (`validate`, `provenance`, `attestation`) against the `ktl-sidecar` template; `SECURITY.md` says the copy keeps the template's jobs unchanged, so any other difference is drift to report, not fix |
 | `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.lokf/scripts/`, `.lokf/m365/` | the scheduled librarian, the bundle release and the sidecar's scripts; no concept of their own, since the design is the `ktl-sidecar` template's and `SECURITY.md` links to it | none | diffing each against its template the same way |
 | `.github/workflows/knowledge-sync.yaml`, `.github/PULL_REQUEST_TEMPLATE/knowledge-sync.md`, `.lokf/scripts/knowledge-sync.sh` | the weekly sync that keeps the sidecar's copies and the skills pin at the newest release of Knowledge Trust Ladder, and the template for the pull request it opens; the design is the `ktl-sidecar` template's, so the concept says only what a pin move copies | `Playbook` (`contributing.md`) | diffing each against its template the same way, and re-reading the sync script's header and the workflow's against `playbooks/contributing.md` |
