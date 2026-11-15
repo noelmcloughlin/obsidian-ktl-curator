@@ -16,7 +16,7 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 - **The knowledge website is built with Hugo from the ktl-website templates**, set by `website/site.toml`, in place of the Astro site.
 - **The release job installs semantic-release with `npm ci` from `.github/release/package-lock.json`**, which pins every package it pulls in by hash.
-- **The project requires Python 3.11 or later**, since Python 3.10's support ended in October 2026.
+- **The bundle's sidecar and the website's tools require Python 3.11 or later**, as KTL's templates do.
 
 ### Security
 
