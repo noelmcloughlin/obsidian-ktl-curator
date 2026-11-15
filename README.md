@@ -5,6 +5,11 @@
 
 # KTL Curator
 
+[![Node.js build](https://github.com/noelmcloughlin/obsidian-ktl-curator/actions/workflows/build.yml/badge.svg)](https://github.com/noelmcloughlin/obsidian-ktl-curator/actions/workflows/build.yml)
+[![Licence](https://img.shields.io/github/license/noelmcloughlin/obsidian-ktl-curator?label=licence)](LICENSE)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/noelmcloughlin/obsidian-ktl-curator/badge)](https://scorecard.dev/viewer/?uri=github.com/noelmcloughlin/obsidian-ktl-curator)
+[![KTL scorecard](https://img.shields.io/endpoint?url=https://noelmcloughlin.github.io/obsidian-ktl-curator/badge.json)](https://noelmcloughlin.github.io/obsidian-ktl-curator/health/)
+
 > "We lasso the world with networks of silver-coloured Italian hemp,\
 > We bind down the world into some sort of order;\
 > We balance the earth in a pair of scales of our own devising."\

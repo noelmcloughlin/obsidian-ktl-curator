@@ -95,11 +95,23 @@ jobs:
                   [ -f styles.css ] && echo "exists=true" >> "$GITHUB_OUTPUT" || echo "exists=false" >> "$GITHUB_OUTPUT"
 
             - name: Attest build provenance
+              id: attest
               uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
               with:
                   subject-path: |
                       main.js
                       ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }}
+
+            # The release carries that attestation too, as
+            # provenance-<tag>-<name>.intoto.jsonl, so a reader can check a file
+            # without GitHub's attestation API: `gh attestation verify <file>
+            # --bundle <that file> -R <owner>/<repo>`. OpenSSF Scorecard's
+            # Signed-Releases check looks for it.
+            - name: Keep the provenance beside the files
+              env:
+                  BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+                  TAG: ${{ inputs.tag || github.ref_name }}
+              run: cp -- "$BUNDLE" "provenance-${TAG}-${GITHUB_REPOSITORY#*/}.intoto.jsonl"
 
             - name: Create release
               env:
@@ -109,4 +121,5 @@ jobs:
                     gh release create "$TAG" \
                         --title="$TAG" \
                         --draft \
-                        main.js manifest.json ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }}
+                        main.js manifest.json ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }} \
+                        provenance-*.intoto.jsonl

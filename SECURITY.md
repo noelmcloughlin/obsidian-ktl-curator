@@ -39,7 +39,7 @@ Every workflow pins its actions to commit SHAs, declares `permissions: {}` at th
 
 If every inherited guard failed, the worst case is a pull request confined to the bundle, which only the maintainer can merge, after reading it. Nothing on that path reaches `src/`, a release artifact or a published release.
 
-`main` blocks deletion and force-pushes and requires linear history, deliberately nothing more; secret scanning and push protection are on; CodeQL is off because nothing here has a network surface or a runtime dependency. The reasons are under [Repository hardening](https://w3id.org/ktl/docs/threat-model/#repository-hardening).
+`main` blocks deletion and force-pushes and requires linear history, deliberately nothing more; secret scanning and push protection are on; `codeql.yml` runs CodeQL on each pull request, each push to `main` and weekly; `scorecard.yml` publishes the OpenSSF Scorecard. The reasons are under [Repository hardening](https://w3id.org/ktl/docs/threat-model/#repository-hardening).
 
 ## Not covered
 

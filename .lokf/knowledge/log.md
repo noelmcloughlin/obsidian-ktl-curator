@@ -1,5 +1,9 @@
 # Change Log
 
+## 2026-11-15
+
+* **Changed**: Knowledge website, Contributing and Knowledge sources describe the Hugo site in `website/` that replaced the Astro site, from `website/README.md`, `website/site.toml` and `.github/workflows/knowledge-website.yaml`.
+
 ## 2026-11-12
 
 * **Changed**: concepts call the bundle's file in `.lokf/schema/` a domain vocabulary, and keep *domain schema* for a LinkML project's model of a domain.
