@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The release tools are in `.release/`**, outside `.github/`, where Dependabot's pull requests for them were refused.
+
 ## [1.7.4] - 2026-11-15
 
 ### Added
