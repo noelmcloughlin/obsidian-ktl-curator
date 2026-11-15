@@ -21,7 +21,7 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ### Security
 
-- **The sidecar copies are at Knowledge Trust Ladder [v0.65.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/v0.65.0/CHANGELOG.md), and `.lokf/pyproject.toml` pins `ktl==0.65.0`**, which the librarian installs its skill from. The Python scripts carry no `exclude-newer` date.
+- **The sidecar copies are at Knowledge Trust Ladder [v0.66.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/v0.66.0/CHANGELOG.md), and `.lokf/pyproject.toml` pins `ktl==0.66.0`**, which the librarian installs its skill from.
 
 ## [1.7.3] - 2026-11-12
 
