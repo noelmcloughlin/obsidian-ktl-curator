@@ -101,3 +101,5 @@ jobs:
         uses: codespell-project/actions-codespell@e3258cca84ce02b0bb36a3d41f2c18f719a0cc1a # v2.4.3
         with:
           path: '**/*.md'
+          # The provenance files' suffix, as in provenance-<tag>-<name>.intoto.jsonl.
+          ignore_words_list: intoto
