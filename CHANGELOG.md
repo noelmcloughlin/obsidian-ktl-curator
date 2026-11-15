@@ -11,6 +11,7 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 - **`scorecard.yml` publishes this repository's OpenSSF Scorecard.**
 - **The README shows the CI, licence, OpenSSF Scorecard and KTL scorecard badges.**
 - **`codeql.yml` scans the Python, the JavaScript and the workflows with CodeQL.**
+- **Each release carries its build provenance as `provenance-<tag>-<name>.intoto.jsonl`**, which `gh attestation verify --bundle` checks.
 
 ### Changed
 
