@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.7.6] - 2026-11-18
+
 ### Added
 
 - **A retired concept names its successor: from `isReplacedBy`, or else from the newest `**Deprecation**` line in `log.md` that links it.**
