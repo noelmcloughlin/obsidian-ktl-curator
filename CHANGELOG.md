@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Fixed
+
+- **Each draft release carries its changelog section as its body.** The release workflow creates the draft, and semantic-release only tags here, so the notes now come from `changelog-release.mjs notes` in that workflow.
+
 ## [1.7.9] - 2026-11-19
 
 ### Security
