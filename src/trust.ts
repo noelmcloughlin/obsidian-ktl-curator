@@ -31,12 +31,18 @@ export interface TrustRecord {
   /** The `generated.by` producer (e.g. "process:ktl-librarian"), for the
    *  "drafted by the librarian" handoff. */
   generatedBy: string | null;
-  editedSinceConfirmed: boolean | null; // null = can't tell
+  /** The later of `generated.at` and `revised.at` against the latest `human:`
+   *  event, compared whole (SPEC section 8). null = can't tell. */
+  editedSinceConfirmed: boolean | null;
   pastReview: boolean;
   dueSoon: boolean;
   hasOpenQuestions: boolean;
   firstOpenQuestion: string | null; // filled in lazily by the caller
   reliedOnBy: number; // filled in a second pass over all records
+  /** A retired concept's successor as a bundle path, and its title when the
+   *  path names a concept. Filled by `computeSuccessors`; null otherwise. */
+  successor: string | null;
+  successorTitle: string | null;
   generatedAt: string | null; // ISO, for "newest" tie-breaks
   source: string | null; // resource, else sources[0].resource, else null
   /** Every recorded source, in order: `resource` first, then each
@@ -46,10 +52,11 @@ export interface TrustRecord {
 
 export interface HealthCounts {
   total: number; // N, includes retired
-  humanConfirmed: number; // a
+  humanConfirmed: number; // a: confirmed by a person and not edited since
   automationOnly: number; // b
   unchecked: number; // c
-  drafts: number; // d
+  drafts: number; // d: status draft, no human event
+  reopened: number; // r: status draft on a concept a person confirmed
   pastReview: number; // e
   editedSinceConfirmed: number; // f
   retired: number; // g
@@ -170,15 +177,24 @@ export function buildTrustRecord(
   if (!generatedAt && typeof timestampRaw === "string") generatedAt = timestampRaw;
   else if (!generatedAt && timestampRaw instanceof Date) generatedAt = normalizeDateTime(timestampRaw);
 
+  // LOKF lets a producer record a later edit as `revised.at` and leave
+  // `generated.at` alone, so the last edit is the later of the two.
+  const revisedRaw = fm["revised"];
+  let revisedAt: string | null = null;
+  if (revisedRaw && typeof revisedRaw === "object" && !Array.isArray(revisedRaw)) {
+    revisedAt = normalizeDateTime((revisedRaw as Record<string, unknown>)["at"]);
+  }
+  const lastEditAt = [generatedAt, revisedAt].filter((t): t is string => !!t).sort().at(-1) ?? null;
+
   let editedSinceConfirmed: boolean | null = null;
-  if (generatedAt) {
+  if (lastEditAt) {
     const latestHuman = humanEvents
       .map((e) => e.at)
       .filter(Boolean)
       .sort()
       .at(-1);
     if (latestHuman) {
-      editedSinceConfirmed = generatedAt > latestHuman;
+      editedSinceConfirmed = lastEditAt > latestHuman;
     }
   }
 
@@ -240,6 +256,8 @@ export function buildTrustRecord(
     hasOpenQuestions,
     firstOpenQuestion: null,
     reliedOnBy: 0,
+    successor: null,
+    successorTitle: null,
     generatedAt,
     source,
     sources: allSources,
@@ -298,23 +316,9 @@ export function computeReliedOnBy(
     if (!fm) continue;
     const counted = new Set<TrustRecord>();
     const baseIri = baseIriByRoot.get(citing.bundleRoot) ?? null;
-    const conceptDir = dirOf(toBundlePath(citing.path, citing.bundleRoot));
 
     for (const raw of relationTargetsOf(fm)) {
-      const resolved = resolveRelationTarget(raw, baseIri);
-      const candidates: string[] = [];
-      if (resolved.kind === "internal-iri" && baseIri) {
-        candidates.push(baseIri + resolved.resolvedPath);
-      } else if (resolved.kind === "internal-relative" && baseIri) {
-        const withoutExt = (resolved.resolvedPath ?? "").replace(/\.md$/i, "");
-        candidates.push(baseIri + withoutExt);
-        if (conceptDir) candidates.push(`${baseIri}${conceptDir}/${withoutExt}`);
-      } else if (resolved.kind === "external-iri") {
-        // Another bundle's minted IRI, or a genuinely external one - the map
-        // decides which, since it holds every bundle's concepts.
-        candidates.push(resolved.raw);
-      }
-      const hit = candidates.map((c) => byId.get(c)).find((r) => r !== undefined);
+      const hit = resolveTargetRecord(raw, citing, baseIri, byId);
       // A concept naming itself is not "another concept relying on" it.
       if (!hit || hit === citing || hit.status === "deprecated" || counted.has(hit)) continue;
       counted.add(hit);
@@ -323,18 +327,136 @@ export function computeReliedOnBy(
   }
 }
 
-/** The seven health counts. Not a partition - only `total` is a total; every
- *  other count may overlap another (§trust-fields.md, "Labels overlap by
- *  design"). Retired concepts are excluded from every count but `total` and
- *  `retired` itself. */
+/** The record one relation target names, or null. An IRI under `base_iri`
+ *  resolves by the path after it, any other IRI as written, and a relative
+ *  path from the bundle's root and then from the citing concept's folder. */
+function resolveTargetRecord(
+  raw: unknown,
+  citing: TrustRecord,
+  baseIri: string | null,
+  byId: Map<string, TrustRecord>
+): TrustRecord | null {
+  const resolved = resolveRelationTarget(raw, baseIri);
+  const candidates: string[] = [];
+  if (resolved.kind === "internal-iri" && baseIri) {
+    candidates.push(baseIri + resolved.resolvedPath);
+  } else if (resolved.kind === "internal-relative" && baseIri) {
+    const withoutExt = (resolved.resolvedPath ?? "").replace(/\.md$/i, "");
+    candidates.push(baseIri + withoutExt);
+    const conceptDir = dirOf(toBundlePath(citing.path, citing.bundleRoot));
+    if (conceptDir) candidates.push(`${baseIri}${conceptDir}/${withoutExt}`);
+  } else if (resolved.kind === "external-iri") {
+    // Another bundle's minted IRI, or a genuinely external one - the map
+    // decides which, since it holds every bundle's concepts.
+    candidates.push(resolved.raw);
+  }
+  return candidates.map((c) => byId.get(c)).find((r) => r !== undefined) ?? null;
+}
+
+/** The `isReplacedBy` targets, from the field and from `relations[]`. */
+function isReplacedByTargetsOf(fm: Record<string, unknown>): unknown[] {
+  const targets: unknown[] = [];
+  const field: unknown = fm["isReplacedBy"];
+  if (Array.isArray(field)) targets.push(...(field as unknown[]));
+  else if (field !== undefined) targets.push(field);
+  const relations: unknown = fm["relations"];
+  if (Array.isArray(relations)) {
+    for (const entry of relations as unknown[]) {
+      if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+        const rel = entry as Record<string, unknown>;
+        if (rel["predicate"] === "isReplacedBy" && rel["target"] !== undefined) targets.push(rel["target"]);
+      }
+    }
+  }
+  return targets;
+}
+
+const DEPRECATION_LINE_RE = /^\s*[*-]\s+\*\*Deprecation\*\*:/;
+const MARKDOWN_LINK_RE = /\[[^\]]*\]\(([^)\s]+)\)/g;
+
+/** A log link as a bundle path: no `./` or `../` prefix, no fragment. */
+function linkToBundlePath(link: string): string {
+  let path = link.trim();
+  const hash = path.indexOf("#");
+  if (hash >= 0) path = path.slice(0, hash);
+  while (path.startsWith("./") || path.startsWith("../")) path = path.replace(/^\.\.?\//, "");
+  return path;
+}
+
+/** The successor the newest `**Deprecation**` line in `log` names for the
+ *  concept at `bundlePath`: the first link is the retired concept, the link
+ *  after "replaced by" is the successor (SPEC 5.3). Null when no line links
+ *  the concept, or the newest one names no successor. */
+export function successorFromLog(log: string, bundlePath: string): string | null {
+  const target = bundlePath.replace(/\.md$/i, "");
+  for (const line of log.split("\n")) {
+    if (!DEPRECATION_LINE_RE.test(line)) continue;
+    const links = [...line.matchAll(MARKDOWN_LINK_RE)];
+    const first = links[0];
+    if (!first || linkToBundlePath(first[1]!).replace(/\.md$/i, "") !== target) continue;
+    const cut = line.indexOf("replaced by");
+    if (cut === -1) return null;
+    const after = links.find((m) => (m.index ?? 0) > cut);
+    return after ? linkToBundlePath(after[1]!) : null;
+  }
+  return null;
+}
+
+/**
+ * Fills in every retired record's `successor` and `successorTitle`: first from
+ * `isReplacedBy`, the first target that names a concept; failing that, from
+ * the bundle's `log.md`. Like `computeReliedOnBy`, a second pass over every
+ * record, after it. `logByRoot` holds each bundle's `log.md` text.
+ */
+export function computeSuccessors(
+  records: TrustRecord[],
+  frontmatterByPath: Map<string, Record<string, unknown>>,
+  baseIriByRoot: Map<string, string | null>,
+  logByRoot: Map<string, string>
+): void {
+  const byId = new Map<string, TrustRecord>();
+  for (const r of records) byId.set(r.id, r);
+  const byBundlePath = new Map<string, TrustRecord>();
+  for (const r of records) byBundlePath.set(`${r.bundleRoot}\n${toBundlePath(r.path, r.bundleRoot)}`, r);
+
+  for (const r of records) {
+    r.successor = null;
+    r.successorTitle = null;
+    if (r.status !== "deprecated") continue;
+    const fm = frontmatterByPath.get(r.path);
+    const baseIri = baseIriByRoot.get(r.bundleRoot) ?? null;
+    const fromField = fm
+      ? isReplacedByTargetsOf(fm)
+          .map((raw) => resolveTargetRecord(raw, r, baseIri, byId))
+          .find((hit): hit is TrustRecord => hit !== null && hit !== r)
+      : undefined;
+    if (fromField) {
+      r.successor = toBundlePath(fromField.path, fromField.bundleRoot);
+      r.successorTitle = fromField.title;
+      continue;
+    }
+    const log = logByRoot.get(r.bundleRoot);
+    if (!log) continue;
+    const fromLog = successorFromLog(log, toBundlePath(r.path, r.bundleRoot));
+    if (!fromLog) continue;
+    r.successor = fromLog;
+    r.successorTitle = byBundlePath.get(`${r.bundleRoot}\n${fromLog}`)?.title ?? null;
+  }
+}
+
+/** The health counts. Confirmed by a person, edited since confirmed, checked
+ *  by automation only, nobody has checked and retired partition the bundle,
+ *  so those five add up to `total` (SPEC section 8). Drafts, reopened and past
+ *  review overlap them. A retired concept is counted under `retired` alone. */
 export function computeHealth(records: TrustRecord[]): HealthCounts {
   const active = records.filter((r) => r.status !== "deprecated");
   return {
     total: records.length,
-    humanConfirmed: active.filter((r) => r.humanConfirmed).length,
+    humanConfirmed: active.filter((r) => r.humanConfirmed && r.editedSinceConfirmed !== true).length,
     automationOnly: active.filter((r) => r.automationOnly).length,
     unchecked: active.filter((r) => r.unchecked).length,
-    drafts: active.filter((r) => r.status === "draft").length,
+    drafts: active.filter((r) => r.status === "draft" && !r.humanConfirmed).length,
+    reopened: active.filter((r) => r.status === "draft" && r.humanConfirmed).length,
     pastReview: active.filter((r) => r.pastReview).length,
     editedSinceConfirmed: active.filter((r) => r.editedSinceConfirmed === true).length,
     retired: records.filter((r) => r.status === "deprecated").length,

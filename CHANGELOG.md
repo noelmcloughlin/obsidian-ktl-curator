@@ -6,6 +6,19 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Added
+
+- **A retired concept names its successor: from `isReplacedBy`, or else from the newest `**Deprecation**` line in `log.md` that links it.**
+- **Retire asks what replaced the concept, writes the successor's id under `isReplacedBy`, and links it in the log line after "replaced by".**
+- **The health line counts reopened concepts.**
+- **The smoke test runs the KTL reader conformance fixture, copied into `scripts/fixtures/conformance-reader/`.**
+
+### Fixed
+
+- **The health counts follow the specification's partition: a concept edited since its confirmation is no longer counted as confirmed, and a reopened one is no longer counted as a draft.**
+- **A later `revised.at` counts as the concept's last edit.**
+- **The curation policy and the missing-concept placeholder are drafts the session wrote, authored by `process:ktl-curator` with no `verified` event.**
+
 ### Security
 
 - **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.69.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.66.0...v0.69.0).** The release changed `.github/workflows/knowledge-registrar.yaml`, `.github/workflows/knowledge-librarian.yaml`, `.github/workflows/knowledge-release.yaml`, `.github/workflows/knowledge-sync.yaml`, `.github/PULL_REQUEST_TEMPLATE/knowledge-sync.md`, `.lokf/scripts/knowledge-conventions.sh`, `.lokf/scripts/knowledge-conventions.py`, `.lokf/scripts/knowledge-preflight.sh`, `.lokf/scripts/knowledge-provenance.sh`, `.lokf/scripts/knowledge-feedback.sh`, `.lokf/scripts/knowledge-apply.py`, `.lokf/scripts/knowledge-report.sh`, `.lokf/m365/ktl-docent-m365.md`, `.lokf/justfile`, `website/assets/css/site.css`, `website/assets/js/graph.js`, `website/assets/js/site.js`, `website/content/_content.gotmpl`, `website/content/knowledge/_content.gotmpl`, `website/.gitignore`, `website/hugo.toml`, `website/layouts/_markup/render-blockquote.html`, `website/layouts/_markup/render-codeblock-mermaid.html`, `website/layouts/_markup/render-heading.html`, `website/layouts/_markup/render-link.html`, `website/layouts/_partials/gendoc.html`, `website/layouts/_partials/heroes.html`, `website/layouts/_partials/icon.html`, `website/layouts/_partials/markdown-file.html`, `website/layouts/_partials/nav-key.html`, `website/layouts/_partials/route.html`, `website/layouts/_partials/schema-file.html`, `website/layouts/_partials/sidebar.html`, `website/layouts/_partials/tools.html`, `website/layouts/_partials/vendor.html`, `website/layouts/baseof.html`, `website/layouts/health.html`, `website/layouts/home.badge.json`, `website/layouts/home.llms.txt`, `website/layouts/page.atom.xml`, `website/layouts/page.html`, `website/layouts/schema/section.html`, `website/pyproject.toml`, `website/scripts/build.sh`, `website/scripts/clean-html.py`, `website/scripts/prepare.sh`, `website/uv.lock`, `.github/workflows/knowledge-website.yaml`, `website/layouts/_partials/own.html`, `website/layouts/_partials/spec.html`, `website/scripts/check-svg.py`, `website/scripts/lokf-export.py`, `website/scripts/site-values.py`, `website/scripts/uv-env.sh` and `website/scripts/vendor.sh` here. No plugin change.

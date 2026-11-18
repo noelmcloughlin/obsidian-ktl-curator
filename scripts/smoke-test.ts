@@ -8,7 +8,7 @@
  * YAML parser (a devDependency; the plugin itself uses Obsidian's parseYaml)
  * and a walk of scripts/fixtures/curation-bundle/.
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
@@ -43,6 +43,8 @@ import {
 import {
   buildTrustRecord,
   computeReliedOnBy,
+  computeSuccessors,
+  successorFromLog,
   computeHealth,
   rankQueue,
   rankQueueAll,
@@ -193,6 +195,10 @@ section("bundle.ts - source locators (§6.2)", () => {
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const FIXTURE_ROOT = join(__dirname, "fixtures", "curation-bundle", "knowledge");
+// Copied from knowledge-trust-ladder's tests/conformance/reader (the .lokf/knowledge
+// bundle as knowledge/, plus feedback.md and expected.json). Re-copy it when
+// that fixture changes.
+const CONFORMANCE_DIR = join(__dirname, "fixtures", "conformance-reader");
 
 function walkMarkdown(dir: string): string[] {
   const out: string[] = [];
@@ -222,15 +228,18 @@ function extractHeadings(body: string): HeadingLine[] {
   return out;
 }
 
-function loadFixtureBundle(): { records: TrustRecord[]; frontmatterByPath: Map<string, Record<string, unknown>>; bodyByPath: Map<string, string> } {
-  const files = walkMarkdown(FIXTURE_ROOT);
+/** Reads a fixture bundle at `<dir>/knowledge/` the way the plugin does: one
+ *  record per concept, then the two second passes (reliance, successors). */
+function loadBundle(dir: string, today: string): { records: TrustRecord[]; frontmatterByPath: Map<string, Record<string, unknown>>; bodyByPath: Map<string, string> } {
+  const root = join(dir, "knowledge");
+  const files = walkMarkdown(root);
   const baseIri = "https://example.test/knowledge/";
   const frontmatterByPath = new Map<string, Record<string, unknown>>();
   const bodyByPath = new Map<string, string>();
   const records: TrustRecord[] = [];
 
   for (const full of files) {
-    const rel = relative(join(FIXTURE_ROOT, ".."), full).split(sep).join("/"); // "knowledge/..."
+    const rel = relative(dir, full).split(sep).join("/"); // "knowledge/..."
     if (isReserved(rel) !== null) continue;
     const content = readFileSync(full, "utf8");
     const { hasFm, data, body } = parseFixture(content);
@@ -245,7 +254,7 @@ function loadFixtureBundle(): { records: TrustRecord[]; frontmatterByPath: Map<s
         headings: extractHeadings(body),
         mintId: (p) => mintExpectedId(toBundlePath(p, "knowledge"), baseIri),
       },
-      TODAY
+      today
     );
     if (record.hasOpenQuestions) {
       const lines = body.split("\n");
@@ -256,8 +265,17 @@ function loadFixtureBundle(): { records: TrustRecord[]; frontmatterByPath: Map<s
     records.push(record);
   }
 
-  computeReliedOnBy(records, frontmatterByPath, new Map([["knowledge", baseIri]]));
+  const baseIriByRoot = new Map([["knowledge", baseIri]]);
+  computeReliedOnBy(records, frontmatterByPath, baseIriByRoot);
+  const logPath = join(root, "log.md");
+  const logByRoot = new Map<string, string>();
+  if (existsSync(logPath)) logByRoot.set("knowledge", readFileSync(logPath, "utf8"));
+  computeSuccessors(records, frontmatterByPath, baseIriByRoot, logByRoot);
   return { records, frontmatterByPath, bodyByPath };
+}
+
+function loadFixtureBundle() {
+  return loadBundle(join(FIXTURE_ROOT, ".."), TODAY);
 }
 
 section("trust.ts - per-concept labels", () => {
@@ -289,32 +307,39 @@ section("trust.ts - per-concept labels", () => {
   expect("orders-term relied on by 4", get("orders-term.md").reliedOnBy === 4, String(get("orders-term.md").reliedOnBy));
 });
 
-section("trust.ts - health counts (not a partition), exact numbers", () => {
+section("trust.ts - health counts: the five rungs partition the bundle, exact numbers", () => {
   const { records } = loadFixtureBundle();
   const health = computeHealth(records);
   // Every number below is derived by hand from the fixture bundle, so a rule
   // change that silently shifts a count fails here rather than in a vault.
   const expected: HealthCounts = {
     total: 14, // every concept in the fixture, retired included
-    // human-confirmed, edited-since-confirmed, past-review, due-soon, bare-verified
-    humanConfirmed: 5,
+    // human-confirmed, past-review, due-soon, bare-verified; a concept edited
+    // since its confirmation is counted under editedSinceConfirmed instead
+    humanConfirmed: 4,
     automationOnly: 1, // automation-only
     // unchecked, orders-term, other-term, unknown-type, invalid-status,
     // mentions-open-questions, knowledge-curation
     unchecked: 7,
-    drafts: 2, // orders-term, other-term
+    drafts: 2, // orders-term, other-term: draft, no human event
+    reopened: 0,
     pastReview: 1, // past-review
     editedSinceConfirmed: 1, // edited-since-confirmed
     retired: 1, // retired-service
   };
   expect(
-    "all seven counts plus the total match the fixture exactly",
+    "all eight counts plus the total match the fixture exactly",
     JSON.stringify(health) === JSON.stringify(expected),
     `got      ${JSON.stringify(health)}\n         expected ${JSON.stringify(expected)}`
   );
+  expect(
+    "confirmed, edited since, automation only, unchecked and retired add up to the total",
+    health.humanConfirmed + health.editedSinceConfirmed + health.automationOnly + health.unchecked + health.retired === health.total,
+    JSON.stringify(health)
+  );
 
-  // "Labels overlap by design" - the same concept carries several at once, so
-  // no one should read the health line as a breakdown of the total.
+  // The other labels overlap the rungs: the same concept carries several at
+  // once, so drafts and past review are not a breakdown of the total.
   const byPath = new Map(records.map((r) => [r.path, r]));
   const pastReviewRecord = [...byPath.values()].find((r) => r.path.endsWith("past-review.md"))!;
   expect(
@@ -348,6 +373,23 @@ section("trust.ts - due-soon flips to past-review when today advances", () => {
     "2026-09-21"
   );
   expect("moving today past stale_after flips dueSoon -> pastReview", laterRecord.pastReview && !laterRecord.dueSoon, JSON.stringify(laterRecord));
+});
+
+section("trust.ts - the last edit is the later of generated.at and revised.at", () => {
+  const build = (frontmatter: Record<string, unknown>): TrustRecord =>
+    buildTrustRecord({ path: "knowledge/services/r.md", bundleRoot: "knowledge", frontmatter, headings: [], mintId: () => "x" }, TODAY);
+  const verified = [{ by: "human:ada", at: "2026-01-15T05:00:00Z" }];
+  const generated = { by: "process:ktl-librarian", at: "2026-01-01T05:00:00Z" };
+  const revisedLater = build({ generated, revised: { at: "2026-02-01T05:00:00Z" }, verified });
+  expect("a revised.at after the confirmation is an edit since", revisedLater.editedSinceConfirmed === true, JSON.stringify(revisedLater.editedSinceConfirmed));
+  const revisedEarlier = build({ generated, revised: { at: "2026-01-10T05:00:00Z" }, verified });
+  expect("a revised.at before the confirmation is not", revisedEarlier.editedSinceConfirmed === false, JSON.stringify(revisedEarlier.editedSinceConfirmed));
+  const sameDay = build({ generated: { ...generated, at: "2026-01-15T14:00:00Z" }, verified: [{ by: "human:ada", at: "2026-01-15T10:00:00Z" }] });
+  expect("two times are compared whole, never by day", sameDay.editedSinceConfirmed === true, "");
+  expect("generatedAt stays the tie-break time", revisedLater.generatedAt === "2026-01-01T05:00:00Z", String(revisedLater.generatedAt));
+  const reopened = build({ generated, verified, status: "draft" });
+  const reopenedHealth = computeHealth([reopened]);
+  expect("a draft a person confirmed is reopened, not a draft", reopenedHealth.reopened === 1 && reopenedHealth.drafts === 0 && reopenedHealth.humanConfirmed === 1, JSON.stringify(reopenedHealth));
 });
 
 section("trust.ts - a verified key with no events reads as unchecked", () => {
@@ -621,6 +663,13 @@ section("edits.ts - Retire", () => {
   const fm = structuredClone(EXAMPLE_FM);
   const next = applyRetire(fm);
   expect("only status changes", next["status"] === "deprecated" && next["title"] === fm["title"], JSON.stringify(next));
+  const withSuccessor = applyRetire(fm, "https://acme.example/knowledge/services/orders-v2");
+  expect("a named successor goes under isReplacedBy as a one-item list", JSON.stringify(withSuccessor["isReplacedBy"]) === JSON.stringify(["https://acme.example/knowledge/services/orders-v2"]), JSON.stringify(withSuccessor));
+  const proposed = { ...fm, isReplacedBy: ["https://acme.example/knowledge/services/agent-guess"] };
+  const replaced = applyRetire(proposed, "https://acme.example/knowledge/services/orders-v2");
+  expect("it replaces a value already there", JSON.stringify(replaced["isReplacedBy"]) === JSON.stringify(["https://acme.example/knowledge/services/orders-v2"]), JSON.stringify(replaced));
+  const cleared = applyRetire(proposed);
+  expect("with no successor named, a value an agent proposed is removed", !("isReplacedBy" in cleared), JSON.stringify(cleared));
 });
 
 section("edits.ts - Later", () => {
@@ -682,6 +731,23 @@ section("edits.ts - log.md upsert", () => {
     log.includes("* **Deprecation**: [Legacy Orders Sync](../services/legacy-orders-sync.md) retired - replaced by the Orders API."),
     log
   );
+
+  // With a successor, the line links it after "replaced by" (SPEC 5.3), and a
+  // reader finds it from the log alone.
+  const linked = appendDeprecationLine("", "2026-09-08", "Old Export", "../services/old-export.md", "the nightly copy stopped", {
+    title: "Orders API",
+    path: "../services/orders-api.md",
+  });
+  expect(
+    "a successor is linked after 'replaced by'",
+    linked.includes("* **Deprecation**: [Old Export](../services/old-export.md) retired - replaced by [Orders API](../services/orders-api.md) - the nightly copy stopped."),
+    linked
+  );
+  expect("successorFromLog reads that successor back", successorFromLog(linked, "services/old-export.md") === "services/orders-api.md", String(successorFromLog(linked, "services/old-export.md")));
+  expect("a line with no link after 'replaced by' names none", successorFromLog(log, "services/legacy-orders-sync.md") === null, String(successorFromLog(log, "services/legacy-orders-sync.md")));
+  expect("a concept no line links has none", successorFromLog(linked, "services/other.md") === null, "");
+  const two = ["## 2026-09-09", "", "* **Deprecation**: [Old Export](../services/old-export.md) retired - replaced by [Exports v2](../services/exports-v2.md).", "", linked].join("\n");
+  expect("the newest line, first in the file, wins", successorFromLog(two, "services/old-export.md") === "services/exports-v2.md", String(successorFromLog(two, "services/old-export.md")));
 });
 
 section("edits.ts - GUARDRAIL: no verb touches a key outside its own row of §6.3", () => {
@@ -707,6 +773,7 @@ section("edits.ts - GUARDRAIL: no verb touches a key outside its own row of §6.
     { verb: "Send back", run: (fm) => applySendBack(fm), allowed: ["status"] },
     { verb: "Corrected", run: (fm) => applyCorrected(fm, "ada", "2026-09-08T14:00:00Z"), allowed: ["generated", "status", "verified"] },
     { verb: "Retire", run: (fm) => applyRetire(fm), allowed: ["status"] },
+    { verb: "Retire with a successor", run: (fm) => applyRetire(fm, "https://acme.example/knowledge/services/orders-v2"), allowed: ["isReplacedBy", "status"] },
     { verb: "Later", run: (fm) => applyLater(fm, "2026-12-24"), allowed: ["stale_after", "status"] },
   ];
 
@@ -1078,7 +1145,7 @@ section("CONTRIBUTING names the modules this suite actually covers (drift guard)
 // plugin can read back.
 
 section("edits.ts - the curation policy template is a valid, re-readable record", () => {
-  const rendered = renderCurationPolicyTemplate("https://acme.example/knowledge/", "ada-lovelace", "2026-09-14T09:00:00Z");
+  const rendered = renderCurationPolicyTemplate("https://acme.example/knowledge/", "2026-09-14T09:00:00Z");
   const { hasFm, raw, body } = splitFrontmatter(rendered);
   expect("it carries frontmatter", hasFm, rendered.slice(0, 40));
   const fm = (loadYaml(raw) ?? {}) as Record<string, unknown>;
@@ -1087,11 +1154,12 @@ section("edits.ts - the curation policy template is a valid, re-readable record"
   expect("id matches what this path would mint", fm["id"] === mintExpectedId("policies/knowledge-curation.md", "https://acme.example/knowledge/"), String(fm["id"]));
   expect("title and description are present", typeof fm["title"] === "string" && typeof fm["description"] === "string", JSON.stringify(fm));
 
-  // A person ran the command, so the record says a person made it - and the
-  // actor spelling is the one the registrar's `by` pattern accepts.
+  // The defaults are the skill's words, not the person's: a draft the session
+  // wrote, which the person's Confirm records (review-session.md).
   const generated = fm["generated"] as Record<string, unknown>;
-  expect("generated.by is the curator, as a human: actor", generated?.["by"] === "human:ada-lovelace", JSON.stringify(generated));
-  expect("verified carries the same human event", normalizeVerified(fm["verified"]).some((e) => e.by === "human:ada-lovelace"), JSON.stringify(fm["verified"]));
+  expect("generated.by is the session", generated?.["by"] === "process:ktl-curator", JSON.stringify(generated));
+  expect("no verified event is recorded", normalizeVerified(fm["verified"]).length === 0, JSON.stringify(fm["verified"]));
+  expect("it starts as a draft", fm["status"] === "draft", String(fm["status"]));
 
   // The table is the point of the file: this plugin must read back what it wrote.
   const overrides = parseCurationPolicyTable(body);
@@ -1123,7 +1191,9 @@ section("edits.ts - the missing-concept placeholder is a valid draft record", ()
   expect("the type the person chose is kept", fm["type"] === "Dataset", String(fm["type"]));
   expect("id is minted under base_iri", fm["id"] === "https://acme.example/knowledge/datasets/orders", String(fm["id"]));
   expect("it is a draft - nothing has been derived yet", fm["status"] === "draft", String(fm["status"]));
-  expect("generated.by is the person who reported it", (fm["generated"] as Record<string, unknown>)?.["by"] === "human:ada-lovelace", JSON.stringify(fm["generated"]));
+  expect("generated.by is the session, so the librarian may fill it", (fm["generated"] as Record<string, unknown>)?.["by"] === "process:ktl-curator", JSON.stringify(fm["generated"]));
+  const noLogin = renderMissingPlaceholder("https://acme.example/knowledge/", "Dataset", "datasets/orders", "Orders", null, "2026-09-14T09:00:00Z", "2026-09-14", "Hint.");
+  expect("with no id, the question's actor is the session too", noLogin.includes("- 2026-09-14, process:ktl-curator: reported missing."), noLogin);
 
   // The heading must be the exact one the librarian and this plugin look for,
   // or the placeholder's question is invisible to both.
@@ -1142,6 +1212,76 @@ section("edits.ts - the missing-concept placeholder is a valid draft record", ()
   );
   expect("it reads back as an unchecked draft with open questions", record.unchecked && record.status === "draft" && record.hasOpenQuestions, JSON.stringify({ u: record.unchecked, s: record.status, q: record.hasOpenQuestions }));
   expect("so it lands in the review queue", rankQueueAll([record]).length === 1, "");
+});
+
+// ---- the KTL reader conformance fixture ----
+//
+// expected.json was worked out by hand from SPEC.md section 8. `today` is
+// fixed late enough that past-review fires and due-soon cannot. The plugin
+// does not read Disagreements from feedback.md (it counts entries only), nor
+// derived_from_edited, vocabulary_misfit as a list, or open_questions, so
+// `disputed` is dropped from the expected labels and those keys are not
+// compared.
+
+section("conformance - the reader fixture from knowledge-trust-ladder", () => {
+  interface Expected {
+    health: Record<string, number>;
+    labels: Record<string, string[]>;
+    successor: Record<string, string>;
+    relied_on: Record<string, number>;
+    queue: string[];
+  }
+  const expected = JSON.parse(readFileSync(join(CONFORMANCE_DIR, "expected.json"), "utf8")) as Expected;
+  const { records } = loadBundle(CONFORMANCE_DIR, "2030-01-01");
+  const bundlePath = (r: TrustRecord) => toBundlePath(r.path, "knowledge");
+
+  const health = computeHealth(records);
+  const got: Record<string, number> = {
+    total: health.total,
+    confirmed: health.humanConfirmed,
+    automation_only: health.automationOnly,
+    unchecked: health.unchecked,
+    drafts: health.drafts,
+    reopened: health.reopened,
+    past_review: health.pastReview,
+    edited_since: health.editedSinceConfirmed,
+    retired: health.retired,
+  };
+  for (const [key, value] of Object.entries(expected.health)) {
+    expect(`health.${key} is ${value}`, got[key] === value, `got ${String(got[key])}`);
+  }
+
+  const labelsOf = (r: TrustRecord): string[] => {
+    if (r.status === "deprecated") return ["retired"];
+    const out: string[] = [];
+    if (r.humanConfirmed && r.editedSinceConfirmed !== true) out.push("confirmed");
+    if (r.editedSinceConfirmed === true) out.push("edited-since");
+    if (r.automationOnly) out.push("automation-only");
+    if (r.unchecked) out.push("unchecked");
+    if (r.status === "draft") out.push(r.humanConfirmed ? "reopened" : "draft");
+    if (r.pastReview) out.push("past-review");
+    if (r.dueSoon) out.push("due-soon");
+    return out.sort();
+  };
+  expect("every concept of the fixture is read", records.length === Object.keys(expected.labels).length, `${records.length} records`);
+  for (const r of records) {
+    const want = (expected.labels[bundlePath(r)] ?? []).filter((l) => l !== "disputed").sort();
+    const have = labelsOf(r);
+    expect(`labels of ${bundlePath(r)}: ${want.join(", ")}`, JSON.stringify(have) === JSON.stringify(want), `got ${have.join(", ")}`);
+  }
+
+  const successors: Record<string, string> = {};
+  for (const r of records) if (r.successor) successors[bundlePath(r)] = r.successor;
+  expect("successors match: one from isReplacedBy, one from the log, none for the third", JSON.stringify(successors) === JSON.stringify(expected.successor), JSON.stringify(successors));
+  const legacy = records.find((r) => bundlePath(r) === "services/legacy-sync.md")!;
+  expect("the successor read from the log carries its title", legacy.successorTitle === "Orders API", String(legacy.successorTitle));
+
+  const reliedOn: Record<string, number> = {};
+  for (const r of records.filter((x) => x.reliedOnBy > 0).sort((a, b) => bundlePath(a).localeCompare(bundlePath(b)))) reliedOn[bundlePath(r)] = r.reliedOnBy;
+  expect("relied_on counts match", JSON.stringify(reliedOn) === JSON.stringify(expected.relied_on), JSON.stringify(reliedOn));
+
+  const queue = rankQueue(records, 5).map(bundlePath);
+  expect("the queue order matches", JSON.stringify(queue) === JSON.stringify(expected.queue), JSON.stringify(queue));
 });
 
 // ---- summary ----

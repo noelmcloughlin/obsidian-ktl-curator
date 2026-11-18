@@ -8,17 +8,18 @@ Every label is arithmetic over frontmatter, computed afresh on each refresh and 
 
 | Label | Rule |
 |---|---|
-| Confirmed by a person | any `verified[].by` starts with `human:` |
+| Confirmed by a person | any `verified[].by` starts with `human:`, and the concept is not edited since |
 | Checked by automation only | `verified` holds events, none by a `human:` actor |
 | Nobody has checked this yet | no `verified` key, or one with no events |
-| Still a draft | `status: draft` |
-| Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue |
-| Edited since a person last confirmed it | `generated.at` later than the newest `human:` `verified[].at` |
+| Still a draft | `status: draft`, and no `human:` `verified` event |
+| Reopened | `status: draft` on a concept a person confirmed; a send-back or a question set it. The confirmation still counts, so the rung stays |
+| Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue. Names its successor from `isReplacedBy`, or else from the newest `**Deprecation**` line in `log.md` that links the concept |
+| Edited since a person last confirmed it | `generated.at`, or a later `revised.at`, later than the newest `human:` `verified[].at`; the two times compared whole, never by day |
 | Past its review date / due soon | `stale_after` against today |
 | *N* other concepts rely on this | concepts whose typed relations target this concept's `id`, across every configured bundle; each relying concept counts once, and a retired concept counts for none and is counted for none |
 | Doesn't fit the known vocabulary | `type` outside the classes listed under *Settings → Type vocabulary*: the pinned LOKF schema's, plus a domain vocabulary's where a bundle has one. Cosmetic; it never moves a concept into the queue |
 
-The rules, with every parsing edge case, are in `references/trust-fields.md` in the `ktl-curator` skill: a bare `verified` mapping, an exact `## Open questions` heading versus a passing mention in prose, cross-bundle relation targets. This plugin implements that document and does not relax or restate it.
+Confirmed by a person, edited since confirmed, checked by automation only, nobody has checked and retired partition the bundle: every concept is counted under exactly one, so the five add up to the total. The other labels overlap them. The rules, with every parsing edge case, are in `references/trust-fields.md` in the `ktl-curator` skill: a bare `verified` mapping, an exact `## Open questions` heading versus a passing mention in prose, cross-bundle relation targets. This plugin implements that document and does not relax or restate it.
 
 ## What this plugin leaves to others
 

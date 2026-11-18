@@ -6,7 +6,7 @@ This page lists the panel, the review card and its five verbs, the in-editor aid
 
 **The panel** opens from the status bar, the ribbon, or **Open curator panel**:
 
-- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, past review, edited since confirmed, retired. These labels overlap, and only the total is a total. The skills' architecture page says what each label rests on, under [Trust stays visible](https://w3id.org/ktl/docs/architecture/#trust-stays-visible), and [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from) gives the exact rule per label.
+- The **health line** as chips: confirmed by a person, checked by automation only, nobody's checked, drafts, reopened, past review, edited since confirmed, retired. Confirmed by a person, edited since confirmed, automation only, nobody's checked and retired add up to the total; drafts, reopened and past review overlap them. The skills' architecture page says what each label rests on, under [Trust stays visible](https://w3id.org/ktl/docs/architecture/#trust-stays-visible), and [docs/for-the-curious.md](for-the-curious.md#the-trust-labels-and-the-fields-they-come-from) gives the exact rule per label.
 - **Worth ten minutes today**: up to five concepts, ranked by what most needs a person: past its review date or edited since confirmed, then drafts with open questions, then the wholly unchecked. Within each group, the most-relied-upon concept comes first.
 - **Open questions the librarian left**: what a previous pass flagged and could not settle alone.
 - The **active note**, pinned, with its labels and a *Review this note* button.
@@ -20,7 +20,7 @@ This page lists the panel, the review card and its five verbs, the in-editor aid
 | **Confirm** | your `verified` event appended, `draft` cleared, the next review date you accepted |
 | **Wrong - send back** | `status: draft`, and your note under `## Open questions` for the librarian |
 | **Wrong - I corrected it** | you make the edit yourself; this records that you authored it, and confirms it |
-| **Retire** | `status: deprecated`, plus its own dated line in the bundle's `log.md` |
+| **Retire** | `status: deprecated`, and `isReplacedBy` when you name a successor; plus its own dated line in the bundle's `log.md`, which links the successor |
 | **Later** | keeps it a draft; a review date only if you type one |
 
 Everything but **Later** also keeps one running `**Curation**` line under today's date in the bundle's `log.md`. Beyond that the plugin writes nothing: not `type`, not a relation, not a word of body text outside `## Open questions`, and never an existing `verified` event. Each verb takes one concept and one person's answer. There is no *confirm all*. In a repository, the skills' CI gate, `knowledge-registrar.yaml`, checks on each pull request that a new confirmation is backed by that person's approval of the pull request, or by their verified signature on the commit that recorded it.
@@ -39,7 +39,7 @@ Open the command palette and search for **KTL Curator**:
 | Review the next concept in the queue | Opens the review card for the top of *Worth ten minutes today* |
 | Review the active note | Opens the review card for the note you are editing |
 | Look up a LOKF field | Searchable reference of the LOKF frontmatter fields |
-| Create curation policy | Writes `policies/knowledge-curation.md`, the table that sets how often each kind of concept is re-confirmed |
+| Create curation policy | Writes `policies/knowledge-curation.md` as a draft for you to confirm: the table that sets how often each kind of concept is re-confirmed |
 | Record something missing | Writes a placeholder concept, with a type, a title and one open question, for the librarian to fill in |
 
 The confirmed count is meant to rise slowly, a handful of concepts in a sitting. A large or fast-growing bundle never quite reaches fully-confirmed, and the report says so.
