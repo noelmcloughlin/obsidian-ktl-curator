@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Security
+
+- **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.69.1](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.69.0...v0.69.1).** The release changed `.lokf/scripts/knowledge-apply.py` and `.lokf/scripts/knowledge-sync.sh` here. No plugin change.
+
 ## [1.7.7] - 2026-11-18
 
 ### Fixed
