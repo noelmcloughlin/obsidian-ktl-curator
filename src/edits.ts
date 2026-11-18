@@ -74,9 +74,14 @@ export function applyCorrected(
   return next;
 }
 
-/** Retire: `status: deprecated`. Nothing else changes. */
-export function applyRetire(fm: Record<string, unknown>): Record<string, unknown> {
-  return { ...fm, status: "deprecated" };
+/** Retire: `status: deprecated`, and `isReplacedBy: [<id>]` when the person
+ *  names a successor, in place of any value already there. With none named,
+ *  any value an agent proposed is removed. Nothing else changes. */
+export function applyRetire(fm: Record<string, unknown>, successorId?: string): Record<string, unknown> {
+  const next: Record<string, unknown> = { ...fm, status: "deprecated" };
+  if (successorId) next["isReplacedBy"] = [successorId];
+  else delete next["isReplacedBy"];
+  return next;
 }
 
 /** Later: keep/set `status: draft`; `stale_after` only if a date was typed. */
@@ -265,14 +270,24 @@ export function upsertCurationLine(log: string, today: string, curatorId: string
 
 /** Adds a `**Deprecation**` line immediately after the Curation line under
  *  today's heading (log already has today's heading by the time Retire is
- *  logged, since the Curation upsert runs first). */
-export function appendDeprecationLine(log: string, today: string, title: string, path: string, reason: string): string {
+ *  logged, since the Curation upsert runs first). With a successor, the line
+ *  reads `replaced by [Title](path)` before the reason, so a reader finds the
+ *  successor from the log (SPEC 5.3). */
+export function appendDeprecationLine(
+  log: string,
+  today: string,
+  title: string,
+  path: string,
+  reason: string,
+  successor?: { title: string; path: string }
+): string {
   const lines = log.split("\n");
   const headingIdx = lines.findIndex((l) => {
     const m = l.match(DAY_HEADING_RE);
     return m && m[1] === today;
   });
-  const depLine = `* **Deprecation**: [${title}](${path}) retired - ${reason}.`;
+  const replaced = successor ? `replaced by [${successor.title}](${successor.path}) - ` : "";
+  const depLine = `* **Deprecation**: [${title}](${path}) retired - ${replaced}${reason}.`;
   if (headingIdx === -1) return [`## ${today}`, "", depLine, "", ...lines].join("\n");
   let insertAt = headingIdx + 1;
   for (let i = headingIdx + 1; i < lines.length; i++) {
@@ -301,19 +316,19 @@ export function repeatedSendBackHint(notes: string[]): string | null {
   return `- ${total} similar send-backs; check the librarian's instructions.`;
 }
 
-/** Renders the curation-policy concept template (review-session.md). */
-export function renderCurationPolicyTemplate(baseIri: string, curatorId: string, now: string): string {
+/** Renders the curation-policy concept template (review-session.md): a draft
+ *  the session wrote, so its author is `process:ktl-curator` and no `verified`
+ *  event is recorded. The person's Confirm is what records them. */
+export function renderCurationPolicyTemplate(baseIri: string, now: string): string {
   return `---
 type: Policy
 id: ${baseIri}policies/knowledge-curation
 title: Knowledge curation policy
 description: How often each kind of concept in this bundle is re-confirmed by a person, and who does it.
+status: draft
 generated:
-  by: human:${curatorId}
+  by: process:ktl-curator
   at: "${now}"
-verified:
-  - by: human:${curatorId}
-    at: "${now}"
 ---
 
 # Who curates
@@ -337,17 +352,20 @@ A named person opened the concept's source and agreed the concept still says wha
 }
 
 /** Renders a placeholder concept for something the person reports missing
- *  (review-session.md, "Recording something missing"). */
+ *  (review-session.md, "Recording something missing"). The session is the
+ *  author, so the librarian may fill it; the open question is the person's
+ *  when they have an id, else the session's. */
 export function renderMissingPlaceholder(
   baseIri: string,
   type: string,
   slug: string,
   title: string,
-  curatorId: string,
+  curatorId: string | null,
   now: string,
   dateOnly: string,
   hint: string
 ): string {
+  const asker = curatorId ? `human:${curatorId}` : "process:ktl-curator";
   return `---
 type: ${type}
 id: ${baseIri}${slug}
@@ -355,12 +373,12 @@ title: ${title}
 description: Placeholder - not yet derived from the repository.
 status: draft
 generated:
-  by: human:${curatorId}
+  by: process:ktl-curator
   at: "${now}"
 ---
 
 ## Open questions
 
-- ${dateOnly}, human:${curatorId}: reported missing. ${hint}
+- ${dateOnly}, ${asker}: reported missing. ${hint}
 `;
 }

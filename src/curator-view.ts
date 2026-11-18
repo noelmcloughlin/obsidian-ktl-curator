@@ -24,8 +24,10 @@ export const KTL_CURATOR_ICON_SVG = `
 
 function labelFor(record: TrustRecord): string {
   const bits: string[] = [];
-  if (record.status === "deprecated") bits.push("retired");
-  else {
+  if (record.status === "deprecated") {
+    const successor = record.successorTitle ?? record.successor;
+    bits.push(successor ? `retired - replaced by ${successor}` : "retired");
+  } else {
     if (record.humanConfirmed) bits.push("confirmed by a person");
     else if (record.automationOnly) bits.push("checked by automation only");
     else if (record.unchecked) bits.push("nobody has checked this yet");
@@ -140,6 +142,7 @@ export class KtlCuratorView extends ItemView {
     rest.createSpan({ cls: "ktl-chip", text: `Automation only: ${report.health.automationOnly}` });
     rest.createSpan({ cls: "ktl-chip", text: `Nobody checked: ${report.health.unchecked}` });
     rest.createSpan({ cls: "ktl-chip", text: `Drafts: ${report.health.drafts}` });
+    rest.createSpan({ cls: "ktl-chip", text: `Reopened: ${report.health.reopened}` });
     rest.createSpan({ cls: "ktl-chip", text: `Past review: ${report.health.pastReview}` });
     rest.createSpan({ cls: "ktl-chip", text: `Edited since confirmed: ${report.health.editedSinceConfirmed}` });
     rest.createSpan({ cls: "ktl-chip", text: `Retired: ${report.health.retired}` });
@@ -444,10 +447,21 @@ export class KtlCuratorView extends ItemView {
     anyway.addEventListener("click", run);
   }
 
+  /** Asks what replaced the concept, if anything, and why it is retired. The
+   *  successor is one of the bundle's other concepts, not retired; its id goes
+   *  under `isReplacedBy` and its link into the log line (SPEC 5.3). */
   private promptRetire(dialog: HTMLElement, file: TFile, record: TrustRecord, root: string) {
     dialog.empty();
     const box = dialog.createDiv({ cls: "ktl-note-dialog" });
-    box.createDiv({ text: "Why is it retired? (e.g. “replaced by the Orders API”, required)" });
+    box.createDiv({ text: "What replaced it, if anything?" });
+    const select = box.createEl("select");
+    select.createEl("option", { text: "Nothing replaced it", value: "" });
+    const candidates = this.plugin
+      .getRecordsForRoot(root)
+      .filter((r) => r.path !== record.path && r.status !== "deprecated")
+      .sort((a, b) => a.title.localeCompare(b.title) || a.path.localeCompare(b.path));
+    for (const r of candidates) select.createEl("option", { text: r.title, value: r.path });
+    box.createDiv({ text: "Why is it retired? (one line, required)" });
     const input = box.createEl("input", { type: "text" });
     const go = box.createEl("button", { text: "Retire", cls: "mod-cta" });
     const error = box.createDiv({ cls: "ktl-dialog-error" });
@@ -460,8 +474,9 @@ export class KtlCuratorView extends ItemView {
         error.show();
         return;
       }
+      const successor = candidates.find((r) => r.path === select.value);
       go.disabled = true;
-      void this.plugin.retire(file, record, root, reason).then(() => this.stopReview());
+      void this.plugin.retire(file, record, root, reason, successor).then(() => this.stopReview());
     });
   }
 

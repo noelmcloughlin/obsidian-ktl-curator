@@ -22,6 +22,7 @@ import { DEFAULT_SETTINGS, mergeSavedSettings, type CuratorSettings } from "./se
 import {
   computeHealth,
   computeReliedOnBy,
+  computeSuccessors,
   buildTrustRecord,
   monthsForClass,
   parseCurationPolicyTable,
@@ -535,6 +536,15 @@ export default class KtlCuratorPlugin extends Plugin {
 
       computeReliedOnBy(allRecords, frontmatterByPath, baseIriByRoot);
 
+      // A retired concept's successor may sit in the log alone (SPEC 5.3), so
+      // each bundle's log.md is read for the second pass.
+      const logByRoot = new Map<string, string>();
+      for (const root of roots) {
+        const log = await this.readBundleLog(root);
+        if (log !== null) logByRoot.set(root, log);
+      }
+      computeSuccessors(allRecords, frontmatterByPath, baseIriByRoot, logByRoot);
+
       this.reportsByRoot.clear();
       this.recordsByRoot.clear();
 
@@ -584,6 +594,17 @@ export default class KtlCuratorPlugin extends Plugin {
       this.refreshStatusBar();
     } finally {
       this.busy = false;
+    }
+  }
+
+  /** The bundle's `log.md` text, or null when there is none. */
+  private async readBundleLog(root: string): Promise<string | null> {
+    const file = this.app.vault.getAbstractFileByPath(bundleLogPath(root));
+    if (!(file instanceof TFile)) return null;
+    try {
+      return await this.app.vault.cachedRead(file);
+    } catch {
+      return null;
     }
   }
 
@@ -795,6 +816,11 @@ export default class KtlCuratorPlugin extends Plugin {
     return null;
   }
 
+  /** Every record of one bundle, for the successor chooser. */
+  getRecordsForRoot(root: string): TrustRecord[] {
+    return this.recordsByRoot.get(root) ?? [];
+  }
+
   /**
    * Where a recorded source lives (§6.2): as a vault path, as a path relative
    * to the concept's bundle root, else "outside this vault". A `#fragment` or
@@ -943,21 +969,24 @@ export default class KtlCuratorPlugin extends Plugin {
     await this.refreshAllReports();
   }
 
-  async retire(file: TFile, record: TrustRecord, root: string, reason: string): Promise<void> {
+  /** Retire, with the successor the person chose, if any: its id goes under
+   *  `isReplacedBy` and its link into the Deprecation line (SPEC 5.3). */
+  async retire(file: TFile, record: TrustRecord, root: string, reason: string, successor?: TrustRecord): Promise<void> {
     if (this.refuseReserved(file, root)) return;
     const curatorId = await this.ensureCuratorId();
     if (!curatorId) return;
     await this.app.fileManager.processFrontMatter(file, (fm: Record<string, unknown>) => {
-      const next = applyRetire(fm);
+      const next = applyRetire(fm, successor?.id);
       Object.keys(fm).forEach((k) => delete fm[k]);
       Object.assign(fm, next);
     });
     const today = todayIso();
     const relPath = `../${toBundlePath(file.path, root)}`;
+    const successorLink = successor ? { title: successor.title, path: `../${toBundlePath(successor.path, root)}` } : undefined;
     await this.withTally(
       root,
       (t) => (t.retired += 1),
-      (log) => appendDeprecationLine(log, today, record.title, relPath, reason)
+      (log) => appendDeprecationLine(log, today, record.title, relPath, reason, successorLink)
     );
     new Notice(`Retired ${record.title}.`);
     await this.refreshAllReports();
@@ -998,15 +1027,15 @@ export default class KtlCuratorPlugin extends Plugin {
       new Notice("KTL Curator: several bundle roots are configured - open a note inside the target bundle first.");
       return;
     }
-    const curatorId = await this.ensureCuratorId();
-    if (!curatorId) return;
+    // The policy starts as the session's draft; the person's Confirm records
+    // them, so no id is asked for here.
     const baseIri = (await this.findBaseIriFor(root)) ?? "";
     const path = toVaultPath("policies/knowledge-curation.md", root);
     if (this.app.vault.getAbstractFileByPath(path)) {
       new Notice(`KTL Curator: ${path} already exists.`);
       return;
     }
-    const content = renderCurationPolicyTemplate(baseIri, curatorId, nowIso());
+    const content = renderCurationPolicyTemplate(baseIri, nowIso());
     if (!this.app.vault.getAbstractFileByPath(toVaultPath("policies", root))) {
       await this.app.vault.createFolder(toVaultPath("policies", root));
     }
@@ -1024,8 +1053,9 @@ export default class KtlCuratorPlugin extends Plugin {
       new Notice("KTL Curator: several bundle roots are configured - open a note inside the target bundle first.");
       return;
     }
-    const curatorId = await this.ensureCuratorId();
-    if (!curatorId) return;
+    // The placeholder is the session's; the open question is the person's
+    // when they have an id, else the session's too (review-session.md).
+    const curatorId = this.settings.curatorId.trim() || null;
     new RecordMissingModal(this.app, async (type, title, slugHint, hint) => {
       const baseIri = (await this.findBaseIriFor(root)) ?? "";
       const slug = slugHint || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
