@@ -13,7 +13,7 @@ Every label is arithmetic over frontmatter, computed afresh on each refresh and 
 | Nobody has checked this yet | no `verified` key, or one with no events |
 | Still a draft | `status: draft`, and no `human:` `verified` event |
 | Reopened | `status: draft` on a concept a person confirmed; a send-back or a question set it. The confirmation still counts, so the rung stays |
-| Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue. Names its successor from `isReplacedBy`, or else from the newest `**Deprecation**` line in `log.md` that links the concept |
+| Retired | `status: deprecated`. Counted once, then excluded from every other label and the queue. Names its successor from `isReplacedBy` |
 | Edited since a person last confirmed it | `generated.at`, or a later `revised.at`, later than the newest `human:` `verified[].at`; the two times compared whole, never by day |
 | Past its review date / due soon | `stale_after` against today |
 | *N* other concepts rely on this | concepts whose typed relations target this concept's `id`, across every configured bundle; each relying concept counts once, and a retired concept counts for none and is counted for none |
