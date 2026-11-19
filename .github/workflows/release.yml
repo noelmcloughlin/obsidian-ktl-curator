@@ -117,9 +117,13 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   TAG: ${{ inputs.tag || github.ref_name }}
+              # The body is the tag's changelog section; at the tag,
+              # Unreleased is empty, so `notes` prints that section.
               run: |
+                    node .github/scripts/changelog-release.mjs notes "$TAG" > release-notes.md
                     gh release create "$TAG" \
                         --title="$TAG" \
+                        --notes-file=release-notes.md \
                         --draft \
                         main.js manifest.json ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }} \
                         provenance-*.intoto.jsonl
