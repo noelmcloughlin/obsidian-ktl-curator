@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.7.11] - 2026-11-19
+
 ### Security
 
 - **The skills pin is at Knowledge Trust Ladder [v0.69.2](https://github.com/noelmcloughlin/knowledge-trust-ladder/blob/v0.69.2/CHANGELOG.md).** The sync also wrote the template over a local edit of `.github/workflows/knowledge-sync.yaml`. No plugin change.
