@@ -536,14 +536,7 @@ export default class KtlCuratorPlugin extends Plugin {
 
       computeReliedOnBy(allRecords, frontmatterByPath, baseIriByRoot);
 
-      // A retired concept's successor may sit in the log alone (SPEC 5.3), so
-      // each bundle's log.md is read for the second pass.
-      const logByRoot = new Map<string, string>();
-      for (const root of roots) {
-        const log = await this.readBundleLog(root);
-        if (log !== null) logByRoot.set(root, log);
-      }
-      computeSuccessors(allRecords, frontmatterByPath, baseIriByRoot, logByRoot);
+      computeSuccessors(allRecords, frontmatterByPath, baseIriByRoot);
 
       this.reportsByRoot.clear();
       this.recordsByRoot.clear();
@@ -594,17 +587,6 @@ export default class KtlCuratorPlugin extends Plugin {
       this.refreshStatusBar();
     } finally {
       this.busy = false;
-    }
-  }
-
-  /** The bundle's `log.md` text, or null when there is none. */
-  private async readBundleLog(root: string): Promise<string | null> {
-    const file = this.app.vault.getAbstractFileByPath(bundleLogPath(root));
-    if (!(file instanceof TFile)) return null;
-    try {
-      return await this.app.vault.cachedRead(file);
-    } catch {
-      return null;
     }
   }
 

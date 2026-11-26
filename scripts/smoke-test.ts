@@ -8,7 +8,7 @@
  * YAML parser (a devDependency; the plugin itself uses Obsidian's parseYaml)
  * and a walk of scripts/fixtures/curation-bundle/.
  */
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
@@ -44,7 +44,6 @@ import {
   buildTrustRecord,
   computeReliedOnBy,
   computeSuccessors,
-  successorFromLog,
   computeHealth,
   rankQueue,
   rankQueueAll,
@@ -267,10 +266,7 @@ function loadBundle(dir: string, today: string): { records: TrustRecord[]; front
 
   const baseIriByRoot = new Map([["knowledge", baseIri]]);
   computeReliedOnBy(records, frontmatterByPath, baseIriByRoot);
-  const logPath = join(root, "log.md");
-  const logByRoot = new Map<string, string>();
-  if (existsSync(logPath)) logByRoot.set("knowledge", readFileSync(logPath, "utf8"));
-  computeSuccessors(records, frontmatterByPath, baseIriByRoot, logByRoot);
+  computeSuccessors(records, frontmatterByPath, baseIriByRoot);
   return { records, frontmatterByPath, bodyByPath };
 }
 
@@ -732,8 +728,7 @@ section("edits.ts - log.md upsert", () => {
     log
   );
 
-  // With a successor, the line links it after "replaced by" (SPEC 5.3), and a
-  // reader finds it from the log alone.
+  // With a successor, the line links it after "replaced by" (SPEC 5.3).
   const linked = appendDeprecationLine("", "2026-09-08", "Old Export", "../services/old-export.md", "the nightly copy stopped", {
     title: "Orders API",
     path: "../services/orders-api.md",
@@ -743,11 +738,7 @@ section("edits.ts - log.md upsert", () => {
     linked.includes("* **Deprecation**: [Old Export](../services/old-export.md) retired - replaced by [Orders API](../services/orders-api.md) - the nightly copy stopped."),
     linked
   );
-  expect("successorFromLog reads that successor back", successorFromLog(linked, "services/old-export.md") === "services/orders-api.md", String(successorFromLog(linked, "services/old-export.md")));
-  expect("a line with no link after 'replaced by' names none", successorFromLog(log, "services/legacy-orders-sync.md") === null, String(successorFromLog(log, "services/legacy-orders-sync.md")));
-  expect("a concept no line links has none", successorFromLog(linked, "services/other.md") === null, "");
-  const two = ["## 2026-09-09", "", "* **Deprecation**: [Old Export](../services/old-export.md) retired - replaced by [Exports v2](../services/exports-v2.md).", "", linked].join("\n");
-  expect("the newest line, first in the file, wins", successorFromLog(two, "services/old-export.md") === "services/exports-v2.md", String(successorFromLog(two, "services/old-export.md")));
+
 });
 
 section("edits.ts - GUARDRAIL: no verb touches a key outside its own row of §6.3", () => {
@@ -1272,7 +1263,7 @@ section("conformance - the reader fixture from knowledge-trust-ladder", () => {
 
   const successors: Record<string, string> = {};
   for (const r of records) if (r.successor) successors[bundlePath(r)] = r.successor;
-  expect("successors match: one from isReplacedBy, one from the log, none for the third", JSON.stringify(successors) === JSON.stringify(expected.successor), JSON.stringify(successors));
+  expect("successors match: two from isReplacedBy, none for the third", JSON.stringify(successors) === JSON.stringify(expected.successor), JSON.stringify(successors));
   const legacy = records.find((r) => bundlePath(r) === "services/legacy-sync.md")!;
   expect("the successor read from the log carries its title", legacy.successorTitle === "Orders API", String(legacy.successorTitle));
 

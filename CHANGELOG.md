@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **A retired concept names its successor from `isReplacedBy` alone, as Knowledge Trust Ladder 0.70.0 does; a `**Deprecation**` line in `log.md` no longer names one.** Retire still links the successor in that line, for the history.
+
 ### Security
 
 - **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.70.4](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.70.3...v0.70.4).** The release changed `.lokf/scripts/knowledge-sync.sh` here. No plugin change.

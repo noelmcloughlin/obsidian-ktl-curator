@@ -371,53 +371,19 @@ function isReplacedByTargetsOf(fm: Record<string, unknown>): unknown[] {
   return targets;
 }
 
-const DEPRECATION_LINE_RE = /^\s*[*-]\s+\*\*Deprecation\*\*:/;
-const MARKDOWN_LINK_RE = /\[[^\]]*\]\(([^)\s]+)\)/g;
-
-/** A log link as a bundle path: no `./` or `../` prefix, no fragment. */
-function linkToBundlePath(link: string): string {
-  let path = link.trim();
-  const hash = path.indexOf("#");
-  if (hash >= 0) path = path.slice(0, hash);
-  while (path.startsWith("./") || path.startsWith("../")) path = path.replace(/^\.\.?\//, "");
-  return path;
-}
-
-/** The successor the newest `**Deprecation**` line in `log` names for the
- *  concept at `bundlePath`: the first link is the retired concept, the link
- *  after "replaced by" is the successor (SPEC 5.3). Null when no line links
- *  the concept, or the newest one names no successor. */
-export function successorFromLog(log: string, bundlePath: string): string | null {
-  const target = bundlePath.replace(/\.md$/i, "");
-  for (const line of log.split("\n")) {
-    if (!DEPRECATION_LINE_RE.test(line)) continue;
-    const links = [...line.matchAll(MARKDOWN_LINK_RE)];
-    const first = links[0];
-    if (!first || linkToBundlePath(first[1]!).replace(/\.md$/i, "") !== target) continue;
-    const cut = line.indexOf("replaced by");
-    if (cut === -1) return null;
-    const after = links.find((m) => (m.index ?? 0) > cut);
-    return after ? linkToBundlePath(after[1]!) : null;
-  }
-  return null;
-}
-
 /**
- * Fills in every retired record's `successor` and `successorTitle`: first from
- * `isReplacedBy`, the first target that names a concept; failing that, from
- * the bundle's `log.md`. Like `computeReliedOnBy`, a second pass over every
- * record, after it. `logByRoot` holds each bundle's `log.md` text.
+ * Fills in every retired record's `successor` and `successorTitle` from
+ * `isReplacedBy`, the first target that names a concept; a `**Deprecation**`
+ * line in `log.md` names none (SPEC 5.3). Like `computeReliedOnBy`, a second
+ * pass over every record, after it.
  */
 export function computeSuccessors(
   records: TrustRecord[],
   frontmatterByPath: Map<string, Record<string, unknown>>,
-  baseIriByRoot: Map<string, string | null>,
-  logByRoot: Map<string, string>
+  baseIriByRoot: Map<string, string | null>
 ): void {
   const byId = new Map<string, TrustRecord>();
   for (const r of records) byId.set(r.id, r);
-  const byBundlePath = new Map<string, TrustRecord>();
-  for (const r of records) byBundlePath.set(`${r.bundleRoot}\n${toBundlePath(r.path, r.bundleRoot)}`, r);
 
   for (const r of records) {
     r.successor = null;
@@ -430,17 +396,9 @@ export function computeSuccessors(
           .map((raw) => resolveTargetRecord(raw, r, baseIri, byId))
           .find((hit): hit is TrustRecord => hit !== null && hit !== r)
       : undefined;
-    if (fromField) {
-      r.successor = toBundlePath(fromField.path, fromField.bundleRoot);
-      r.successorTitle = fromField.title;
-      continue;
-    }
-    const log = logByRoot.get(r.bundleRoot);
-    if (!log) continue;
-    const fromLog = successorFromLog(log, toBundlePath(r.path, r.bundleRoot));
-    if (!fromLog) continue;
-    r.successor = fromLog;
-    r.successorTitle = byBundlePath.get(`${r.bundleRoot}\n${fromLog}`)?.title ?? null;
+    if (!fromField) continue;
+    r.successor = toBundlePath(fromField.path, fromField.bundleRoot);
+    r.successorTitle = fromField.title;
   }
 }
 
