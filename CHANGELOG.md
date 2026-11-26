@@ -6,6 +6,8 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+## [1.7.14] - 2026-11-26
+
 ### Changed
 
 - **A retired concept names its successor from `isReplacedBy` alone, as Knowledge Trust Ladder 0.70.0 does; a `**Deprecation**` line in `log.md` no longer names one.** Retire still links the successor in that line, for the history.
