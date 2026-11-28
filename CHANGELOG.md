@@ -6,6 +6,10 @@ This is a fresh identity forked from [KTL Registrar](https://github.com/noelmclo
 
 ## [Unreleased]
 
+### Changed
+
+- **The sidecar copies and the skills pin are at Knowledge Trust Ladder [v0.71.0](https://github.com/noelmcloughlin/knowledge-trust-ladder/compare/v0.70.4...v0.71.0).** The release changed `.github/workflows/knowledge-sync.yaml`, `.lokf/scripts/knowledge-conventions.sh`, `website/pyproject.toml` and `website/uv.lock` here. No plugin change.
+
 ## [1.7.14] - 2026-11-26
 
 ### Changed
